@@ -1,6 +1,6 @@
 module.exports = RouteHandler;
 
-function RouteHandler(app)
+function RouteHandler(app, config)
 {
   app.get('/', function(req, res)
   {
