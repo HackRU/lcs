@@ -1,0 +1,193 @@
+@font-face {
+	font-family: "Proxima Nova Lt";
+	src: url(./assets/proximanova-light-webfont.eot),
+		url(./assets/proximanova-light-webfont.ttf),
+		url(./assets/proximanova-light-webfont.woff);
+}
+@font-face {
+	font-family: "Proxima Nova Bol";
+	src: url(./assets/proximanova-bold-webfont.eot),
+		url(./assets/proximanova-bold-webfont.ttf),
+		url(./assets/proximanova-bold-webfont.woff);
+}
+
+* {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+}
+body {
+	background-color: #262626;
+}
+div {
+	font-size: 21px;
+	color: white;
+	text-align: center;
+}
+#home {
+	background-image: url(./assets/background.jpg);
+	background-position: center bottom;
+	background-size: cover;
+	min-height: 100vh;
+	width: 100%;
+	position: fixed;
+	z-index: -1;
+}
+.landing-container {
+	width: 370px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	vertical-align: middle;
+	min-height: 100vh;
+}
+.text-wrapper {
+	margin-top: 30px;
+	font-family: "Proxima Nova Lt";
+	font-size: 21px;
+}
+.text-wrapper img {
+	margin: 25px;
+}
+.coming-soon {
+	margin: 10px 0px 90px;
+	font-family: "Proxima Nova Lt";
+	text-transform: uppercase;
+	opacity: .8;
+	letter-spacing: 4px;
+	font-size: 14px;
+	background-color: rgba(255, 255, 255, .2);
+	padding: 20px;
+}
+.sponsors {
+	display: table;
+	margin-top: 150px;
+	width: 100%;
+	max-width: 700px;
+	margin: 0px auto;
+	padding-bottom: 100px;
+}
+.sponsors img {
+	max-width: 200px;
+	max-height: 100px;
+	padding: 20px;
+	opacity: 1;
+}
+.sponsors a, .social a {
+	text-decoration: none;
+	transition: opacity .2s ease-in-out;
+}
+.sponsors a:hover, .social a:hover {
+	opacity: .5;
+}
+.sponsors h1 {
+	margin-bottom: 50px;
+}
+.social ul li {
+	list-style: none;
+	width: 70px;
+	display: inline-block
+}
+.projects {
+	width: 100%;
+	background-color: #ec232b;
+	padding: 20px;
+	letter-spacing: 4px;
+	font-size: 14px;
+	font-family: "Proxima Nova Lt";
+	text-transform: uppercase;
+	margin-bottom: 50px;
+	color: white;
+	transition: all .2s ease-in-out;
+	position: relative;
+}
+.projects:hover {
+	border-radius: 16px;
+	background-color: #e96427;
+}
+.projects:before {
+	content: "Check out the amazing projects built last HackRU:";
+	position: absolute;
+	top: -25px;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	letter-spacing: 1px;
+	text-transform: none;
+}
+#mc_embed_signup {
+	margin-top: 30px;
+	font-family: "Proxima Nova Lt";
+	letter-spacing: 1px;
+	background: none;
+}
+#mc_embed_signup input.email {
+	height: 50px;
+	padding: 20px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+#mc_embed_signup .button {
+	background-color: #ec232b;
+	font-size: 14px;
+	color: white; 	/*Connie's edit*/
+	text-transform: uppercase;
+	letter-spacing: 4px;
+	/*border-radius: 0px;	Connie's edit */
+	border: none; /*Connie's edit*/
+	padding: 20px;
+	line-height: normal;
+	width: 100%;
+	height: auto;
+	transition: all .2s ease-in-out; /*Connie's edit*/
+	display: block;
+	
+}
+#mc_embed_signup form {
+	padding-bottom: 0px;
+}
+#mc_embed_signup .button:hover {
+	background-color: #e96427;
+	border-radius: 16px;
+}
+#mc_embed_signup .clear {
+	display: block;
+}
+#mc_embed_signup label {
+	font-weight: normal;
+	font-size: 14px;
+}
+h1 {
+	font-family: "Proxima Nova Lt";
+	font-size: 36px;
+	text-align: center;
+	letter-spacing: 4px;
+}
+sup {
+	font-size: 13px;
+}
+a {
+	text-decoration: none;
+}
+@media only screen and (max-height: 900px) {
+	.landing-container {
+		padding-top: 50px;
+	}
+}
+@media only screen and (max-width: 400px) {
+	.landing-container {
+		width: 100%;
+		padding: 0px 20px;
+	}
+	.coming-soon, .projects {
+		font-size: 3vw;
+	}
+}
