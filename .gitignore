@@ -38,3 +38,4 @@ jspm_packages
 
 # config vars
 config
+config/config.js
