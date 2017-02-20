@@ -26,17 +26,22 @@ const init = function PassportSetup(passport) {
       'education',
       'event'
     ]
-  }, (accessToken, refreshToken, profile, callback) {
+  }, (accessToken, refreshToken, profile, callback)=>{
+    console.log("UHHHHH");
     process.nextTick(()=>{
+      console.log("HELP");
       // Check if the user exists in the database
       User.findOne({'mlhid': profile.id}, (err, user)=>{
         if (err) {
+          console.log("WTF");
           return callback(err);
         }
         // If a user was found, then return the user.
         if (user) {
+          console.log("Found new User");
           return callback(null, user);
         } else {
+          console.log("Creating new User");
           // Create a New User
           var newUser = new User();
 

@@ -1,14 +1,12 @@
 const request = require('request');
 
-const init = function RouteHandler(app, config)
-{
+const init = function RouteHandler(app, config, passport) {
   app.get('/', (req, res)=>{
     res.sendfile('views/index.html');
   });
 
   app.get('/test', (req, res)=>{
     res.sendfile('views/test.html');
-    console.log(config.MYMLH_CLIENT_ID);
   });
 
   app.get('/register', isLoggedIn, (req, res)=>{
@@ -19,7 +17,7 @@ const init = function RouteHandler(app, config)
     passport.authenticate('mymlh', {
       successRedirect: '/register',
       failureRedirect: '/'
-    });
+    })
   );
 
   app.get('/dashboard', isLoggedIn, (req, res)=>{
