@@ -35,7 +35,7 @@ const init = function PassportSetup(passport) {
         }
         // If a user was found, then return the user.
         if (user) {
-          console.log("Found new User");
+          console.log("Found User");
           return callback(null, user);
         } else {
           console.log("Creating new User");
@@ -43,8 +43,7 @@ const init = function PassportSetup(passport) {
           var newUser = new User();
 
           // MyMLH Data
-          //newUser.mlhid = profile.id;
-          console.log("FUCK");
+          newUser.mlhid = profile.id;
           newUser.email = profile.email;
           newUser.first_name = profile.first_name;
           newUser.last_name = profile.last_name;

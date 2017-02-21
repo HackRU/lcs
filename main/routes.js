@@ -25,6 +25,8 @@ const init = function RouteHandler(app, config, passport) {
   });
 
   app.post('/register', isLoggedIn, (req, res)=>{
+    console.log(req.user);
+    console.log("BODY");
     console.log(req.body);
   })
 };
