@@ -1,0 +1,19 @@
+module.exports =
+{
+  'MYMLH_CLIENT_ID': 'id',
+  'MYMLH_SECRET': 'secret',
+  'MYMLH_CALLBACK': 'http://localhost:8080/callback/mymlh',
+  'session': {
+    'options': {
+      'host': 'localhost',
+      'port': '6379'
+    },
+    'secret': 'secret'
+  },
+  'db': {
+    'url': 'mongodb://path/to/db'
+  },
+  'resume': {
+    'filetypes': ['pdf', 'doc', 'docx', 'txt', 'jpg', 'rtf']
+  }
+}
