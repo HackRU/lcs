@@ -31,7 +31,6 @@ const init = function PassportSetup(passport) {
       // Check if the user exists in the database
       User.findOne({'mlhid': profile.id}, (err, user)=>{
         if (err) {
-          console.log("WTF");
           return callback(err);
         }
         // If a user was found, then return the user.

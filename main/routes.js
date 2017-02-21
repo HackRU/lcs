@@ -23,6 +23,10 @@ const init = function RouteHandler(app, config, passport) {
   app.get('/dashboard', isLoggedIn, (req, res)=>{
     res.render('dashboard.ejs');
   });
+
+  app.post('/register', isLoggedIn, (req, res)=>{
+    console.log(req.body);
+  })
 };
 
 // Middleware
