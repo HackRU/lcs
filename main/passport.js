@@ -9,7 +9,7 @@ const init = function PassportSetup(passport) {
   });
 
   passport.deserializeUser((mlhid, callback)=>{
-    User.findById(mlhid, (err, user)=>{
+    User.findOne({ 'mlhid': mlhid }, (err, user)=>{
       callback(err, user);
     });
   });
@@ -27,9 +27,7 @@ const init = function PassportSetup(passport) {
       'event'
     ]
   }, (accessToken, refreshToken, profile, callback)=>{
-    console.log("UHHHHH");
     process.nextTick(()=>{
-      console.log("HELP");
       // Check if the user exists in the database
       User.findOne({'mlhid': profile.id}, (err, user)=>{
         if (err) {
@@ -46,7 +44,8 @@ const init = function PassportSetup(passport) {
           var newUser = new User();
 
           // MyMLH Data
-          newUser.mlhid = profile.id;
+          //newUser.mlhid = profile.id;
+          console.log("FUCK");
           newUser.email = profile.email;
           newUser.first_name = profile.first_name;
           newUser.last_name = profile.last_name;

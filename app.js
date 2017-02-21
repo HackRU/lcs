@@ -3,6 +3,7 @@ const express       = require('express');
 const helmet        = require('helmet');
 const morgan        = require('morgan');
 const bodyParser    = require('body-parser');
+const ejs           = require('ejs');
 const mongoose      = require('mongoose');
 const session       = require('express-session');
 const RedisStore    = require('connect-redis')(session);
