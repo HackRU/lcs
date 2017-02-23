@@ -1,19 +1,24 @@
+// Dependencies
 const mongoose      = require('mongoose');
+const LocalStrategy = require('passport-local').Strategy;
 const MyMLHStrategy = require('passport-mymlh').Strategy;
+const bcrypt        = require('bcrypt-nodejs');
 const User          = require('../models/user.js');
 const config        = require('../config/config.js');
 
+// Initialization function
 const init = function PassportSetup(passport) {
   passport.serializeUser((user, callback)=>{
-    callback(null, user.mlhid);
+    callback(null, user._id);
   });
 
-  passport.deserializeUser((mlhid, callback)=>{
-    User.findOne({ 'mlhid': mlhid }, (err, user)=>{
+  passport.deserializeUser((_id, callback)=>{
+    User.findOne({ '_id': _id }, (err, user)=>{
       callback(err, user);
     });
   });
 
+  // Handle Authentication Through MyMLH
   passport.use(new MyMLHStrategy({
     clientID: config.MYMLH_CLIENT_ID,
     clientSecret: config.MYMLH_SECRET,
@@ -29,7 +34,7 @@ const init = function PassportSetup(passport) {
   }, (accessToken, refreshToken, profile, callback)=>{
     process.nextTick(()=>{
       // Check if the user exists in the database
-      User.findOne({'mlhid': profile.id}, (err, user)=>{
+      User.findOne({'mlh_data.mlhid': profile.id}, (err, user)=>{
         if (err) {
           return callback(err);
         }
@@ -43,21 +48,29 @@ const init = function PassportSetup(passport) {
           var newUser = new User();
 
           // MyMLH Data
-          newUser.mlhid = profile.id;
-          newUser.email = profile.email;
-          newUser.first_name = profile.first_name;
-          newUser.last_name = profile.last_name;
-          newUser.level_of_study = profile.level_of_study;
-          newUser.major = profile.major;
-          newUser.shirt_size = profile.shirt_size;
-          newUser.dietary_restrictions = profile.dietary_restrictions;
-          newUser.special_needs = profile.special_needs;
-          newUser.date_of_birth = profile.date_of_birth;
-          newUser.gender = profile.gender;
-          newUser.phone_number = profile.phone_number;
-          newUser.school = profile.school;
+          newUser.mlh_data.mlhid = profile.id;
+          newUser.mlh_data.email = profile.email;
+          newUser.mlh_data.first_name = profile.first_name;
+          newUser.mlh_data.last_name = profile.last_name;
+          newUser.mlh_data.level_of_study = profile.level_of_study;
+          newUser.mlh_data.major = profile.major;
+          newUser.mlh_data.shirt_size = profile.shirt_size;
+          newUser.mlh_data.dietary_restrictions = profile.dietary_restrictions;
+          newUser.mlh_data.special_needs = profile.special_needs;
+          newUser.mlh_data.date_of_birth = profile.date_of_birth;
+          newUser.mlh_data.gender = profile.gender;
+          newUser.mlh_data.phone_number = profile.phone_number;
+          newUser.mlh_data.school = profile.school;
 
           // Our Data
+          newUser.local.email = profile.email;
+          newUser.local.password = 'defacto';
+          newUser.role.director = false;
+          newUser.role.admin = false;
+          newUser.role.organizer = false;
+          newUser.role.volunteer = false;
+          newUser.role.mentor = false;
+          newUser.role.attendee = true;
           newUser.registration_status = 0;
           newUser.github = '';
           newUser.resume = '';

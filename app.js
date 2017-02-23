@@ -3,13 +3,11 @@ const express       = require('express');
 const helmet        = require('helmet');
 const morgan        = require('morgan');
 const bodyParser    = require('body-parser');
-const busboy        = require('connect-busboy');
 const ejs           = require('ejs');
 const mongoose      = require('mongoose');
 const session       = require('express-session');
 const RedisStore    = require('connect-redis')(session);
 const passport      = require('passport');
-const passportMyMLH = require('passport-mymlh').Strategy;
 const routes        = require('./main/routes.js');
 const config        = require('./config/config.js');
 const passconfig    = require('./main/passport.js');
@@ -24,7 +22,6 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(busboy());
 app.use(express.static(__dirname + "/views"));
 app.set('view engine', 'ejs');
 
@@ -41,6 +38,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Initialize Routes Handler
 routes(app, config, passport);
 
 // Launch
