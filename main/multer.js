@@ -13,7 +13,7 @@ const init = function multerConfiguration(multer, config) {
   // Define Resume Storage and File naming convention
   var storage = multer.diskStorage({
     destination: function resumeLocation(req, file, callback) {
-      callback(null, path.join(__dirname + '/../' + config.SemesterID + '/resumes'));
+      callback(null, path.join(__dirname + '/../resumes/' + config.SemesterID));
     },
     filename: function customFilename(req, file, callback) {
       console.log(file);

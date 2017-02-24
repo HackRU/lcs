@@ -1,7 +1,7 @@
 // Dependencies
 const request = require('request');
 const path    = require('path');
-const multer  = require('multer');
+const User    = require('../models/user.js');
 
 // Middleware
 // Authentication Check
@@ -20,6 +20,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
+    //console.log(User.findOne());
     res.render('register-mymlh.ejs');
   });
 
