@@ -39,3 +39,6 @@ jspm_packages
 
 # config vars
 config/config.js
+
+# Resume dump
+resumes
