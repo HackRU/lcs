@@ -1,5 +1,7 @@
 // Dependencies
 const request = require('request');
+const path    = require('path');
+const multer  = require('multer');
 
 // Middleware
 // Authentication Check
@@ -11,7 +13,8 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 }
 
 // Initialization function
-const init = function RouteHandler(app, config, passport) {
+const init = function RouteHandler(app, config, passport, upload) {
+
   app.get('/', (req, res)=>{
     res.render('index.ejs');
   });
@@ -32,10 +35,17 @@ const init = function RouteHandler(app, config, passport) {
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
+    upload.single('resume')(req, res, (err)=>{
+      if(err) {
+        return err;
+      }
+      console.log(req.file);
+      res.json(201);
+    });
     console.log(req.user);
     console.log("BODY");
     console.log(req.body);
-  })
+  });
 };
 
 module.exports = init;
