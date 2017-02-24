@@ -37,14 +37,15 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
     upload.single('resume')(req, res, (err)=>{
       if(err) {
+        console.log(err);
         return err;
       }
       console.log(req.file);
-      res.json(201);
     });
     console.log(req.user);
     console.log("BODY");
     console.log(req.body);
+    res.redirect('/dashboard');
   });
 };
 
