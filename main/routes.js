@@ -21,7 +21,12 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
     //console.log(User.findOne());
-    res.render('register-mymlh.ejs');
+    res.render('register-mymlh.ejs', { user: req.user});
+  });
+
+  app.get('/logout', (req, res)=>{
+    req.logout();
+    res.redirect('/');
   });
 
   app.get('/callback/mymlh',
@@ -32,7 +37,8 @@ const init = function RouteHandler(app, config, passport, upload) {
   );
 
   app.get('/dashboard', isLoggedIn, (req, res)=>{
-    res.render('dashboard.ejs');
+    console.log('Dashboard: \n' + req.user);
+    res.render('dashboard.ejs', { user: req.user });
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
@@ -41,12 +47,36 @@ const init = function RouteHandler(app, config, passport, upload) {
         console.log(err);
         return err;
       }
-      console.log(req.file);
+      let github = false;
+      let resume = false;
+      if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
+        github = true;
+      }
+      if((req.file) && (req.user.resume !== req.file.originalname)) {
+        resume = true;
+      }
+      if(github || resume) {
+        User.findOne({ '_id': req.user._id }, (err, user)=>{
+          if (err) {
+            throw err;
+          }
+          if(github) {
+            user.github = req.body.github;
+          }
+          if(resume) {
+            user.resume = req.file.originalname;
+          }
+          user.data_sharing = true;
+          user.registration_status = 1;
+          user.save((err)=>{
+            if (err) {
+              throw err;
+            }
+            res.redirect('/dashboard');
+          });
+        });
+      }
     });
-    console.log(req.user);
-    console.log("BODY");
-    console.log(req.body);
-    res.redirect('/dashboard');
   });
 };
 

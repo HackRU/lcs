@@ -8,17 +8,19 @@ const init = function multerConfiguration(multer, config) {
   };
 
   var fileFilter = function checkFileType(req, file, callback) {
-    // parse file extension or MIMEType
+    // parse file MIMEType
+
   };
 
   // Define Resume Storage and File naming convention
   var storage = multer.diskStorage({
     destination: function resumeLocation(req, file, callback) {
       // Check if Resume dump Folder exists, if not, create it.
-      if(!fs.existsSync(path.join(__dirname + '/../resumes/' + config.SemesterID))) {
-        fs.mkdirSync(path.join(__dirname + '/../resumes/' + config.SemesterID));
+      if(!fs.existsSync(path.join(__dirname, '/../resumes/', config.SemesterID))) {
+        fs.mkdirSync(path.join(__dirname, '/../resumes/'), 484);
+        fs.mkdirSync(path.join(__dirname, '/../resumes/', config.SemesterID), 484);
       }
-      callback(null, path.join(__dirname + '/../resumes/' + config.SemesterID));
+      callback(null, path.join(__dirname, '/../resumes/', config.SemesterID));
     },
     filename: function customFilename(req, file, callback) {
       // Formats Resume names as id_resumeFileName
