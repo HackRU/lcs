@@ -55,27 +55,27 @@ const init = function RouteHandler(app, config, passport, upload) {
       if((req.file) && (req.user.resume !== req.file.originalname)) {
         resume = true;
       }
-      if(github || resume) {
-        User.findOne({ '_id': req.user._id }, (err, user)=>{
+      User.findOne({ '_id': req.user._id }, (err, user)=>{
+        if (err) {
+          throw err;
+        }
+        if(github) {
+          user.github = req.body.github;
+        }
+        if(resume) {
+
+          user.resume = req.file.originalname;
+        }
+        user.data_sharing = true;
+        user.registration_status = 1;
+        user.save((err)=>{
           if (err) {
+            console.log(err);
             throw err;
           }
-          if(github) {
-            user.github = req.body.github;
-          }
-          if(resume) {
-            user.resume = req.file.originalname;
-          }
-          user.data_sharing = true;
-          user.registration_status = 1;
-          user.save((err)=>{
-            if (err) {
-              throw err;
-            }
-            res.redirect('/dashboard');
-          });
+          res.redirect('/dashboard');
         });
-      }
+      });
     });
   });
 };

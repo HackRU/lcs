@@ -9,7 +9,14 @@ const init = function multerConfiguration(multer, config) {
 
   var fileFilter = function checkFileType(req, file, callback) {
     // parse file MIMEType
-
+    const validmimes = ['application/pdf', 'application/msword', 'application/rtf', 'text/rtf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    if(validmimes.includes(file.mimetype)) {
+      // Correct MIMEType
+      callback(null, true);
+    } else {
+      // Incorrect MIMEType
+      callback(null, false);
+    }
   };
 
   // Define Resume Storage and File naming convention
@@ -28,8 +35,7 @@ const init = function multerConfiguration(multer, config) {
     }
   });
 
-  return multer({ storage: storage, limits: fileLimits });
-  //return multer({ storage: storage, fileFilter: fileFilter, limits: fileLimits });
+  return multer({ storage: storage, fileFilter: fileFilter, limits: fileLimits });
 }
 
 module.exports = init;
