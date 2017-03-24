@@ -41,6 +41,14 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('dashboard.ejs', { user: req.user });
   });
 
+  app.get('/account', isLoggedIn, (req, res)=>{
+    res.render('account.ejs', { user: req.user });
+  });
+
+  app.get('/resume/:file', isLoggedIn, (req, res)=>{
+    res.download('resumes/Spring2017/' + req.params.file);
+  });
+
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
     upload.single('resume')(req, res, (err)=>{
       if(err) {
@@ -74,6 +82,43 @@ const init = function RouteHandler(app, config, passport, upload) {
             throw err;
           }
           res.redirect('/dashboard');
+        });
+      });
+    });
+  });
+
+  app.post('/account', isLoggedIn, (req, res)=>{
+    upload.single('resume')(req, res, (err)=>{
+      if(err) {
+        console.log(err);
+        return err;
+      }
+      let github = false;
+      let resume = false;
+      if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
+        github = true;
+      }
+      if((req.file) && (req.user.resume !== req.file.originalname)) {
+        resume = true;
+      }
+      User.findOne({ '_id': req.user._id }, (err, user)=>{
+        if (err) {
+          throw err;
+        }
+        if(github) {
+          user.github = req.body.github;
+        }
+        if(resume) {
+
+          user.resume = req.file.originalname;
+        }
+        user.data_sharing = true;
+        user.save((err)=>{
+          if (err) {
+            console.log(err);
+            throw err;
+          }
+          res.redirect('/account');
         });
       });
     });
