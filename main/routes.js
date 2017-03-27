@@ -17,7 +17,7 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/', (req, res)=>{
-    res.render('index.ejs', { user: req.user, message: req.flash('info') });
+    res.render('index.ejs', { register_link: config.MYMLH_AUTHORIZE_LINK,user: req.user, message: req.flash('info') });
   });
 
   app.get('/logout', (req, res)=>{
