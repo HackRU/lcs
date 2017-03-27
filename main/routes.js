@@ -34,7 +34,14 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
     //console.log(User.findOne());
+    if(req.user.registration_status == 1) {
+      res.redirect('/dashboard');
+    }
     res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
+  });
+
+  app.get('/register-confirmation', isLoggedIn, (req, res)=>{
+    res.render('registration-confirmation.ejs');
   });
 
   app.get('/dashboard', isLoggedIn, (req, res)=>{
@@ -94,7 +101,7 @@ const init = function RouteHandler(app, config, passport, upload) {
             console.log(err);
             throw err;
           }
-          res.redirect('/dashboard');
+          res.redirect('/register-confirmation');
         });
       });
     });
@@ -139,11 +146,19 @@ const init = function RouteHandler(app, config, passport, upload) {
             console.log(err);
             throw err;
           }
+          req.flash('account', 'Success! Your information was saved.')
           res.redirect('/account');
         });
       });
     });
   });
+
+  app.use(function (req, res, next) {
+    res.render('404.ejs');
+  });
+  // app.get('*', (req, res)=>{
+  //   res.render('404.ejs');
+  // });
 };
 
 module.exports = init;
