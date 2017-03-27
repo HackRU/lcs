@@ -46,7 +46,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/account', isLoggedIn, (req, res)=>{
-    res.render('account.ejs', { user: req.user });
+    res.render('account.ejs', { user: req.user, message: req.flash('account') });
   });
 
   app.get('/resume/:file', isLoggedIn, (req, res)=>{
