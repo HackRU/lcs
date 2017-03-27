@@ -9,6 +9,7 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
+  req.flash('info', 'Something happened with authentication! Please log in again.');
   res.redirect('/');
 }
 
@@ -16,12 +17,7 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/', (req, res)=>{
-    res.render('index.ejs');
-  });
-
-  app.get('/register-mymlh', isLoggedIn, (req, res)=>{
-    //console.log(User.findOne());
-    res.render('register-mymlh.ejs', { user: req.user});
+    res.render('index.ejs', { user: req.user, message: req.flash('info') });
   });
 
   app.get('/logout', (req, res)=>{
@@ -36,7 +32,15 @@ const init = function RouteHandler(app, config, passport, upload) {
     })
   );
 
+  app.get('/register-mymlh', isLoggedIn, (req, res)=>{
+    //console.log(User.findOne());
+    res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
+  });
+
   app.get('/dashboard', isLoggedIn, (req, res)=>{
+    if(req.user.registration_status == 0) {
+      res.redirect('/register-mymlh');
+    }
     console.log('Dashboard: \n' + req.user);
     res.render('dashboard.ejs', { user: req.user });
   });
@@ -46,14 +50,23 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/resume/:file', isLoggedIn, (req, res)=>{
+    // change later
     res.download('resumes/Spring2017/' + req.params.file);
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
     upload.single('resume')(req, res, (err)=>{
       if(err) {
-        console.log(err);
-        return err;
+        if(err.code == 'LIMIT_FILE_SIZE') {
+          req.flash('register', 'The file you\'re trying to upload is too large! Max Size is 2MB! :(');
+          //res.redirect('/register-mymlh');
+        } else if(err.code == 'WRONG_FILE_TYPE') {
+          req.flash('register', 'Wrong file type. Please upload only PDF, DOC, DOCX, RTF, RTF, TXT files.');
+        } else {
+          req.flash('register', err.code);
+        }
+        res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
+        return;
       }
       let github = false;
       let resume = false;
@@ -90,8 +103,16 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.post('/account', isLoggedIn, (req, res)=>{
     upload.single('resume')(req, res, (err)=>{
       if(err) {
-        console.log(err);
-        return err;
+        if(err.code == 'LIMIT_FILE_SIZE') {
+          req.flash('account', 'The file you\'re trying to upload is too large! Max Size is 2MB! :(');
+          //res.redirect('/register-mymlh');
+        } else if(err.code == 'WRONG_FILE_TYPE') {
+          req.flash('account', 'Wrong file type. Please upload only PDF, DOC, DOCX, RTF, RTF, TXT files.');
+        } else {
+          req.flash('account', err.code);
+        }
+        res.render('account', { user: req.user, message: req.flash('account') });
+        return;
       }
       let github = false;
       let resume = false;

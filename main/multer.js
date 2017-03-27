@@ -15,7 +15,7 @@ const init = function multerConfiguration(multer, config) {
       callback(null, true);
     } else {
       // Incorrect MIMEType
-      callback(null, false);
+      callback({ code: 'WRONG_FILE_TYPE' }, false);
     }
   };
 
@@ -26,6 +26,7 @@ const init = function multerConfiguration(multer, config) {
       if(!fs.existsSync(path.join(__dirname, '/../resumes/', config.SemesterID))) {
         fs.mkdirSync(path.join(__dirname, '/../resumes/'), 484);
         fs.mkdirSync(path.join(__dirname, '/../resumes/', config.SemesterID), 484);
+      } else {
       }
       callback(null, path.join(__dirname, '/../resumes/', config.SemesterID));
     },
@@ -35,7 +36,7 @@ const init = function multerConfiguration(multer, config) {
     }
   });
 
-  return multer({ storage: storage, fileFilter: fileFilter, limits: fileLimits });
+  return multer({ storage: storage, fileFilter: fileFilter, limits: {fileSize: config.resume.maxSize} });
 }
 
 module.exports = init;

@@ -5,6 +5,7 @@ const path          = require('path');
 const morgan        = require('morgan');
 const bodyParser    = require('body-parser');
 const ejs           = require('ejs');
+const flash         = require('connect-flash');
 const mongoose      = require('mongoose');
 const session       = require('express-session');
 const RedisStore    = require('connect-redis')(session);
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/views"));
 app.set('view engine', 'ejs');
+app.use(flash());
 
 // Set up Sessions
 app.use(session({
@@ -36,7 +38,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 60000
+    maxAge: config.session.maxAge
   }
 }));
 app.use(passport.initialize());

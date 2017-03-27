@@ -18,7 +18,6 @@ var userSchema = new Schema({
     special_needs: String,
     date_of_birth: String,
     gender: String,
-    phone_number: String,
     school: {
       id: Number,
       name: String
