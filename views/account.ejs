@@ -13,9 +13,16 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta property="og:title" content="HackRU Spring 2017" />
+	<meta property="og:description" content="Spring into learning and creating. HackRU's 12th hackathon is coming to the Rutgers Athletic Center April 22nd - 23rd." />
+	<meta property="og:image" content="http://www.hackru.org/assets/hackRU_SP17_avatar.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Sign up for HackRU Spring 2017, taking place from April 22nd to 23rd.">
 	<title>HackRU - Account</title>
+
+	<link rel="shortcut icon" href="./assets/logo-favicon.ico" type="image/x-icon">
+	<link rel="icon" href="./assets/logo-favicon.ico" type="image/x-icon">
+
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./css/custom.css">
 
@@ -35,36 +42,37 @@
 
 
 			<div class="row subpage-hero">
-				<div class="col-sm-12 subpage-nav"></div>
-				<div class="col-sm-12 subpage-hero-title">
-					<h1>Manage Account</h1>
+				<div class="col-xs-12 subpage-nav"></div>
+				<div class="col-xs-12 subpage-hero-title">
+					<h1 class="hidden-xs">Manage Account</h1>
+					<h3 class="visible-xs-block">Manage Account</h3>
 				</div>
 			</div>
 
 			<div class="row subpage-content text-center">
-				<div class="col-sm-5">
+				<div class="col-xs-10 col-sm-5">
 
 					<% if(message) { %>
-					  <p><%= message %></p>
+					<h4><%= message %></h4>
 					<% } %>
 
 					<form class="form-horizontal" role="form" method="post" action="/account" enctype="multipart/form-data">
 
 						<div class="form-group">
-							<label for="github-handle-input" class="col-sm-12 col-md-6 control-label"><h6>Github Username</h6></label>
-							<div class="col-sm-12 col-md-6">
+							<label for="github-handle-input" class="col-xs-12 col-md-6 control-label"><h6>Github Username</h6></label>
+							<div class="col-xs-12 col-md-6">
 								<input type="text" name="github" class="form-control" id="github-handle-input" pattern="\S+" placeholder=<%= user.github %>>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="resume-upload-input" class="col-sm-12 col-md-6 control-label"><h6>Resumé</h6></label>
-							<div class="col-sm-12 col-md-4">
+							<label for="resume-upload-input" class="col-xs-12 col-md-6 control-label"><h6>Resumé</h6></label>
+							<div class="col-xs-12 col-md-4">
 								<label class="btn btn-default btn-file">
 									<p>Upload</p><input type="file" name="resume" id="resume-upload-input" class="hidden">
 								</label>
 							</div>
-							<div class="col-sm-12 col-md-2"><p id="file-selector-notif"></p></div>
+							<div class="col-xs-12 col-md-2"><p id="file-selector-notif"></p></div>
 						</div>
 
 						<input class="btn btn-default content-button" type="submit" value="Save">
@@ -83,7 +91,7 @@
 		</div>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
+		<div class="row" id="footer"></div>
 	</div>
 </body>
 

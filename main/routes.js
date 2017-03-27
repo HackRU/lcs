@@ -20,6 +20,10 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('index.ejs', { register_link: config.MYMLH_AUTHORIZE_LINK,user: req.user, message: req.flash('info') });
   });
 
+  app.get('/authenticate', passport.authenticate('mymlh'), (req, res)=>{
+    //
+  });
+
   app.get('/logout', (req, res)=>{
     req.logout();
     res.redirect('/');
@@ -35,8 +39,9 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
     //console.log(User.findOne());
     if(req.user.registration_status == 1) {
-      res.redirect('/dashboard');
+      res.redirect('/dashboard', { user: req.user });
     }
+    
     res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
   });
 
