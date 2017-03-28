@@ -67,6 +67,16 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
+    let dob = new Date(req.user.mlh_data.date_of_birth);
+    let eventdate = new Date(config.event_date);
+    let deltaTime = Math.abs(dob.getTime() - eventdate.getTime());
+    let deltaDays = Math.ceil(deltaTime/(1000 * 3600 * 24));
+    if(req.user.mlh_data.school.id != 2 && req.user.mlh_data.school.id != 2037) {
+      if(deltaDays < (18 * 365)) {
+        req.flash('info', 'Sorry, you have to be at least 18 to attend this event.');
+        return res.redirect('/');
+      }
+    }
     upload.single('resume')(req, res, (err)=>{
       if(err) {
         if(err.code == 'LIMIT_FILE_SIZE') {
