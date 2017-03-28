@@ -2,10 +2,15 @@
 const request = require('request');
 const path    = require('path');
 const User    = require('../models/user.js');
+const config  = require('../config/config.js');
 
 // Middleware
 // Authentication Check
 const isLoggedIn = function checkLoggedIn(req, res, next) {
+  if(req && req.session && req.session.user_tmp && config.devmode) {
+    req.user == req.session.user_tmp;
+    return next();
+  }
   if (req.isAuthenticated()) {
     return next();
   }
@@ -17,7 +22,8 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/', (req, res)=>{
-    res.render('index.ejs', { register_link: config.MYMLH_AUTHORIZE_LINK,user: req.user, message: req.flash('info') });
+    console.log(req.session);
+    res.render('index.ejs', { user: req.user, message: req.flash('info') });
   });
 
   app.get('/authenticate', passport.authenticate('mymlh'), (req, res)=>{
@@ -50,6 +56,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/dashboard', isLoggedIn, (req, res)=>{
+    console.log(req.session);
     if(req.user.registration_status == 0) {
       res.redirect('/register-mymlh');
     }
@@ -126,7 +133,6 @@ const init = function RouteHandler(app, config, passport, upload) {
       if(err) {
         if(err.code == 'LIMIT_FILE_SIZE') {
           req.flash('account', 'The file you\'re trying to upload is too large! Max Size is 2MB! :(');
-          //res.redirect('/register-mymlh');
         } else if(err.code == 'WRONG_FILE_TYPE') {
           req.flash('account', 'Wrong file type. Please upload only PDF, DOC, DOCX, RTF, RTF, TXT files.');
         } else {
@@ -165,6 +171,15 @@ const init = function RouteHandler(app, config, passport, upload) {
         });
       });
     });
+  });
+
+  app.get('/auth/fake/test', (req, res)=>{
+    if(config.devmode) {
+      req.session = req.session || {};
+      req.session.passport = config.fakeuser.passport;
+      isLoggedIn(req, res, res.redirect('/'));
+    }
+    return res.redirect('/');
   });
 
   app.use(function (req, res, next) {
