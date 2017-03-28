@@ -247,13 +247,15 @@ body {
     color: white;
     padding: 50px 0px; }
     body #schedule .section-subtitle {
+      font-size: 28px;
       padding: 25px 0px 10px 0px;
       text-align: center; }
     body #schedule .sched-event {
       width: 100%;
       float: left; }
       body #schedule .sched-event p {
-        margin: 0px; }
+        margin: 0px;
+        font-size: 18px; }
       body #schedule .sched-event .sched-time {
         width: 40%;
         display: block;
@@ -283,7 +285,7 @@ body {
     padding: 50px 0px; }
     body #sponsors .sponsor-logo-row {
       padding: 50px 0px; }
-    body #sponsors .sponsor-logo {
+    body #sponsors .sps-logo {
       width: 80%;
       max-height: auto; }
     body #sponsors .section-title {
@@ -293,9 +295,11 @@ body {
     color: white;
     padding: 50px 0px; }
     body #faqs .section-subtitle {
+      font-size: 28px;
       color: white;
       padding-top: 40px; }
     body #faqs p {
+      font-size: 18px;
       color: black;
       padding-top: 10px;
       font-weight: normal; }
@@ -315,7 +319,7 @@ body {
       display: inline-block;
       /*border: green 1px solid;*/ }
     body #footer h5 {
-      font-size: 2vmin;
+      font-size: 20px;
       line-height: 100px;
       margin: 0; }
       body #footer h5 a {
@@ -355,8 +359,14 @@ body {
         .subpage-section .subpage-hero .subpage-nav .text-logo a {
           color: white;
           text-decoration: none; }
+      .subpage-section .subpage-hero .subpage-nav h3 {
+        font-size: 25px;
+        margin: 0px; }
       .subpage-section .subpage-hero .subpage-nav h4 {
-        font-size: 2vmin;
+        font-size: 18px;
+        margin: 0px; }
+      .subpage-section .subpage-hero .subpage-nav p {
+        font-size: 15px;
         margin: 0px; }
       .subpage-section .subpage-hero .subpage-nav ul {
         padding: 0;
@@ -365,6 +375,8 @@ body {
       .subpage-section .subpage-hero .subpage-nav li {
         height: 100%;
         display: inline-block; }
+        .subpage-section .subpage-hero .subpage-nav li p a {
+          padding: 0 10px; }
       .subpage-section .subpage-hero .subpage-nav li a {
         display: block;
         line-height: 50px;
@@ -374,10 +386,15 @@ body {
     .subpage-section .subpage-hero .subpage-hero-title {
       text-align: center; }
       .subpage-section .subpage-hero .subpage-hero-title h1 {
-        font-size: 7vmin;
+        font-size: 50px;
         line-height: 25vh;
         margin: 0;
         color: white; }
+      .subpage-section .subpage-hero .subpage-hero-title h3 {
+        font-size: 20px;
+        color: white;
+        margin: 0;
+        padding: 25px 10px; }
   .subpage-section .subpage-content {
     color: #4BCF7E; }
     .subpage-section .subpage-content > div {
@@ -385,12 +402,12 @@ body {
       float: none; }
     .subpage-section .subpage-content .content-button {
       color: white;
-      width: 75%;
+      width: 100%;
       height: 7vh;
       line-height: 7vh;
       font-family: 'Circular', sans-serif;
       text-transform: uppercase;
-      font-size: 2.5vmin;
+      font-size: 15px;
       background-color: #4BCF7E;
       border: none;
       padding-top: 0;
@@ -429,7 +446,8 @@ body {
           color: black; }
       .subpage-section .subpage-content form #registration-terms {
         margin: 0;
-        margin: 5vh 0; }
+        margin: 5vh 0;
+        font-size: 17px; }
         .subpage-section .subpage-content form #registration-terms a {
           color: inherit;
           text-decoration: none;
@@ -438,6 +456,7 @@ body {
       .subpage-section .subpage-content form #registration-checkbox {
         margin: 5vh 0; }
         .subpage-section .subpage-content form #registration-checkbox p {
+          font-size: 17px;
           text-align: left;
           margin: 0 0 0 20px; }
           .subpage-section .subpage-content form #registration-checkbox p input {

@@ -39,9 +39,9 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
     //console.log(User.findOne());
     if(req.user.registration_status == 1) {
-      res.redirect('/dashboard', { user: req.user });
+      res.redirect('/dashboard');
     }
-    
+
     res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
   });
 

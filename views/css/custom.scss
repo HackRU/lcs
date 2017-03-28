@@ -392,31 +392,31 @@ body {
 		padding: 50px 0px;
 
 		.section-subtitle {
+			font-size: 28px;
 			padding: 25px 0px 10px 0px;
 			text-align: center;
 		}
 
 		.sched-event {
 			width: 100%;
-			// background-color: purple;
 			float: left;
 
 			p {
 				margin: 0px;
+				font-size: 18px;
 			}
 
 			.sched-time {
 				width: 40%;
-				// background-color: red;
 				display: block;
 				color: black;
 				text-align: right;
 				padding-right: 10px;
+
 			}
 
 			.sched-desc {
 				width: 60%;
-				// background-color: blue;
 				display: block;
 				text-align: left;
 				padding-left: 10px;
@@ -426,7 +426,6 @@ body {
 		.sched-text {
 			width: 100%;
 			padding: 10px 0px 0px 0px;
-			// border: 1px white dotted;
 
 			p {
 				float: left;
@@ -453,7 +452,7 @@ body {
 			padding: 50px 0px;
 		}
 
-		.sponsor-logo {
+		.sps-logo {
 			width: 80%;
 			max-height: auto;
 		}
@@ -469,11 +468,13 @@ body {
 		padding: 50px 0px;
 
 		.section-subtitle {
+			font-size: 28px;
 			color: white;
 			padding-top: 40px;
 		}
 
 		p {
+			font-size: 18px;
 			color: black;
 			padding-top: 10px;
 			font-weight: normal;
@@ -503,7 +504,8 @@ body {
 		}
 
 		h5 {
-			font-size: 2vmin;
+
+			font-size: 20px;
 			line-height: 100px;
 			margin: 0;
 
@@ -564,10 +566,22 @@ body {
 					text-decoration: none;
 				}
 			}
+			
+			h3 {
+				font-size: 25px;
+				margin: 0px;
+			}
 
 			h4 {
-				font-size: 2vmin;
+				font-size: 18px;
 				margin: 0px;
+			}
+
+			p {
+				font-size: 15px;
+				margin: 0px;
+
+				
 			}
 
 			ul {
@@ -581,6 +595,12 @@ body {
 				// float: left;
 				height: 100%;
 				display: inline-block;
+
+				p {
+					a {
+						padding: 0 10px;
+					}
+				}
 			}
 
 			li a {
@@ -596,10 +616,17 @@ body {
 			text-align: center;
 
 			h1 {
-				font-size: 7vmin;
+				font-size: 50px;
 				line-height: 25vh;
 				margin: 0;
 				color: white;
+			}
+
+			h3 {
+				font-size: 20px;
+				color: white;
+				margin: 0;
+				padding: 25px 10px;
 			}
 		}
 	}
@@ -615,12 +642,12 @@ body {
 
 		.content-button {
 			color: white;
-			width: 75%;
+			width: 100%;
 			height: 7vh;
 			line-height: 7vh;
 			font-family: 'Circular', sans-serif;
 			text-transform: uppercase;
-			font-size: 2.5vmin;
+			font-size: 15px;
 			background-color: $dark-green;
 			border: none;
 			padding-top: 0;
@@ -679,6 +706,8 @@ body {
 			#registration-terms {
 				margin: 0;
 				margin: 5vh 0;
+				font-size: 17px;
+
 
 				a {
 					color: inherit;
@@ -693,6 +722,7 @@ body {
 				margin: 5vh 0;
 
 				p {
+					font-size: 17px;
 					text-align: left;
 					margin: 0 0 0 20px;
 
@@ -762,3 +792,14 @@ body {
 		
 	}
 }
+
+// #manage-account {
+// 	.form-horizontal {
+		
+// 		.form-group {
+			
+// 			width: 90%;
+
+// 		}
+// 	}
+// }
