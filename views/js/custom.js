@@ -18,11 +18,14 @@ $(document).ready(function() {
 
 	loadExternalHTMLTemplates();
 
-	if (pageLocation == '/' ) { // run on home page (landing page)
+
+	if (pageLocation == '/' || pageLocation == '/index.ejs') { // run on home page (landing page)
 		// console.log("THIS IS THE HOME PAGE.");
 		smoothScrollEnable();
 		toggleMapScrollOnClickAndLeave();
+		hideWebOIfNoSpace();
 	}
+
 	else {
 		// on resume file upload, change the notification to say what file was uploaded
 		$('#resume-upload-input').on("change", function(){
@@ -33,6 +36,16 @@ $(document).ready(function() {
 	
 });
 
+function hideWebOIfNoSpace() {
+	var $heroInfo = $('#hero-info');
+	var botOfHeroInfo = $heroInfo.offset().top + $heroInfo.outerHeight(true);
+	var $webO = $('#hero-webosphere');
+	var topOfWebO = $webO.offset().top;
+	if (botOfHeroInfo > topOfWebO) {
+		$webO.hide();
+	}
+	return;
+}
 
 function loadExternalHTMLTemplates() {
 	// templating.
