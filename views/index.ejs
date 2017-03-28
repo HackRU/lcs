@@ -50,21 +50,19 @@
 					<h1>Spring 2017</h1>
 					<h3 id="date-text">April 22nd-23rd</h3>
 					<h5>Rutgers Athletic Center,<br/>Rutgers University</h5>
-					<br class="hidden-xs">
 
-					<h5 class="hidden-xs">Registration is now open!</h5>
+					<h5 class="hidden-xs"><br>Registration is now open!</h5>
 					<% if (message) { %>
 					<p class="bg-danger"><%= message %></p>
 					<% } %>
 
 					<% if (user) { %>
+					<br>
 					<a href="/dashboard" class="btn btn-default"><h4>DASHBOARD</h4></a>
-
-					<br class="hidden-xs"><br class="hidden-xs">
-
+					<br><br>
 					<a href="/logout" class="btn btn-default"><h4>LOGOUT</h4></a>
 					<% } else { %>
-					<br><br>
+					<br>
 					<a href="/authenticate" class="btn btn-default"><h4>REGISTER</h4></a>
 
 					<br class="hidden-xs"><br class="hidden-xs">

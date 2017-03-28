@@ -96,16 +96,12 @@ body {
   overflow-y: scroll;
   color: black;
   font-family: 'Circular', sans-serif; }
-  body .container-fluid .row {
-    overflow: hidden; }
   body h1, body h2, body h3, body h4, body h5, body h6 {
     font-weight: bold; }
   body h5 {
     font-size: 18px; }
   body h6 {
     font-size: 16px; }
-  body .row {
-    overflow: hidden; }
   body .subtitle-icon {
     padding-right: 5px; }
   body #hero {
