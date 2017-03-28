@@ -54,7 +54,7 @@
 
 					<h5 class="hidden-xs">Registration is now open!</h5>
 					<% if (message) { %>
-					<p><%= message %></p>
+					<p class="bg-danger"><%= message %></p>
 					<% } %>
 
 					<% if (user) { %>
@@ -64,6 +64,7 @@
 
 					<a href="/logout" class="btn btn-default"><h4>LOGOUT</h4></a>
 					<% } else { %>
+					<br><br>
 					<a href="/authenticate" class="btn btn-default"><h4>REGISTER</h4></a>
 
 					<br class="hidden-xs"><br class="hidden-xs">

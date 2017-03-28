@@ -512,6 +512,17 @@ body {
 			a {
 				color: white;
 				margin: 0 10px;
+				transition: all 0.5s ease-in-out;
+
+				i {
+					font-size: 25px;
+				}
+
+			}
+
+			a:hover {
+				color: $dark-green;
+				margin: 0 25px;
 			}
 		}
 	}

@@ -54,7 +54,7 @@
 					<h3>Awesome <%= user.mlh_data.first_name %>, you're signed in with myMLH! Now we just need a little bit more information about you.</h3>
 
 					<% if(message) { %>
-					<h4><%= message %></h4>
+					<h4 class="bg-danger"><%= message %></h4>
 					<% } %>
 
 					<form class="form-horizontal" role="form" method="post" action="/register-mymlh" enctype="multipart/form-data">
