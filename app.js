@@ -12,6 +12,7 @@ const RedisStore    = require('connect-redis')(session);
 const passport      = require('passport');
 const multer        = require('multer');
 const routes        = require('./main/routes.js');
+const errors        = require('./main/errors.js');
 const config        = require('./config/config.js');
 const passConfig    = require('./main/passport.js');
 const multerConfig  = require('./main/multer.js');
@@ -46,6 +47,8 @@ app.use(passport.session());
 
 // Initialize Routes Handler
 routes(app, config, passport, upload);
+// Load Error Handling last
+errors(app);
 
 // Launch
 app.listen(port);

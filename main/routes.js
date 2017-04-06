@@ -22,7 +22,7 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/', (req, res)=>{
-    console.log(req.session);
+    //console.log(req.session);
     res.render('index.ejs', { user: req.user, message: req.flash('info') });
   });
 
@@ -181,13 +181,6 @@ const init = function RouteHandler(app, config, passport, upload) {
     }
     return res.redirect('/');
   });
-
-  app.use(function (req, res, next) {
-    res.render('404.ejs');
-  });
-  // app.get('*', (req, res)=>{
-  //   res.render('404.ejs');
-  // });
 };
 
 module.exports = init;

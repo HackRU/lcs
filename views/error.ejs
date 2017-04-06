@@ -18,7 +18,7 @@
 	<meta property="og:image" content="http://www.hackru.org/assets/hackRU_SP17_avatar.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Sign up for HackRU Spring 2017, taking place from April 22nd to 23rd.">
-	<title>HackRU - Dashboard</title>
+	<title>Error! - Oh no!</title>
 
 	<link rel="shortcut icon" href="./assets/logo-favicon.ico" type="image/x-icon">
 	<link rel="icon" href="./assets/logo-favicon.ico" type="image/x-icon">
@@ -40,20 +40,17 @@
 			<div class="row subpage-hero">
 				<div class="col-xs-12 subpage-nav"></div>
 				<div class="col-xs-12 subpage-hero-title">
-					<h1 class="hidden-xs">Dashboard</h1>
-					<h3 class="visible-xs-block">Dashboard</h3>
+					<h1 class="hidden-xs">Error!</h1>
+					<h3 class="visible-xs-block">Error!</h3>
 				</div>
 			</div>
 
 			<div class="row subpage-content text-center">
 				<div class="col-xs-10 col-sm-5">
-					<% if(user.registration_status == 1) { %>
-					<h3>Currently: Registered </h3>
-					<a title="Being Registered doesn't mean you can attend. The next step is Confirming Your Attendance. We'll be emailing instructions on how to do that soon! Stay tuned!">What does this mean? Hover over me!</a>
-					<% } %>
-
-					<h3>Need to change something?</h3>
-					<a href="/account" class="btn btn-default content-button">Account Settings</a>
+					<h3>Something Happened!</h3>
+					<!-- <p><%=  %></p> -->
+					<a href="/dashboard" class="btn btn-default content-button">Back to Dashboard</a>
+					<a href="/" class="btn btn-default content-button">Back to Home</a>
 				</div>
 			</div>
 
