@@ -89,6 +89,10 @@
 
   .text-justify-lg {
     text-align: justify; } }
+.col-centered {
+  float: none;
+  margin: 0 auto; }
+
 html {
   background-color: white; }
 
@@ -280,12 +284,19 @@ body {
     background-color: white;
     padding: 50px 0px; }
     body #sponsors .sponsor-logo-row {
-      padding: 50px 0px; }
+      padding: 10px 0px;
+      margin-bottom: 25px; }
     body #sponsors .sps-logo {
       width: 80%;
       max-height: auto; }
     body #sponsors .section-title {
       color: #4BCF7E; }
+    body #sponsors .section-subtitle {
+      color: #4BCF7E;
+      font-size: 25px;
+      padding: 10px 0px 0px 0px;
+      margin-bottom: 25px;
+      text-align: center; }
   body #faqs {
     background-color: #4BCF7E;
     color: white;

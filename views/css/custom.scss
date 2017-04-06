@@ -119,6 +119,11 @@ $browser-height: 100vh;
 $browser-height-half: 50vh;
 $browser-width: 100%;
 
+.col-centered{
+	float: none;
+	margin: 0 auto;
+}
+
 html {
 	background-color: white;
 }
@@ -449,7 +454,9 @@ body {
 		padding: 50px 0px;
 		
 		.sponsor-logo-row {
-			padding: 50px 0px;
+			padding: 10px 0px;
+			margin-bottom: 25px;
+
 		}
 
 		.sps-logo {
@@ -459,6 +466,15 @@ body {
 
 		.section-title {
 			color: $dark-green;
+		}
+
+		.section-subtitle {
+			color: $dark-green;
+			font-size: 25px;
+			padding: 10px 0px 0px 0px;
+			margin-bottom: 25px;
+			text-align: center;
+			// border-bottom: 2px solid;
 		}
 	}
 
@@ -806,9 +822,9 @@ body {
 
 // #manage-account {
 // 	.form-horizontal {
-		
+
 // 		.form-group {
-			
+
 // 			width: 90%;
 
 // 		}
