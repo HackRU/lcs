@@ -48,12 +48,19 @@
 			<div class="row subpage-content text-center">
 				<div class="col-xs-10 col-sm-5">
 					<% if(user.registration_status == 1) { %>
-					<h3>Currently: Registered </h3>
-					<a title="Being Registered doesn't mean you can attend. The next step is Confirming Your Attendance. We'll be emailing instructions on how to do that soon! Stay tuned!">What does this mean? Hover over me!</a>
+						<h3>Currently: Registered </h3>
+						<a title="Being Registered doesn't mean you can attend. The next step is Confirming Your Attendance. We'll be emailing instructions on how to do that soon! Stay tuned!">What does this mean? Hover over me!</a>
+					<% } else if(user.registration_status == 2) { %>
+						<h3>Currently: Not Attending </h3>
+					<% } else if(user.registration_status == 3) { %>
+						<h3>Currently: Attending!</h3>
+					<% } else if(user.registration_status == 4 ) { %>
+						<h3>Currently: Waitlisted </h3>
 					<% } %>
 
 					<h3>Need to change something?</h3>
 					<a href="/account" class="btn btn-default content-button">Account Settings</a>
+					<a href="/attendance" class="btn btn-default content-button">Change Confirmation Status</a>
 				</div>
 			</div>
 

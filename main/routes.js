@@ -1,8 +1,9 @@
 // Dependencies
-const request = require('request');
-const path    = require('path');
-const User    = require('../models/user.js');
-const config  = require('../config/config.js');
+const request  = require('request');
+const path     = require('path');
+const User     = require('../models/user.js');
+const Waitlist = require('../models/waitlist.js');
+const config   = require('../config/config.js');
 
 // Middleware
 // Authentication Check
@@ -56,7 +57,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/dashboard', isLoggedIn, (req, res)=>{
-    console.log(req.session);
+    //console.log(req.session);
     if(req.user.registration_status == 0) {
       res.redirect('/register-mymlh');
     }
@@ -70,6 +71,10 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.get('/resume/:file', isLoggedIn, (req, res)=>{
     // change later
     res.download('resumes/Spring2017/' + req.params.file);
+  });
+
+  app.get('/attendance', isLoggedIn, (req, res)=>{
+    res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance') });
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
@@ -138,7 +143,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         } else {
           req.flash('account', err.code);
         }
-        res.render('account', { user: req.user, message: req.flash('account') });
+        res.render('account.ejs', { user: req.user, message: req.flash('account') });
         return;
       }
       let github = false;
@@ -170,6 +175,70 @@ const init = function RouteHandler(app, config, passport, upload) {
           res.redirect('/account');
         });
       });
+    });
+  });
+
+  app.post('/confirm-attendance', isLoggedIn, (req, res)=>{
+    // Finds the current user
+    User.findOne({ '_id': req.user._id }, (err, user)=>{
+      if (err) {
+        throw err;
+      }
+
+      // Determine attendance from POST request
+      // if Attending, see if there's space, else set Not Attending
+      if (req.body.attendance === 'attending') {
+        if (user.registration_status != 3) {
+          User.count({'registration_status': 3}, (err, count)=>{
+            if (count <= config.capacity) {
+              user.registration_status = 3;
+              user.save((err)=>{
+                if (err) {
+                  throw err;
+                }
+                return res.redirect('/dashboard');
+              });
+            } else {
+              // Capacity has been filled, check space in waitlist
+              Waitlist.count({}, (err, queueSize)=>{
+                if (queueSize <= config.waitlistCapacity) {
+                  user.registration_status = 4;
+                  var waitlisted = new Waitlist();
+
+                  waitlisted.id = user.id;
+                  waitlisted.mlhid = user.mlh_data.mlhid;
+
+                  waitlisted.save((err)=>{
+                    if (err) {
+                      throw err;
+                    }
+                    user.save((err)=>{
+                      if (err) {
+                        throw err;
+                      }
+                      return res.redirect('/dashboard');
+                    });
+                  });
+
+                } else {
+                  req.flash('attendance', 'Sorry, our waitlist is full. Currently, you may not attend HackRU, but check back later; spots on the waitlist may open up.');
+                }
+              });
+            }
+          });
+        } else {
+          return res.redirect('/dashboard');
+        }
+      } else {
+        // Set Not Attending
+        user.registration_status = 2;
+        user.save((err)=>{
+          if (err) {
+            throw err;
+          }
+          return res.redirect('/dashboard');
+        });
+      }
     });
   });
 

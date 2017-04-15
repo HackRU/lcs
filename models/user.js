@@ -1,6 +1,6 @@
 // Dependencies
 const mongoose = require('mongoose');
-//const bcrypt   = require('bcrypt-nodejs');
+const bcrypt   = require('bcrypt-nodejs');
 
 var Schema = mongoose.Schema;
 
@@ -45,7 +45,9 @@ var userSchema = new Schema({
   // registration_status:
   // 0 = Fresh User, Only has MyMLH Data
   // 1 = Registered, filled in all Account details
-  // 2 = Confirmed attendance
+  // 2 = Not Attending
+  // 3 = Confirmed Attendance
+  // 4 = Waitlisted
 });
 
 // Methods for Dealing with Local Logins and Non-MyMLH Users in the future
