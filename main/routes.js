@@ -45,7 +45,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/register-mymlh', isLoggedIn, (req, res)=>{
     //console.log(User.findOne());
-    if(req.user.registration_status == 1) {
+    if(req.user.registration_status > 1) {
       return res.redirect('/dashboard');
     }
 
@@ -73,7 +73,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.download('resumes/Spring2017/' + req.params.file);
   });
 
-  app.get('/attendance', isLoggedIn, (req, res)=>{
+  app.get('/confirm-status', isLoggedIn, (req, res)=>{
     res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance') });
   });
 
@@ -178,7 +178,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     });
   });
 
-  app.post('/confirm-attendance', isLoggedIn, (req, res)=>{
+  app.post('/confirm-status', isLoggedIn, (req, res)=>{
     // Finds the current user
     User.findOne({ '_id': req.user._id }, (err, user)=>{
       if (err) {
