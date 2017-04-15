@@ -200,6 +200,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                   throw err;
                 }
                 email.sendConfirmedEmail(user.local.email);
+                req.flash('dashboard', 'Thanks for confirming! We\'ve sent an email with some information');
                 return res.redirect('/dashboard');
               });
             } else {
@@ -216,6 +217,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                     if (err) {
                       throw err;
                     }
+                    req.flash('dashboard', 'You\'re on the waitlist! We\'ve sent an email with some information');
                     email.sendWaitlistEmail(user.local.email);
                     user.save((err)=>{
                       if (err) {
