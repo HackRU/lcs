@@ -42,3 +42,6 @@ config/config.js
 
 # Resume dump
 resumes
+
+# email-template directory
+email-templates
