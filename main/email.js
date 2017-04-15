@@ -9,6 +9,26 @@ class EmailClient {
     this.client = new sparkpost(config.SPARKPOST_KEY);
   }
 
+  sendConfirmAttendanceEmail(email_address) {
+    this.client.transmissions.send({
+        options: {
+
+        },
+        content: {
+          template_id: 'sp2017-goconfirm'
+        },
+        recipients: [
+          {address: email_address}
+        ]
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   sendConfirmedEmail(email_address) {
     this.client.transmissions.send({
         options: {

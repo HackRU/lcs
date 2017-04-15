@@ -128,6 +128,8 @@ const init = function RouteHandler(app, config, passport, upload) {
             console.log(err);
             throw err;
           }
+          var email = new EmailClient();
+          email.sendConfirmAttendanceEmail(user.local.email);
           res.redirect('/register-confirmation');
         });
       });
