@@ -61,7 +61,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     if(req.user.registration_status == 0) {
       res.redirect('/register-mymlh');
     }
-    res.render('dashboard.ejs', { user: req.user });
+    res.render('dashboard.ejs', { user: req.user, message: req.flash('dashboard') });
   });
 
   app.get('/account', isLoggedIn, (req, res)=>{
@@ -190,7 +190,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       if (req.body.attendance === 'attending') {
         if (user.registration_status != 3) {
           User.count({'registration_status': 3}, (err, count)=>{
-            if (count <= config.capacity) {
+            if (count < config.capacity) {
               user.registration_status = 3;
               user.save((err)=>{
                 if (err) {
@@ -201,7 +201,7 @@ const init = function RouteHandler(app, config, passport, upload) {
             } else {
               // Capacity has been filled, check space in waitlist
               Waitlist.count({}, (err, queueSize)=>{
-                if (queueSize <= config.waitlistCapacity) {
+                if (queueSize < config.waitlistCapacity) {
                   user.registration_status = 4;
                   var waitlisted = new Waitlist();
 
@@ -221,7 +221,8 @@ const init = function RouteHandler(app, config, passport, upload) {
                   });
 
                 } else {
-                  req.flash('attendance', 'Sorry, our waitlist is full. Currently, you may not attend HackRU, but check back later; spots on the waitlist may open up.');
+                  req.flash('dashboard', 'Sorry, our waitlist is full. Currently, you may not attend HackRU, but check back later; spots on the waitlist may open up.');
+                  res.redirect('/dashboard');
                 }
               });
             }
