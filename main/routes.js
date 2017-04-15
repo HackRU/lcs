@@ -39,7 +39,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/callback/mymlh',
     passport.authenticate('mymlh', {
-      successRedirect: '/register-mymlh',
+      successRedirect: '/dashboard',
       failureRedirect: '/'
     })
   );
