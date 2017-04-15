@@ -1,9 +1,10 @@
 // Dependencies
-const request  = require('request');
-const path     = require('path');
-const User     = require('../models/user.js');
-const Waitlist = require('../models/waitlist.js');
-const config   = require('../config/config.js');
+const request     = require('request');
+const path        = require('path');
+const User        = require('../models/user.js');
+const Waitlist    = require('../models/waitlist.js');
+const EmailClient = require('./email.js');
+const config      = require('../config/config.js');
 
 // Middleware
 // Authentication Check
@@ -179,6 +180,8 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.post('/confirm-status', isLoggedIn, (req, res)=>{
+
+    var email = new EmailClient();
     // Finds the current user
     User.findOne({ '_id': req.user._id }, (err, user)=>{
       if (err) {
@@ -196,6 +199,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                 if (err) {
                   throw err;
                 }
+                email.sendConfirmedEmail(user.local.email);
                 return res.redirect('/dashboard');
               });
             } else {
@@ -212,6 +216,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                     if (err) {
                       throw err;
                     }
+                    email.sendWaitlistEmail(user.local.email);
                     user.save((err)=>{
                       if (err) {
                         throw err;
