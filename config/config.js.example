@@ -25,4 +25,8 @@ module.exports =
     'access_token_key':'MY_ACCESS_TOKEN_KEY',
     'access_token_secret':'MY_ACCESS_TOKEN_SECRET'
   }
+  'slack':{
+    'token':'SLACK_LEGACY_TOKEN',
+    'channel:'C43KDNGR0'
+  }
 }

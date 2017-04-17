@@ -144,7 +144,6 @@ module.exports.loadEvents = function loadEvents() {
     
         GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{ 
           if(err) console.log(err);
-          console.log(gcevent);
         });
 
       

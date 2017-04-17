@@ -6,3 +6,18 @@ Git Clone this Repo
 npm install
 node app.js
 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-14-04#set-up-reverse-proxy-server
+
+Ask for client_secret.json from me on Slack.
+Any questions: Slack - @jcatarata
+
+Notes:
+- There are two Twitter cards, "#twitter" is my shitty implementation that will be removed if I can't setup grabbing and displaying the medias in time.
+- Please don't look at my horrendous code lol.
+
+TODO:
+- Hookup user/authentication stuff
+- Hookup QRU
+- Hookup Gavel
+- Display Announcements
+- Push Notifications for Calendar (Google) and Announcements (Slack) [Realtime update of cards]
+- Ask for help to make things look pretty.
