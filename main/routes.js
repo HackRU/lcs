@@ -1,8 +1,16 @@
 // Dependencies
-const request = require('request');
-const path    = require('path');
-const User    = require('../models/user.js');
-const config  = require('../config/config.js');
+const request   = require('request');
+const path      = require('path');
+const JSX       = require('node-jsx').install();
+const React     = require('react');
+const ReactDOMServer = require('react-dom/server');
+const TweetsApp = React.createFactory(require('./components/TweetsApp.react'));
+const EventsApp = React.createFactory(require('./components/EventsApp.react'));
+const Tweet     = require('../models/Tweet.js');
+const User      = require('../models/user.js');
+const GCEvent   = require('../models/GCEvent.js');
+const config    = require('../config/config.js');
+
 
 // Middleware
 // Authentication Check
@@ -61,6 +69,57 @@ const init = function RouteHandler(app, config, passport, upload) {
       res.redirect('/register-mymlh');
     }
     res.render('dashboard.ejs', { user: req.user });
+  });
+
+  app.get('/dashboard-dayof',(req,res) =>{
+   
+    var markup;
+    var tweetsdata;
+
+    /*
+    //Get the tweets in da db
+    Tweet.getTweets(0,0, function(tweets){
+        
+        //Render React to a string, passing in our tweets
+        markup = ReactDOMServer.renderToString(
+            TweetsApp({
+                tweets: tweets
+            })
+        );
+    
+        tweetsdata = tweets;
+      
+    });
+    */
+
+    var eventsdata;
+    GCEvent.getEvents(0,0, function(events){ 
+
+      var eventsmarkup = ReactDOMServer.renderToString(
+        EventsApp({
+            events:events
+        })
+      );
+ 
+      Tweet.getTweets(0,0, function(tweets){
+        
+        var tweetsmarkup = ReactDOMServer.renderToString(
+            TweetsApp({
+                tweets: tweets
+            })
+        );
+    
+        res.render('dashboard-dayof.ejs',{
+          tweetsMarkup: tweetsmarkup,
+          tweetsState: JSON.stringify(tweets),
+      
+          eventsMarkup: eventsmarkup,
+          eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
+        });
+      });
+      
+    });
+  
   });
 
   app.get('/account', isLoggedIn, (req, res)=>{

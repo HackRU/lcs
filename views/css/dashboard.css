@@ -1,0 +1,39 @@
+
+
+
+.card {
+    padding:10px;
+    max-height: 400px;
+}
+.card section{   
+    overflow-y:auto;
+    background-color:white;
+    max-height: 300px;
+}
+
+
+.event {
+}
+
+.tweet{
+    margin-bottom: 10px;
+}
+.tweet a{
+    font-size: 23px;    
+    padding-left: 10px;
+}
+.tweet-user{
+    margin-bottom: 10px;
+}
+.card-elements{
+    min-height: 300px;
+    background-color:white;
+    padding:10px;
+    padding-top:1px;
+    padding-right:0px;
+    border-radius:4px;
+}
+#dashboard{
+    background-color:#4BCF7E;
+}
+

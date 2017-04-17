@@ -19,4 +19,10 @@ module.exports =
     'validMIMEtypes': ['application/pdf', 'application/msword', 'application/rtf', 'text/rtf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
     'maxSize': '5mb'
   }
+  'twitter':{
+    'consumer_key':'MY_CONSUMER_KEY',
+    'consumer_secret':'MY_CONSUMER_SECRET',
+    'access_token_key':'MY_ACCESS_TOKEN_KEY',
+    'access_token_secret':'MY_ACCESS_TOKEN_SECRET'
+  }
 }

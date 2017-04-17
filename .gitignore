@@ -42,3 +42,6 @@ config/config.js
 
 # Resume dump
 resumes
+
+#client_secret
+client_secret.json
