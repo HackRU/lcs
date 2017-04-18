@@ -20,6 +20,5 @@ TODO:
 - Hookup user/authentication stuff
 - Hookup QRU
 - Hookup Gavel
-- Display Announcements
 - Push Notifications for Calendar (Google) and Announcements (Slack) [Realtime update of cards]
 - Ask for help to make things look pretty.

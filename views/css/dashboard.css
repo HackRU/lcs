@@ -1,14 +1,10 @@
-
-
-
 .card {
     padding:10px;
-    max-height: 400px;
+    max-height: 450px;
 }
 .card section{   
     overflow-y:auto;
     background-color:white;
-    max-height: 300px;
 }
 
 
@@ -25,13 +21,18 @@
 .tweet-user{
     margin-bottom: 10px;
 }
+.card-container{
+    background-color:white;
+    background-size:cover;
+    border-radius:4px;
+}
 .card-elements{
     min-height: 300px;
-    background-color:white;
     padding:10px;
     padding-top:1px;
     padding-right:0px;
-    border-radius:4px;
+    max-height: 300px;
+    overflow-y:auto;
 }
 #dashboard{
     background-color:#4BCF7E;

@@ -6,11 +6,12 @@ const React     = require('react');
 const ReactDOMServer = require('react-dom/server');
 const TweetsApp = React.createFactory(require('./components/TweetsApp.react'));
 const EventsApp = React.createFactory(require('./components/EventsApp.react'));
+const AnouncementsApp = React.createFactory(require('./components/AnouncementsApp.react'));
 const Tweet     = require('../models/Tweet.js');
 const User      = require('../models/user.js');
 const GCEvent   = require('../models/GCEvent.js');
 const config    = require('../config/config.js');
-
+const SlackMsg  = require('../models/SlackMsg.js');
 
 // Middleware
 // Authentication Check
@@ -73,26 +74,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/dashboard-dayof',(req,res) =>{
    
-    var markup;
-    var tweetsdata;
-
-    /*
-    //Get the tweets in da db
-    Tweet.getTweets(0,0, function(tweets){
-        
-        //Render React to a string, passing in our tweets
-        markup = ReactDOMServer.renderToString(
-            TweetsApp({
-                tweets: tweets
-            })
-        );
-    
-        tweetsdata = tweets;
-      
-    });
-    */
-
-    var eventsdata;
+    console.log("get events"); 
     GCEvent.getEvents(0,0, function(events){ 
 
       var eventsmarkup = ReactDOMServer.renderToString(
@@ -101,6 +83,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         })
       );
  
+      console.log("get tweets"); 
       Tweet.getTweets(0,0, function(tweets){
         
         var tweetsmarkup = ReactDOMServer.renderToString(
@@ -108,16 +91,30 @@ const init = function RouteHandler(app, config, passport, upload) {
                 tweets: tweets
             })
         );
-    
-        res.render('dashboard-dayof.ejs',{
-          tweetsMarkup: tweetsmarkup,
-          tweetsState: JSON.stringify(tweets),
-      
-          eventsMarkup: eventsmarkup,
-          eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
+        
+        console.log("get messages");
+        SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
+          console.log("get anouncementsmarkup");
+
+          var anouncementsmarkup = ReactDOMServer.renderToString(
+             AnouncementsApp({
+               anouncements:anouncements
+             })
+          );
+
+          console.log("render page");
+          res.render('dashboard-dayof.ejs',{
+            anouncementsMarkup: anouncementsmarkup,
+            anouncementsState: JSON.stringify(anouncements),
+           
+            tweetsMarkup: tweetsmarkup,
+            tweetsState: JSON.stringify(tweets),
+
+            eventsMarkup: eventsmarkup,
+            eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
+          });
         });
       });
-      
     });
   
   });

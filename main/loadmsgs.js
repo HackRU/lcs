@@ -14,7 +14,6 @@ module.exports.loadMsgs= function loadMsgs() {
   
   var url = 'https://slack.com'+pathparam;
 
-  console.log(url);
   const options = {
     hostname:'slack.com',
     path:pathparam,
@@ -43,7 +42,7 @@ module.exports.loadMsgs= function loadMsgs() {
           text:message.text,
           user:message.user
         };
-     
+
         if(slackmessage.text.search("has joined the channel") == -1){
           SlackMsg.findOneAndUpdate({ts:message.ts},slackmessage,{upsert:true,new:true},(err,res)=>{
             if(err) console.log(err);
@@ -51,7 +50,7 @@ module.exports.loadMsgs= function loadMsgs() {
         }
       }
     
-      console.log("DONE LOAD MESSAGES");
+      console.log("DONE LOADING MESSAGES");
 
    });
 

@@ -37,7 +37,7 @@ module.exports.loadTweets= function loadEvents() {
 
     
 
-      console.log("LOADED TWEETS");
+      console.log("DONE LOADING TWEETS");
     });
 
 }

@@ -148,6 +148,7 @@ module.exports.loadEvents = function loadEvents() {
 
       
       }
+      console.log("DONE LOADING EVENTS");
     }
   });
 }

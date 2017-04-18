@@ -16,7 +16,7 @@ module.exports = Event = React.createClass({
     var event = this.props.event;
     return (
       <div className={'event' + ' active'}>
-          <h2>{event.title}</h2>
+          <h3>{event.title}</h3>
           <div className="short-separator"></div>
           <p>Location: {event.loc}</p>
           <p>Description: {event.description}</p>

@@ -39,6 +39,7 @@
 
 
 	        <div class="row subpage-section" id="dashboard">
+                    
 	                <div class="row subpage-hero">
 				<div class="col-xs-12 subpage-nav"></div>
 				<div class="col-xs-12 subpage-hero-title">
@@ -49,44 +50,57 @@
 
 
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                                 <h1>#profile</h1> 
+                                <div class="card-elements">
+                                </div>
                             </div>
                         </div>
 	
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                                 <h1>#latest announcements</h1> 
+                            <div class="card-elements">
+                                <section class="card-section" id="anouncements-app"><%- anouncementsMarkup %></section>
+                            </div>
                             </div>
                         </div>
         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                                 <h1>#QRU</h1> 
+                            <div class="card-elements">
+                            </div>
                             </div>
                         </div>                
         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                                 <h1>#gavel/devpost</h1> 
+                            <div class="card-elements">
+                            </div>
                             </div>
                         </div>                
                         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                                <a class="twitter-timeline" data-height="600" data-dnt="true" data-theme="light" href="https://twitter.com/theHackRU"></a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                                <a class="twitter-timeline card-container card-elements" data-height="600" data-dnt="true" data-theme="light" href="https://twitter.com/theHackRU"></a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
                         </div>
                         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                             <h1>#upcoming events</h1>
+                            <div class="card-elements">
                                 <section class="card-section" id="events-app"><%- eventsMarkup %></section>
                             </div>
+                            </div>
                         </div>
                         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
-                            <div class="card-elements">
+                            <div class="card-container">
                             <h1>#twitter</h1>
+                            <div class="card-elements">
                                 <section class="card-section"  id="tweets-app"><%- tweetsMarkup %></section>
+                            </div>
                             </div>
                         </div>
                 </div>
@@ -103,6 +117,7 @@
 
         <script id="events-initial-state" type="application/json"><%- eventsState %> </script>
         <script id="tweets-initial-state" type="application/json"><%- tweetsState %></script>
+        <script id="anouncementsState-initial-state" type="application/json"><%- anouncementsState %></script>
         <script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
         <script src="./js/bundles.js"></script>
 </body>

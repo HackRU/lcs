@@ -20,13 +20,14 @@ const multerConfig  = require('./main/multer.js');
 const streamHandler = require('./utils/streamHandler.js'); //Handles twitter stream
 const eventfeed     = require('./main/calendar.js');
 const twitterfeed   = require('./main/loadtweets.js');
-//const slackfeed     = require('./main/loadmsgs.js');
+const slackfeed     = require('./main/loadmsgs.js');
 
 
 // Set up Application
 const app = express();
 var port = process.env.PORT || 8080;
 
+mongoose.Promise = require('bluebird');
 mongoose.connect(config.db.url);
 passConfig(passport);
 
@@ -61,7 +62,7 @@ errors(app);
 // Load calendar, twitter, slack
 setTimeout(eventfeed.loadEvents,5000);
 twitterfeed.loadTweets();
-//slackfeed.loadMsgs();
+slackfeed.loadMsgs();
 
 // Launch
 var server = app.listen(port);
