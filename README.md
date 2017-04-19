@@ -20,5 +20,6 @@ TODO:
 - Hookup user/authentication stuff
 - Hookup QRU
 - Hookup Gavel
-- Push Notifications for Calendar (Google) and Announcements (Slack) [Realtime update of cards]
+- Push Notifications for Calendar (Google) [Realtime update of cards]
+- Have the client update automatically or add an "alert/notification" to reload changes
 - Ask for help to make things look pretty.

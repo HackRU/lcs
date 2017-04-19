@@ -10,8 +10,8 @@ const AnouncementsApp = React.createFactory(require('./components/AnouncementsAp
 const Tweet     = require('../models/Tweet.js');
 const User      = require('../models/user.js');
 const GCEvent   = require('../models/GCEvent.js');
-const config    = require('../config/config.js');
 const SlackMsg  = require('../models/SlackMsg.js');
+const config    = require('../config/config.js');
 
 // Middleware
 // Authentication Check
@@ -73,8 +73,9 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/dashboard-dayof',(req,res) =>{
-   
-    console.log("get events"); 
+  
+
+    //Will prbably break this up into multiple get request from client.
     GCEvent.getEvents(0,0, function(events){ 
 
       var eventsmarkup = ReactDOMServer.renderToString(
@@ -83,7 +84,6 @@ const init = function RouteHandler(app, config, passport, upload) {
         })
       );
  
-      console.log("get tweets"); 
       Tweet.getTweets(0,0, function(tweets){
         
         var tweetsmarkup = ReactDOMServer.renderToString(
@@ -92,7 +92,6 @@ const init = function RouteHandler(app, config, passport, upload) {
             })
         );
         
-        console.log("get messages");
         SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
           console.log("get anouncementsmarkup");
 
@@ -102,7 +101,6 @@ const init = function RouteHandler(app, config, passport, upload) {
              })
           );
 
-          console.log("render page");
           res.render('dashboard-dayof.ejs',{
             anouncementsMarkup: anouncementsmarkup,
             anouncementsState: JSON.stringify(anouncements),
@@ -117,6 +115,33 @@ const init = function RouteHandler(app, config, passport, upload) {
       });
     });
   
+  });
+
+  app.post('/slack',(req,res)=>{
+    console.log(req);
+    if(req.body.type === 'url_verification'){
+      console.log(req.body);
+      res.send(''+req.body.challenge);
+    }else if(req.body.type === 'event_callback'){
+      console.log(req.body.event);
+      var slackEvent = req.body.event;
+      if(slackEvent.type === 'message'){
+        console.log(slackEvent.text);
+        if(slackEvent.channel === config.slack.channel || slackEvent.channel === config.slack.privatechannel){ 
+          var message ={
+            ts:slackEvent.ts,
+            text:slackEvent.text,
+            user:slackEvent.user
+          };
+          if(message.text.search("has joinced the channel") == -1){
+            SlackMsg.findOneAndUpdate({ts:message.ts},message,{upsert:true,new:true},(err,res)=>{
+              if(err) console.log(err);
+            });
+          }
+        }
+      }
+      res.send(200);
+    }
   });
 
   app.get('/account', isLoggedIn, (req, res)=>{
