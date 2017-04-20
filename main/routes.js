@@ -27,11 +27,61 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
   res.redirect('/');
 }
 
-const getQRU = function getQRUData(req,res,next){
-  console.log("GETTING QRU");
-  return next();
+//Get Event data
+const getEvents = function getEventsData(req, res, next){
+  
+  GCEvent.getEvents(0,0, function(events){ 
+
+    req.body.eventsmarkup = ReactDOMServer.renderToString(
+      EventsApp({
+        events:events
+      })
+    );
+
+    req.body.events = events;
+    return next();
+  });
 }
 
+const getTweets = function getTweetsData(req,res,next){
+  Tweet.getTweets(0,0, function(tweets){
+        
+    req.body.tweetsmarkup = ReactDOMServer.renderToString(
+      TweetsApp({
+        tweets: tweets
+      })
+    );
+
+    req.body.tweets = tweets;
+    return next();
+  });
+}
+
+const getAnouncements = function getAnouncementsData(req,res,next){
+  SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
+
+    req.body.anouncementsmarkup = ReactDOMServer.renderToString(
+      AnouncementsApp({
+        anouncements:anouncements
+      })
+    );
+
+    req.body.anouncements = anouncements;
+    return next();
+  });
+}
+
+const getQRImage = function getQRImageData(req,res,next){
+  var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
+  var r = request.defaults({encoding:null});
+  r.get(url,(err,response,body)=>{
+    if(err) console.log(err);      
+    else{     
+      req.body.qrimage = new Buffer(body).toString('base64'); 
+    }
+    return next();
+  });
+}
 
 // Initialization function
 const init = function RouteHandler(app, config, passport, upload) {
@@ -78,9 +128,10 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('dashboard.ejs', { user: req.user });
   });
 
-  app.get('/dashboard-dayof',isLoggedIn,getQRU,(req,res) =>{
-  
 
+  app.get('/dashboard-dayof',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
+  
+/*
     //Will prbably break this up into multiple get request from client.
     GCEvent.getEvents(0,0, function(events){ 
 
@@ -105,22 +156,40 @@ const init = function RouteHandler(app, config, passport, upload) {
                anouncements:anouncements
              })
           );
-
-          res.render('dashboard-dayof.ejs',{
-            user: req.user,
-            anouncementsMarkup: anouncementsmarkup,
-            anouncementsState: JSON.stringify(anouncements),
+    
+               res.render('dashboard-dayof.ejs',{
+                user: req.user,
+                qrimage:new Buffer(body).toString('base64'), 
+                anouncementsMarkup: anouncementsmarkup,
+                anouncementsState: JSON.stringify(anouncements),
            
-            tweetsMarkup: tweetsmarkup,
-            tweetsState: JSON.stringify(tweets),
+                tweetsMarkup: tweetsmarkup,
+                tweetsState: JSON.stringify(tweets),
 
-            eventsMarkup: eventsmarkup,
-            eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
+                eventsMarkup: eventsmarkup,
+                eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
+            });
+            }
           });
+      
+          
         });
       });
     });
-  
+    */
+     res.render('dashboard-dayof.ejs',{
+                user: req.user,
+                qrimage:req.body.qrimage, 
+                anouncementsMarkup: req.body.anouncementsmarkup,
+                anouncementsState: JSON.stringify(req.body.anouncements),
+           
+                tweetsMarkup: req.body.tweetsmarkup,
+                tweetsState: JSON.stringify(req.body.tweets),
+
+                eventsMarkup: req.body.eventsmarkup,
+                eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
+      });
+    
   });
 
   app.post('/slack',(req,res)=>{
