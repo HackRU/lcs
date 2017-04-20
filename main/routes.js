@@ -72,14 +72,28 @@ const getAnouncements = function getAnouncementsData(req,res,next){
 }
 
 const getQRImage = function getQRImageData(req,res,next){
-  var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
+  var url = 'http://qru.hackru.org:8080/images/dummee6@test.com.png';
   var r = request.defaults({encoding:null});
   r.get(url,(err,response,body)=>{
-    if(err) console.log(err);      
+    if(err){ 
+      console.log(err);      
+    }else if(response.statusCode === 404 && (req.body.qrRetries == null || req.body.qrRetries < 3)){
+      console.log('404 ERROR');
+      //NOT SURE IF THIS IS COOL-> generate a new QRImage by passing in email to QRU server
+      var qrurl = 'http://qru.hackru.org:8080/viewqr?email=dummee6@test.com';
+      request.get(qrurl,(error,resp,bod)=>{
+          if(req.body.qrRetries == null){
+            req.body.qrRetries = 1;
+          }else{
+            req.body.qrRetries += 1;
+          }
+          getQRImageData(req,res,next);
+      });
+    }
     else{     
       req.body.qrimage = new Buffer(body).toString('base64'); 
+      return next();
     }
-    return next();
   });
 }
 

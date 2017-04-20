@@ -29,7 +29,6 @@ function cleanupTags(text){
     if(indexlt > 0) left = ret.substring(0,indexlt);
     middle = ret.slice(indexlt+1,indexrt);
     if(indexrt < indexrt-1) right = ret.substring(indexrt);
-    console.log(left+','+middle+','+right); 
     ret = left+middle+right;
     indexlt = ret.indexOf('<');
   }
