@@ -146,19 +146,27 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
 
-  app.get('/dashboard-dayof',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
-      res.render('dashboard-dayof.ejs',{
-                user: req.user,
-                qrimage:req.body.qrimage, 
-                anouncementsMarkup: req.body.anouncementsmarkup,
-                anouncementsState: JSON.stringify(req.body.anouncements),
-           
-                tweetsMarkup: req.body.tweetsmarkup,
-                tweetsState: JSON.stringify(req.body.tweets),
+  app.get('/gavelQuery',(req,res)=>{
+    var url = "https://gavel-ru.herokuapp.com/api/hackerquery/?name="+ encodeURI(req.query.name);
+    request.get(url,(err,resp,body)=>{
+      if(err) return;
+      res.send(body);
+    });
+  });
 
-                eventsMarkup: req.body.eventsmarkup,
-                eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
-      });
+  app.get('/dashboard-dayof',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
+    res.render('dashboard-dayof.ejs',{
+      user: req.user,
+      qrimage:req.body.qrimage, 
+      anouncementsMarkup: req.body.anouncementsmarkup,
+      anouncementsState: JSON.stringify(req.body.anouncements),
+           
+      tweetsMarkup: req.body.tweetsmarkup,
+      tweetsState: JSON.stringify(req.body.tweets),
+
+      eventsMarkup: req.body.eventsmarkup,
+      eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
+    });
     
   });
 

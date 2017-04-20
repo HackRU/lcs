@@ -31,6 +31,8 @@
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="https://use.fontawesome.com/8dec7403ea.js"></script>
 	<script src="./js/custom.js"></script>
+	<script src="./js/util.js"></script>
+
 </head>
 
 <body>
@@ -86,9 +88,14 @@
                                 <h1>#gavel/devpost</h1> 
                             <div class="card-elements">
                                 <p>Submit cool hacks <a href="<gavellinkghere>">here</a>!</p>
+                                <form id="gavel-form" action="javascript:handleGavelRequest()">
+                                    <span class="gavel-form-text">Look up your cool hacks </span>
+                                    <input type="text" id="gavel-form-name-input">
+                                    <input type="submit" id="gavel-form-submit-input">
+                                </form>
+                                <div id="gavel-data">
 
-                                <iframe src="https://gavel-ru.herokuapp.com/submissions/" id="gavel-iframe" >
-                                </iframe>
+                                </div>
                             </div>
                             </div>
                         </div>                
@@ -128,9 +135,9 @@
 
         <script id="events-initial-state" type="application/json"><%- eventsState %> </script>
         <script id="tweets-initial-state" type="application/json"><%- tweetsState %></script>
-        <script id="anouncementsState-initial-state" type="application/json"><%- anouncementsState %></script>
+        <script id="anouncements-initial-state" type="application/json"><%- anouncementsState %></script>
         <script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
-        <script src="./js/bundles.js"></script>
+        <script src="./js/bundle.js"></script>
 </body>
 
 </html>

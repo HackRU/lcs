@@ -1,5 +1,5 @@
 var React = require('react');
-var Announcements = require('./Anouncements.react.js');
+var Anouncements = require('./Anouncements.react.js');
 
 module.exports = AnouncementssApp = React.createClass({
 
