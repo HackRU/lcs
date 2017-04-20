@@ -34,6 +34,9 @@
     max-height: 300px;
     overflow-y:auto;
 }
+#user-qr-image{
+    height:250px;
+}
 #gavel-iframe{
 
     height: 280px;

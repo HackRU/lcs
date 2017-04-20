@@ -72,7 +72,7 @@ const getAnouncements = function getAnouncementsData(req,res,next){
 }
 
 const getQRImage = function getQRImageData(req,res,next){
-  var url = 'http://qru.hackru.org:8080/images/dummee6@test.com.png';
+  var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
   var r = request.defaults({encoding:null});
   r.get(url,(err,response,body)=>{
     if(err){ 
@@ -80,7 +80,7 @@ const getQRImage = function getQRImageData(req,res,next){
     }else if(response.statusCode === 404 && (req.body.qrRetries == null || req.body.qrRetries < 3)){
       console.log('404 ERROR');
       //NOT SURE IF THIS IS COOL-> generate a new QRImage by passing in email to QRU server
-      var qrurl = 'http://qru.hackru.org:8080/viewqr?email=dummee6@test.com';
+      var qrurl = 'http://qru.hackru.org:8080/viewqr?email='+req.user.mlh_data.email;
       request.get(qrurl,(error,resp,bod)=>{
           if(req.body.qrRetries == null){
             req.body.qrRetries = 1;
@@ -95,6 +95,9 @@ const getQRImage = function getQRImageData(req,res,next){
       return next();
     }
   });
+}
+const getGavel = function getGavelData(req,res,next){
+  
 }
 
 // Initialization function
@@ -144,54 +147,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
 
   app.get('/dashboard-dayof',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
-  
-/*
-    //Will prbably break this up into multiple get request from client.
-    GCEvent.getEvents(0,0, function(events){ 
-
-      var eventsmarkup = ReactDOMServer.renderToString(
-        EventsApp({
-            events:events
-        })
-      );
- 
-      Tweet.getTweets(0,0, function(tweets){
-        
-        var tweetsmarkup = ReactDOMServer.renderToString(
-            TweetsApp({
-                tweets: tweets
-            })
-        );
-        
-        SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
-
-          var anouncementsmarkup = ReactDOMServer.renderToString(
-             AnouncementsApp({
-               anouncements:anouncements
-             })
-          );
-    
-               res.render('dashboard-dayof.ejs',{
-                user: req.user,
-                qrimage:new Buffer(body).toString('base64'), 
-                anouncementsMarkup: anouncementsmarkup,
-                anouncementsState: JSON.stringify(anouncements),
-           
-                tweetsMarkup: tweetsmarkup,
-                tweetsState: JSON.stringify(tweets),
-
-                eventsMarkup: eventsmarkup,
-                eventsState: JSON.stringify(events)//Pass current state to client side #MAGIC
-            });
-            }
-          });
-      
-          
-        });
-      });
-    });
-    */
-     res.render('dashboard-dayof.ejs',{
+      res.render('dashboard-dayof.ejs',{
                 user: req.user,
                 qrimage:req.body.qrimage, 
                 anouncementsMarkup: req.body.anouncementsmarkup,

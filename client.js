@@ -24,4 +24,4 @@ React.renderComponent(
   document.getElementById('anouncements-app')
 );
 
-$('#gavel-container').load('https://http://gavel-ru.herokuapp.com/submissions/ #items');
+

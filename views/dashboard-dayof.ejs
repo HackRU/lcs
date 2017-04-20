@@ -65,7 +65,7 @@
 	
                         <div class="card col-xs-12 col-sm-6 col-md-4">
                             <div class="card-container">
-                                <h1>#latest announcements</h1> 
+                                <h1>#announcements</h1> 
                             <div class="card-elements">
                                 <section class="card-section" id="anouncements-app"><%- anouncementsMarkup %></section>
                             </div>
@@ -76,7 +76,7 @@
                             <div class="card-container">
                                 <h1>#QRU</h1> 
                             <div class="card-elements">
-                                <img id="user-qr-image" src="data:image/png;charset=utf-8;base64,<%=qrimage%>" width=200 height=200>
+                                <img id="user-qr-image" src="data:image/png;charset=utf-8;base64,<%=qrimage%>">
                             </div>
                             </div>
                         </div>                
@@ -85,6 +85,8 @@
                             <div class="card-container">
                                 <h1>#gavel/devpost</h1> 
                             <div class="card-elements">
+                                <p>Submit cool hacks <a href="<gavellinkghere>">here</a>!</p>
+
                                 <iframe src="https://gavel-ru.herokuapp.com/submissions/" id="gavel-iframe" >
                                 </iframe>
                             </div>
@@ -97,7 +99,7 @@
                         
                         <div class="card col-xs-12 col-sm-6 col-md-4">
                             <div class="card-container">
-                            <h1>#upcoming events</h1>
+                            <h1>#events</h1>
                             <div class="card-elements">
                                 <section class="card-section" id="events-app"><%- eventsMarkup %></section>
                             </div>
