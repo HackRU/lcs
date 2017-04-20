@@ -53,6 +53,12 @@
                             <div class="card-container">
                                 <h1>#profile</h1> 
                                 <div class="card-elements">
+                                    <h3>Welcome, <%=user.mlh_data.first_name%></h3>
+                                    <p><b>School:</b> <%=user.mlh_data.school.name%></p>
+                                    <p><b>Year:</b> <%=user.mlh_data.level_of_study%></p>
+                                    <p><b>Major:</b> <%=user.mlh_data.major%></p>
+                                    <p><b>Github:</b> <a href='https://github.com/<%=user.github%>'>github.com/<%=user.github%></a></p>
+                                    <p><b>Resume:</b> <a href='/resume:file?file=<%=user.resume%>'><%=user.resume%></a></p>
                                 </div>
                             </div>
                         </div>

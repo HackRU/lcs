@@ -103,28 +103,8 @@ module.exports = TweetsApp = React.createClass({
 
     }
   },
-
-  // Method to check if more tweets should be loaded, by scroll position
-  checkWindowScroll: function(){
-
-    // Get scroll pos & window data
-    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    var s = (document.body.scrollTop || document.documentElement.scrollTop || 0);
-    var scrolled = (h + s) > document.body.offsetHeight;
-
-    // If scrolled enough, not currently paging and not complete...
-    if(scrolled && !this.state.paging && !this.state.done) {
-
-      // Set application state (Paging, Increment page)
-      this.setState({paging: true, page: this.state.page + 1});
-
-      // Get the next page of tweets from the server
-      this.getPage(this.state.page);
-
-    }
-  },
-
   // Set the initial component state
+
   getInitialState: function(props){
 
     props = props || this.props;

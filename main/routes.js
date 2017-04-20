@@ -72,7 +72,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('dashboard.ejs', { user: req.user });
   });
 
-  app.get('/dashboard-dayof',(req,res) =>{
+  app.get('/dashboard-dayof',isLoggedIn,(req,res) =>{
   
 
     //Will prbably break this up into multiple get request from client.
@@ -102,6 +102,7 @@ const init = function RouteHandler(app, config, passport, upload) {
           );
 
           res.render('dashboard-dayof.ejs',{
+            user: req.user,
             anouncementsMarkup: anouncementsmarkup,
             anouncementsState: JSON.stringify(anouncements),
            
@@ -127,7 +128,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       var slackEvent = req.body.event;
       if(slackEvent.type === 'message'){
         console.log(slackEvent.text);
-        if(slackEvent.channel === config.slack.channel || slackEvent.channel === config.slack.privatechannel){ 
+        if(slackEvent.channel === config.slack.channel){ 
           var message ={
             ts:slackEvent.ts,
             text:slackEvent.text,
