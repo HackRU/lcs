@@ -38,8 +38,7 @@ function cleanupTags(text){
   return ret;
 }
 
-function cleanup(text, anouncement){
-  var ret =  text+" ";
+function cleanup( anouncement){
   var end = anouncement.ts.indexOf('.');
   var unix = parseInt(anouncement.ts.substring(0,end));
   var date = new Date(unix *1000);
@@ -47,7 +46,7 @@ function cleanup(text, anouncement){
   var hours = date.getHours();
   var minutes = '0' + date.getMinutes();
   
-  return normalize(hours + ':' + minutes.substr(-2)) + '. ' + cleanupTags(ret);
+  return normalize(hours + ':' + minutes.substr(-2)) + '.';
 }
 
 
@@ -56,7 +55,8 @@ module.exports = Anouncement= React.createClass({
     var anouncement = this.props.anouncement;
     return (
       <div className={'anouncement' + ' active'}>
-        <p> {cleanup(anouncement.text,anouncement)} </p>
+        <span className='anouncement-time'> {cleanup(anouncement)}</span>
+        <span className='anouncement-text'> {cleanupTags(anouncement.text)} </span>
         <div className='short-separator'></div>
       </div>
     )

@@ -27,6 +27,12 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
   res.redirect('/');
 }
 
+const getQRU = function getQRUData(req,res,next){
+  console.log("GETTING QRU");
+  return next();
+}
+
+
 // Initialization function
 const init = function RouteHandler(app, config, passport, upload) {
 
@@ -72,7 +78,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('dashboard.ejs', { user: req.user });
   });
 
-  app.get('/dashboard-dayof',isLoggedIn,(req,res) =>{
+  app.get('/dashboard-dayof',isLoggedIn,getQRU,(req,res) =>{
   
 
     //Will prbably break this up into multiple get request from client.
@@ -93,7 +99,6 @@ const init = function RouteHandler(app, config, passport, upload) {
         );
         
         SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
-          console.log("get anouncementsmarkup");
 
           var anouncementsmarkup = ReactDOMServer.renderToString(
              AnouncementsApp({
