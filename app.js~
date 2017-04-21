@@ -1,5 +1,4 @@
 // Dependencies
-<<<<<<< HEAD
 const express         = require('express');
 const helmet          = require('helmet');
 const path            = require('path');
@@ -22,41 +21,12 @@ const twitter         = require('twitter');
 const eventfeed       = require('./main/calendar.js');
 const twitterfeed     = require('./main/loadtweets.js');
 const slackfeed       = require('./main/loadmsgs.js');
-=======
-const express       = require('express');
-const helmet        = require('helmet');
-const path          = require('path');
-const morgan        = require('morgan');
-const bodyParser    = require('body-parser');
-const ejs           = require('ejs');
-const flash         = require('connect-flash');
-const mongoose      = require('mongoose');
-const session       = require('express-session');
-const RedisStore    = require('connect-redis')(session);
-const passport      = require('passport');
-const multer        = require('multer');
-const twitter       = require('twitter'); 
-const routes        = require('./main/routes.js');
-const errors        = require('./main/errors.js');
-const config        = require('./config/config.js');
-const passConfig    = require('./main/passport.js');
-const multerConfig  = require('./main/multer.js');
-const streamHandler = require('./utils/streamHandler.js'); //Handles twitter stream
-const eventfeed     = require('./main/calendar.js');
-const twitterfeed   = require('./main/loadtweets.js');
-const slackfeed     = require('./main/loadmsgs.js');
 
-
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 // Set up Application
 const app = express();
 var port = process.env.PORT || 8080;
 
-<<<<<<< HEAD
 
-=======
-mongoose.Promise = require('bluebird');
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 mongoose.connect(config.db.url);
 passConfig(passport);
 
@@ -88,10 +58,6 @@ routes(app, config, passport, upload);
 // Load Error Handling last
 errors(app);
 
-<<<<<<< HEAD
-=======
-// Load calendar, twitter, slack
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 setTimeout(eventfeed.loadEvents,5000);
 twitterfeed.loadTweets();
 slackfeed.loadMsgs();
@@ -100,16 +66,6 @@ slackfeed.loadMsgs();
 var server = app.listen(port);
 console.log('Listening on port: %d', port);
 
-//Initialize socket.io
-var io = require('socket.io').listen(server);
-
-var twit = new twitter(config.twitter);
-
-//Set a stream listener for tweets matching tracking keywords 
-//WILL BE CHANGED IN FUTURE TO HACKRU TWEETS ONLY
-twit.stream('statuses/filter',{follow:'853467496493481984'},function(stream){
-    streamHandler(stream,io);
-});
 
 /** IGNORE
 var testTweet = {

@@ -1,0 +1,24 @@
+https://slack.com/api/channels.history?channel=C43KDNGR0&token=xoxp-140350940247-159100256132-166567999734-c48d88a22d9e802382af0e535c09a767
+statusCode: 200
+headers: { 'content-type': 'application/json; charset=utf-8',
+  'content-length': '24989',
+  connection: 'close',
+  vary: 'Accept-Encoding, Accept-Encoding',
+  'access-control-allow-origin': '*',
+  'cache-control': 'private, no-cache, no-store, must-revalidate',
+  date: 'Sat, 15 Apr 2017 19:32:16 GMT',
+  expires: 'Mon, 26 Jul 1997 05:00:00 GMT',
+  pragma: 'no-cache',
+  'referrer-policy': 'no-referrer',
+  server: 'Apache',
+  'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+  'x-accepted-oauth-scopes': 'channels:history,read',
+  'x-content-type-options': 'nosniff',
+  'x-oauth-scopes': 'read,client,admin,identify,post,apps',
+  'x-slack-backend': 'h',
+  'x-slack-req-id': 'b5cc76fd-4b48-40d0-b7ef-9c312ca2c0da',
+  'x-xss-protection': '0',
+  'x-cache': 'Miss from cloudfront',
+  via: '1.1 5ec64d9502b4a51a283c9c8c16414219.cloudfront.net (CloudFront)',
+  'x-amz-cf-id': '1IB1--16QmaNKPSPMgTM_tDjI8n_evmt0eIK8yWCh7Aj0qvJylSZvA==' }
+undefined
