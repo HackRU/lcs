@@ -43,11 +43,9 @@ config/config.js
 # Resume dump
 resumes
 
-<<<<<<< HEAD
 # email-template directory
 email-templates
-=======
 #client_secret
 client_secret.json
 .credentials
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
+messages
