@@ -3,10 +3,7 @@ var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var GCEvent = require('../models/GCEvent.js');
-<<<<<<< HEAD
 var request = require('request');
-=======
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
@@ -15,11 +12,7 @@ var TOKEN_DIR = './.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs.json';
 
 var AUTH;
-<<<<<<< HEAD
 var WATCH_LIST;
-=======
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
-
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   if (err) {
@@ -160,7 +153,7 @@ module.exports.loadEvents = function loadEvents() {
     }
   });
 }
-<<<<<<< HEAD
+
 module.exports.setUpPushNotifications = () =>{  
   fs.readFile('../config/watchlist.json',(err,data) =>{
     if(err){
@@ -175,5 +168,3 @@ module.exports.setUpPushNotifications = () =>{
 function setupNewWatchList(){
   
 }
-=======
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e

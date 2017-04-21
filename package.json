@@ -42,12 +42,8 @@
     "react-dom": "^15.5.3",
     "redis": "^2.6.5",
     "request": "^2.73.0",
-<<<<<<< HEAD
     "sparkpost": "^2.1.2"
-=======
-    "socket.io": "^1.2.0",
-    "twitter": "^1.2.0"
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
+
   },
   "browserify": {
     "transform": [

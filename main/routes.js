@@ -1,5 +1,4 @@
 // Dependencies
-<<<<<<< HEAD
 const request     = require('request');
 const path        = require('path');
 const Waitlist    = require('../models/waitlist.js');
@@ -8,13 +7,6 @@ const config      = require('../config/config.js');
 const React     = require('react');
 const ReactDOMServer = require('react-dom/server');
 const JSX       = require('node-jsx').install();
-=======
-const request   = require('request');
-const path      = require('path');
-const JSX       = require('node-jsx').install();
-const React     = require('react');
-const ReactDOMServer = require('react-dom/server');
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 const TweetsApp = React.createFactory(require('./components/TweetsApp.react'));
 const EventsApp = React.createFactory(require('./components/EventsApp.react'));
 const AnouncementsApp = React.createFactory(require('./components/AnouncementsApp.react'));
@@ -22,10 +14,6 @@ const Tweet     = require('../models/Tweet.js');
 const User      = require('../models/user.js');
 const GCEvent   = require('../models/GCEvent.js');
 const SlackMsg  = require('../models/SlackMsg.js');
-<<<<<<< HEAD
-=======
-const config    = require('../config/config.js');
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 
 // Middleware
 // Authentication Check
@@ -45,14 +33,7 @@ const getEvents = function getEventsData(req, res, next){
   
   GCEvent.getEvents(0,0, function(events){ 
 
-<<<<<<< HEAD
-=======
-//Get Event data
-const getEvents = function getEventsData(req, res, next){
-  
-  GCEvent.getEvents(0,0, function(events){ 
 
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
     req.body.eventsmarkup = ReactDOMServer.renderToString(
       EventsApp({
         events:events
@@ -117,13 +98,7 @@ const getQRImage = function getQRImageData(req,res,next){
     }
   });
 }
-<<<<<<< HEAD
-=======
-const getGavel = function getGavelData(req,res,next){
-  
-}
 
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 // Initialization function
 const init = function RouteHandler(app, config, passport, upload) {
 
@@ -215,60 +190,6 @@ const init = function RouteHandler(app, config, passport, upload) {
     }
   });
 
-
-<<<<<<< HEAD
-=======
-  app.get('/gavelQuery',(req,res)=>{
-    var url = "https://gavel-ru.herokuapp.com/api/hackerquery/?name="+ encodeURI(req.query.name);
-    request.get(url,(err,resp,body)=>{
-      if(err) return;
-      res.send(body);
-    });
-  });
-
-  app.get('/dashboard-dayof',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
-    res.render('dashboard-dayof.ejs',{
-      user: req.user,
-      qrimage:req.body.qrimage, 
-      anouncementsMarkup: req.body.anouncementsmarkup,
-      anouncementsState: JSON.stringify(req.body.anouncements),
-           
-      tweetsMarkup: req.body.tweetsmarkup,
-      tweetsState: JSON.stringify(req.body.tweets),
-
-      eventsMarkup: req.body.eventsmarkup,
-      eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
-    });
-    
-  });
-
-  app.post('/slack',(req,res)=>{
-    console.log(req);
-    if(req.body.type === 'url_verification'){
-      console.log(req.body);
-      res.send(''+req.body.challenge);
-    }else if(req.body.type === 'event_callback'){
-      console.log(req.body.event);
-      var slackEvent = req.body.event;
-      if(slackEvent.type === 'message'){
-        console.log(slackEvent.text);
-        if(slackEvent.channel === config.slack.channel){ 
-          var message ={
-            ts:slackEvent.ts,
-            text:slackEvent.text,
-            user:slackEvent.user
-          };
-          if(message.text.search("has joinced the channel") == -1){
-            SlackMsg.findOneAndUpdate({ts:message.ts},message,{upsert:true,new:true},(err,res)=>{
-              if(err) console.log(err);
-            });
-          }
-        }
-      }
-      res.send(200);
-    }
-  });
->>>>>>> 01b86cc9ff8456ec2a92708497fe73768728c71e
 
   app.get('/account', isLoggedIn, (req, res)=>{
     res.render('account.ejs', { user: req.user, message: req.flash('account') });
