@@ -35,5 +35,14 @@
     "redis": "^2.6.5",
     "request": "^2.73.0",
     "sparkpost": "^2.1.2"
-  }
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {}
 }

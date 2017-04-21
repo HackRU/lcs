@@ -16,10 +16,16 @@ const errors          = require('./main/errors.js');
 const passConfig      = require('./main/passport.js');
 const multerConfig    = require('./main/multer.js');
 const config          = require('./config/config.js');
-
+//Dashboard specific stuff
+const twitter         = require('twitter');
+const eventfeed       = require('./main/calendar.js');
+const twitterfeed     = require('./main/loadtweets.js');
+const slackfeed       = require('./main/loadmsgs.js');
 // Set up Application
 const app = express();
 var port = process.env.PORT || 8080;
+
+
 mongoose.connect(config.db.url);
 passConfig(passport);
 var upload = multerConfig(multer, config);
@@ -49,6 +55,10 @@ app.use(passport.session());
 routes(app, config, passport, upload);
 // Load Error Handling last
 errors(app);
+
+setTimeout(eventfeed.loadEvents,5000);
+twitterfeed.loadTweets();
+slackfeed.loadMsgs();
 
 // Launch
 app.listen(port);
