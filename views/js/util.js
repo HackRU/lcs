@@ -16,6 +16,7 @@ function handleGavelRequest(){
     hacks++;
     var div = $("<div>",{id:"hack-"+hacks, "class":"gavel-data-hack"});
     div.append("<p class=\"hack-name\"><span class=\"hack-name-tag\">Name: </span><span class=\"hack-name-text\">"+json[0].Name+"</span></p>");    
+    div.append("<p class=\"hack-description\"><span class=\"hack-description-tag\">Description: </span><span class=\"hack-description-text\">"+json[0].Description+"</span></p>");    
     div.append("<p class=\"hack-location\"><span class=\"hack-location-tag\">Location: </span><span class=\"hack-location-text\">"+json[0].Location+"</span></p>");    
     var table = $("<table>",{id:"hack-table-"+hacks,"class":"hack-table"});
     var row = $("<tr>",{"class":"hack-table-row"});
