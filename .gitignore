@@ -49,3 +49,4 @@ email-templates
 client_secret.json
 .credentials
 messages
+messages.txt

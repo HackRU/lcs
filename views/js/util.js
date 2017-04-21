@@ -1,19 +1,28 @@
-var hacks = 0;
+var hacks = [];
 function handleGavelRequest(){
+  if($('#hack-error').length != 0){
+    $('#hack-error').remove();
+  }
   var hackName = $('#gavel-form-name-input').val().trim();
   if(hackName == "") return;
   var parameters = {name:hackName};
   $.get('/gavelQuery',parameters,(data)=>{
     if(data == null){
-      alert("Sorry! Couldn't find "+hackName +".");
+      var div = $("<div>",{id:"hack-error"});
+      div.append("Sorry! Couldn't find "+hackName+" in our submissions <a href=\"http://gavel-ru.herokuapp.com/submissions/\">list</a>.");
+      $('#gavel-data').prepend(div);  
       return;
     }
     var json = toJSON(data);
     if(json[0] == null){
-      alert("Sorry! Couldn't find "+hackName+".");
+      var div = $("<div>",{id:"hack-error"});
+      div.append("Sorry! Couldn't find "+hackName+" in our submissions <a href=\"http://gavel-ru.herokuapp.com/submissions/\">list</a>.");
+      $('#gavel-data').prepend(div);  
       return;
     }
-    hacks++;
+
+    if(hacks.indexOf(json[0].Name) != -1) return;
+    hacks.push(json[0].Name);
     var div = $("<div>",{id:"hack-"+hacks, "class":"gavel-data-hack"});
     div.append("<p class=\"hack-name\"><span class=\"hack-name-tag\">Name: </span><span class=\"hack-name-text\">"+json[0].Name+"</span></p>");    
     div.append("<p class=\"hack-description\"><span class=\"hack-description-tag\">Description: </span><span class=\"hack-description-text\">"+json[0].Description+"</span></p>");    
