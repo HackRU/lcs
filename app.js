@@ -17,9 +17,7 @@ const passConfig      = require('./main/passport.js');
 const multerConfig    = require('./main/multer.js');
 const config          = require('./config/config.js');
 //Dashboard specific stuff
-const twitter         = require('twitter');
 const eventfeed       = require('./main/calendar.js');
-const twitterfeed     = require('./main/loadtweets.js');
 const slackfeed       = require('./main/loadmsgs.js');
 
 // Set up Application
@@ -60,7 +58,6 @@ errors(app);
 
 setTimeout(eventfeed.loadEvents,5000);
 setTimeout(eventfeed.setUpPushNotifications,5000);
-twitterfeed.loadTweets();
 slackfeed.loadMsgs();
 
 

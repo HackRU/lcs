@@ -1,5 +1,5 @@
 /*                                                                                                                      
- /$$   /$$                     /$$       /$$$$$$$  /$$   /$$        /$$$$$$   /$$$$$$    /$$   /$$$$$$$$
+/$$   /$$                     /$$       /$$$$$$$  /$$   /$$        /$$$$$$   /$$$$$$    /$$   /$$$$$$$$
 | $$  | $$                    | $$      | $$__  $$| $$  | $$       /$$__  $$ /$$$_  $$ /$$$$  |_____ $$/
 | $$  | $$  /$$$$$$   /$$$$$$$| $$   /$$| $$  \ $$| $$  | $$      |__/  \ $$| $$$$\ $$|_  $$       /$$/ 
 | $$$$$$$$ |____  $$ /$$_____/| $$  /$$/| $$$$$$$/| $$  | $$        /$$$$$$/| $$ $$ $$  | $$      /$$/  
@@ -478,6 +478,40 @@ body {
             margin-right: 7px; }
       .subpage-section .subpage-content form #file-selector-notif {
         white-space: nowrap; }
+
+#dashboarddayof .greeting {
+  color: #4BCF7E;
+  border-bottom: 7px solid;
+  padding: 10px; }
+#dashboarddayof .user-info .qr {
+  width: 100%;
+  padding: 10px; }
+#dashboarddayof .user-info .card-text p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+#dashboarddayof .user-info .card-text a {
+  color: #4BCF7E; }
+#dashboarddayof .upcoming {
+  max-height: 50vh;
+  overflow-y: scroll; }
+#dashboarddayof .announcements .card-text p {
+  border-left: 3px solid black;
+  margin: 0px 0px 10px 0px;
+  padding-left: 5px; }
+#dashboarddayof .announcements .a-time {
+  font-weight: bold;
+  margin-right: 5px; }
+#dashboarddayof .info-bar .info-bar-pic {
+  width: 75%; }
+#dashboarddayof .info-bar .emergenums {
+  margin-top: 25px; }
+#dashboarddayof .card-text {
+  padding: 10px 0px; }
+#dashboarddayof .subpage-hero {
+  margin-bottom: 0; }
+#dashboarddayof .card-container h1 {
+  color: #4BCF7E; }
 
 #manage-confirmation #attendance-select {
   width: 100%;

@@ -17,7 +17,6 @@ module.exports = Event = React.createClass({
     return (
       <div className={'event' + ' active'}>
           <h3>{event.title}</h3>
-          <div className="short-separator"></div>
           <p>Location: {event.loc}</p>
           <p>Description: {event.description}</p>
           <p>Start: {normalize(event.startDateTime.slice(11,19))}</p>

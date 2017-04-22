@@ -64,11 +64,10 @@ module.exports = Anouncement= React.createClass({
   render: function(){
     var anouncement = this.props.anouncement;
     return (
-      <div className={'anouncement' + ' active'}>
-        <span className='anouncement-time'> {cleanup(anouncement)}</span>
-        <span className='anouncement-text'> {cleanupTags(anouncement.text)} </span>
-        <div className='short-separator'></div>
-      </div>
+      <p>
+        <span className='a-time'> {cleanup(anouncement)}</span>
+        <span className='a-text'> {cleanupTags(anouncement.text)} </span>
+      </p>
     )
   }
 });

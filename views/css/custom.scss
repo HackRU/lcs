@@ -1,5 +1,5 @@
 /*                                                                                                                      
- /$$   /$$                     /$$       /$$$$$$$  /$$   /$$        /$$$$$$   /$$$$$$    /$$   /$$$$$$$$
+/$$   /$$                     /$$       /$$$$$$$  /$$   /$$        /$$$$$$   /$$$$$$    /$$   /$$$$$$$$
 | $$  | $$                    | $$      | $$__  $$| $$  | $$       /$$__  $$ /$$$_  $$ /$$$$  |_____ $$/
 | $$  | $$  /$$$$$$   /$$$$$$$| $$   /$$| $$  \ $$| $$  | $$      |__/  \ $$| $$$$\ $$|_  $$       /$$/ 
 | $$$$$$$$ |____  $$ /$$_____/| $$  /$$/| $$$$$$$/| $$  | $$        /$$$$$$/| $$ $$ $$  | $$      /$$/  
@@ -15,27 +15,27 @@
 	font-weight: bold;
 	src: local('Circular'), url('../fonts/CircularStd-Bold.otf') format("opentype");
 }
+
 @font-face {
 	font-family: Circular;
 	font-weight: normal;
 	src: local('Circular'), url('../fonts/CircularStd-Book.otf') format("opentype");
 }
 
-
-
-
-
 // START media queries for breakpoint font sizes
 
 .text-left-not-xs, .text-left-not-sm, .text-left-not-md, .text-left-not-lg {
 	text-align: left;
 }
+
 .text-center-not-xs, .text-center-not-sm, .text-center-not-md, .text-center-not-lg {
 	text-align: center;
 }
+
 .text-right-not-xs, .text-right-not-sm, .text-right-not-md, .text-right-not-lg {
 	text-align: right;
 }
+
 .text-justify-not-xs, .text-justify-not-sm, .text-justify-not-md, .text-justify-not-lg {
 	text-align: justify;
 }
@@ -57,6 +57,7 @@
 		text-align: justify;
 	}
 }
+
 @media (min-width: 768px) and (max-width: 991px) {
 	.text-left-not-sm, .text-center-not-sm, .text-right-not-sm, .text-justify-not-sm {
 		text-align: inherit;
@@ -74,6 +75,7 @@
 		text-align: justify;
 	}
 }
+
 @media (min-width: 992px) and (max-width: 1199px) {
 	.text-left-not-md, .text-center-not-md, .text-right-not-md, .text-justify-not-md {
 		text-align: inherit;
@@ -91,6 +93,7 @@
 		text-align: justify;
 	}
 }
+
 @media (min-width: 1200px) {
 	.text-left-not-lg, .text-center-not-lg, .text-right-not-lg, .text-justify-not-lg {
 		text-align: inherit;
@@ -111,15 +114,12 @@
 
 // END media queries for breakpoint font sizes
 
-
 $light-green: #ABFFCC;
 $mid-green: #84E5AA;
 $dark-green: #4BCF7E;
 $browser-height: 100vh;
-$browser-height-half: 50vh;
-$browser-width: 100%;
 
-.col-centered{
+.col-centered {
 	float: none;
 	margin: 0 auto;
 }
@@ -157,19 +157,18 @@ body {
 	}
 
 	.row {
-		// overflow: hidden; 
+		// overflow: hidden;
 	}
 
 	.subtitle-icon {
 		padding-right: 5px;
 	}
 
-	
 	#hero {
 		background: url('../assets/hero-green.jpg');
 		background-size: cover;
 		height: $browser-height;
-		
+
 		#nav-secondary {
 			display: none;
 			background-color: rgba(255, 255, 255, 0.95);
@@ -195,7 +194,7 @@ body {
 				float: right;
 				padding-right: 175px;
 			}
-			
+
 			li {
 				float: left;
 				height: 100%;
@@ -223,9 +222,6 @@ body {
 			background-color: rgba(255, 255, 255, 0.95);
 			height: 100%;
 			padding: 15px 20px;
-			
-
-			
 
 			#hero-logo {
 				margin: 0 auto;
@@ -261,14 +257,13 @@ body {
 					}
 				}
 
-
 			}
 
 			#hero-webosphere {
 				position: absolute;
 				bottom: 0;
 				padding: 15px 0px;
-				
+
 				a {
 					float: left;
 					padding-right: 25px;
@@ -299,7 +294,6 @@ body {
 				}
 			}
 
-
 			h4 {
 				margin: 0px;
 			}
@@ -309,7 +303,7 @@ body {
 				height: 50px;
 				float: right;
 			}
-			
+
 			li {
 				float: left;
 				height: 100%;
@@ -333,7 +327,7 @@ body {
 			}
 		}
 	}
-	
+
 	.section-title {
 		margin: 0px;
 	}
@@ -352,10 +346,10 @@ body {
 	#about {
 		background-color: white;
 		padding: 50px 0px;
-		color: $dark-green;	
+		color: $dark-green;
 
 		p, .section-subtitle {
-			color: black;		
+			color: black;
 		}
 
 		a, .subtitle-icon {
@@ -363,7 +357,7 @@ body {
 		}
 
 		#about-brain {
-			max-height: 250px; 
+			max-height: 250px;
 			float: right;
 		}
 
@@ -375,7 +369,6 @@ body {
 				height: 200px;
 				border: 1px $dark-green solid;
 				overflow: hidden;
-				
 
 				iframe {
 					pointer-events: none;
@@ -438,7 +431,6 @@ body {
 			}
 		}
 
-
 		#full-sched-button {
 			text-transform: uppercase;
 			color: white;
@@ -452,7 +444,7 @@ body {
 	#sponsors {
 		background-color: white;
 		padding: 50px 0px;
-		
+
 		.sponsor-logo-row {
 			padding: 10px 0px;
 			margin-bottom: 25px;
@@ -500,7 +492,7 @@ body {
 			border-color: black;
 		}
 	}
-	
+
 	#footer {
 		background-color: black;
 		color: white;
@@ -554,14 +546,10 @@ body {
 	float: none;
 }
 
-
-
 .subpage-section {
 	background-color: white;
-	min-height: 100vh;
+	min-height: $browser-height;
 	padding-bottom: 7vh;
-	
-
 
 	.subpage-hero {
 
@@ -574,7 +562,7 @@ body {
 			text-align: right;
 			padding-right: 15px;
 			border-bottom: 1px dotted white;
-			
+
 			/* logo on subpages navbars*/
 			img {
 				padding: 5px 0 5px 175px;
@@ -593,7 +581,7 @@ body {
 					text-decoration: none;
 				}
 			}
-			
+
 			h3 {
 				font-size: 25px;
 				margin: 0px;
@@ -608,7 +596,6 @@ body {
 				font-size: 15px;
 				margin: 0px;
 
-				
 			}
 
 			ul {
@@ -638,7 +625,7 @@ body {
 				color: white;
 			}
 		}
-		
+
 		.subpage-hero-title {
 			text-align: center;
 
@@ -696,7 +683,7 @@ body {
 				/*background-color: red;*/
 				text-align: left;
 
-				label { 
+				label {
 					text-align: left;
 					padding: 0;
 
@@ -706,7 +693,7 @@ body {
 						padding: 0 10px;
 					}
 				}
-				
+
 				.btn {
 					color: white;
 					background-color: $dark-green;
@@ -735,7 +722,6 @@ body {
 				margin: 5vh 0;
 				font-size: 17px;
 
-
 				a {
 					color: inherit;
 					text-decoration: none;
@@ -753,10 +739,9 @@ body {
 					text-align: left;
 					margin: 0 0 0 20px;
 
-
 					input {
 						color: $dark-green;
-						margin-left: -20px;	
+						margin-left: -20px;
 						margin-right: 7px;
 					}
 				}
@@ -770,6 +755,85 @@ body {
 	}
 }
 
+#dashboarddayof {
+
+	.greeting {
+		color: #4BCF7E;
+		border-bottom: 7px solid;
+		padding: 10px;
+	}
+
+	.user-info {
+		.qr {
+			width:100%;
+			padding:10px;
+
+		}
+		.card-text {
+			p {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			a {
+				color: $dark-green;
+			}
+		}
+	}
+
+	.upcoming {
+		max-height: 50vh;
+		overflow-y: scroll;
+	}
+
+	.announcements {
+		.card-text {
+			p {
+				border-left: 3px solid black;
+				margin: 0px 0px 10px 0px;
+				padding-left: 5px;
+			}
+		}
+
+		.a-time {
+			font-weight: bold;
+			margin-right: 5px;
+		}
+	}
+
+	.info-bar {
+		.info-bar-pic {
+			width: 75%;
+		}
+
+		.emergenums {
+			margin-top: 25px;
+		}
+	}
+
+
+	.card-text {
+		padding: 10px 0px;
+
+
+
+	}
+	.subpage-hero {
+		margin-bottom: 0;
+	}
+
+	.card-container {
+
+		//border: 2px solid $dark-green;
+
+		h1 {
+			color: $dark-green;
+		}
+
+	}
+
+}
 
 #manage-confirmation {
 
@@ -798,16 +862,14 @@ body {
 			}
 
 		}
-		
 
 		#attending-label.active {
 			background-color: $dark-green;
 		}
-		
-		#not-attending-label.active{
+
+		#not-attending-label.active {
 			background-color: #ea4c48;
 		}
-
 
 		// #attending-label:hover {
 		// 	border: $dark-green solid 1px;
@@ -816,7 +878,7 @@ body {
 		// #not-attending-label:hover {
 		// 	border: #ea4c48 solid 1px;
 		// }
-		
+
 	}
 }
 

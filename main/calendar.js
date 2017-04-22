@@ -186,13 +186,11 @@ function setupNewWatchList(){
   CHANNEL_ID = guid();
   var xtoken = 'dashboard-calendar-notifications';
   var xaddress = CALLBACK_ADDRESS;
-  EXPIRATION = Date.now() + (5 * 60 * 1000);
   
   var bodyParams ={
     id: CHANNEL_ID,
     type: 'web_hook',
     address: xaddress,
-    expiration:EXPIRATION 
   }
   var pathParams = {calendarId: CALENDAR_ID,resource:bodyParams};
 
