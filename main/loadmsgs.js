@@ -33,8 +33,11 @@ module.exports.loadMsgs= function loadMsgs() {
   
       var data = JSON.parse(body);
      
-
+      fs.writeFile('./messages.txt',JSON.stringify(data),(err)=>{
+        if(err) throw err;
+      });
       
+
       for(var i = 0; i < data.messages.length;i++){
         var message = data.messages[i];
         var slackmessage={
@@ -59,28 +62,4 @@ module.exports.loadMsgs= function loadMsgs() {
   req.on('error',(e)=>{console.log(e)});
 
   req.end();
-  /*
-    for (var i = 0; i < events.length; i++) {
-        var data = events[i];
-
-        var message = {
-          
-        };
-
-
-
-        console.log(gcevent);
-        
-
-        GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{ 
-          if(err) console.log(err);
-        });
-
-      
-      }
-
- }
-  
-  */    
- 
 }

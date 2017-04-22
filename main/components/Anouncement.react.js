@@ -20,16 +20,27 @@ function cleanupTags(text){
   while(indexlt != -1){
     var indexrt = ret.indexOf('>');
     if(ret.charAt(indexlt+1) == '@'){
-      var slice = ret.slice(indexlt,indexrt+1);
+      var slice = ret.slice(indexlt+1,indexrt+1);
       ret = ret.replace(slice,'');
     }
-    var left = '';
-    var middle = '';
-    var right = '';
-    if(indexlt > 0) left = ret.substring(0,indexlt);
-    middle = ret.slice(indexlt+1,indexrt);
-    if(indexrt < indexrt-1) right = ret.substring(indexrt);
-    ret = left+middle+right;
+    else if(ret.indexOf('mailto')==indexlt+1 || ret.indexOf('#')==indexlt+1){
+      var slice = ret.slice(indexlt+1,ret.indexOf('|')+1);
+      ret = ret.replace(slice,'');
+      ret = ret.replace('<','');
+      ret = ret.replace('>',''); 
+    }
+    else if(ret.indexOf('http')==indexlt+1){
+      ret = ret.replace('<','');
+      ret = ret.replace('>','');  
+    }else{
+      var left = '';
+      var middle = '';
+      var right = '';
+      if(indexlt > 0) left = ret.substring(0,indexlt);
+      middle = ret.slice(indexlt+1,indexrt);
+      if(indexrt < indexrt-1) right = ret.substring(indexrt);
+      ret = left+middle+right;
+    }
     indexlt = ret.indexOf('<');
   }
   ret = ret.replace('&gt','>');
@@ -53,11 +64,10 @@ module.exports = Anouncement= React.createClass({
   render: function(){
     var anouncement = this.props.anouncement;
     return (
-      <div className={'anouncement' + ' active'}>
-        <span className='anouncement-time'> {cleanup(anouncement)}</span>
-        <span className='anouncement-text'> {cleanupTags(anouncement.text)} </span>
-        <div className='short-separator'></div>
-      </div>
+      <p>
+        <span className='a-time'> {cleanup(anouncement)}</span>
+        <span className='a-text'> {cleanupTags(anouncement.text)} </span>
+      </p>
     )
   }
 });

@@ -7,13 +7,12 @@ const config      = require('../config/config.js');
 const React     = require('react');
 const ReactDOMServer = require('react-dom/server');
 const JSX       = require('node-jsx').install();
-const TweetsApp = React.createFactory(require('./components/TweetsApp.react'));
 const EventsApp = React.createFactory(require('./components/EventsApp.react'));
 const AnouncementsApp = React.createFactory(require('./components/AnouncementsApp.react'));
-const Tweet     = require('../models/Tweet.js');
 const User      = require('../models/user.js');
 const GCEvent   = require('../models/GCEvent.js');
 const SlackMsg  = require('../models/SlackMsg.js');
+const calendar  = require('./calendar.js');
 
 // Middleware
 // Authentication Check
@@ -144,7 +143,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     });
   });
 
-  app.get('/dashboard',isLoggedIn,getEvents, getTweets, getAnouncements, getQRImage,(req,res) =>{
+  app.get('/dashboard',isLoggedIn,getEvents, getAnouncements, getQRImage,(req,res) =>{
     if(req.user.registration_status==0){
       res.redirect('/register-mymlh');
     }
@@ -152,15 +151,20 @@ const init = function RouteHandler(app, config, passport, upload) {
       user: req.user,
       qrimage:req.body.qrimage, 
       anouncementsMarkup: req.body.anouncementsmarkup,
-      anouncementsState: JSON.stringify(req.body.anouncements),
-           
-      tweetsMarkup: req.body.tweetsmarkup,
-      tweetsState: JSON.stringify(req.body.tweets),
 
-      eventsMarkup: req.body.eventsmarkup,
-      eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
+      eventsMarkup: req.body.eventsmarkup
     });
     
+  });
+
+  app.post('/callback/calendar',(req,res)=>{
+    if(req.headers['x-goog-resource-state'] == 'sync'){
+      res.sendStatus(201);
+    }else{
+        console.log(req);
+        res.sendStatus(200);
+        calendar.loadEvents();
+    }
   });
 
   app.post('/slack',(req,res)=>{
