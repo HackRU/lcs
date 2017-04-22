@@ -29,8 +29,8 @@ const isLoggedIn = function checkLoggedIn(req, res, next) {
 }
 //Get Event data
 const getEvents = function getEventsData(req, res, next){
-  
-  GCEvent.getEvents(0,0, function(events){ 
+
+  GCEvent.getEvents(0,0, function(events){
 
 
     req.body.eventsmarkup = ReactDOMServer.renderToString(
@@ -46,7 +46,7 @@ const getEvents = function getEventsData(req, res, next){
 
 const getTweets = function getTweetsData(req,res,next){
   Tweet.getTweets(0,0, function(tweets){
-        
+
     req.body.tweetsmarkup = ReactDOMServer.renderToString(
       TweetsApp({
         tweets: tweets
@@ -59,7 +59,7 @@ const getTweets = function getTweetsData(req,res,next){
 }
 
 const getAnouncements = function getAnouncementsData(req,res,next){
-  SlackMsg.getSlackMsgs(0,0,function(anouncements){ 
+  SlackMsg.getSlackMsgs(0,0,function(anouncements){
 
     req.body.anouncementsmarkup = ReactDOMServer.renderToString(
       AnouncementsApp({
@@ -76,8 +76,8 @@ const getQRImage = function getQRImageData(req,res,next){
   var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
   var r = request.defaults({encoding:null});
   r.get(url,(err,response,body)=>{
-    if(err){ 
-      console.log(err);      
+    if(err){
+      console.log(err);
     }else if(response.statusCode === 404 && (req.body.qrRetries == null || req.body.qrRetries < 3)){
       console.log('404 ERROR');
       //NOT SURE IF THIS IS COOL-> generate a new QRImage by passing in email to QRU server
@@ -91,8 +91,8 @@ const getQRImage = function getQRImageData(req,res,next){
           getQRImageData(req,res,next);
       });
     }
-    else{     
-      req.body.qrimage = new Buffer(body).toString('base64'); 
+    else{
+      req.body.qrimage = new Buffer(body).toString('base64');
       return next();
     }
   });
@@ -146,15 +146,17 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.get('/dashboard',isLoggedIn,getEvents, getAnouncements, getQRImage,(req,res) =>{
     if(req.user.registration_status==0){
       res.redirect('/register-mymlh');
-    }
-    res.render('dashboard-dayof.ejs',{
-      user: req.user,
-      qrimage:req.body.qrimage, 
-      anouncementsMarkup: req.body.anouncementsmarkup,
+    } else if (req.user.registration_status == 5) {
+      res.render('dashboard-dayof.ejs',{
+        user: req.user,
+        qrimage:req.body.qrimage,
+        anouncementsMarkup: req.body.anouncementsmarkup,
 
-      eventsMarkup: req.body.eventsmarkup
-    });
-    
+        eventsMarkup: req.body.eventsmarkup
+      });
+    } else {
+      res.render('dashboard.ejs', { user: req.user, message: req.flash('dashboard') });
+    }
   });
 
   app.post('/callback/calendar',(req,res)=>{
@@ -177,7 +179,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       var slackEvent = req.body.event;
       if(slackEvent.type === 'message'){
         console.log(slackEvent.text);
-        if(slackEvent.channel === config.slack.channel){ 
+        if(slackEvent.channel === config.slack.channel){
           var message ={
             ts:slackEvent.ts,
             text:slackEvent.text,

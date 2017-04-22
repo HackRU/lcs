@@ -18,7 +18,7 @@
 	<meta property="og:image" content="http://www.hackru.org/assets/hackRU_SP17_avatar.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Sign up for HackRU Spring 2017, taking place from April 22nd to 23rd.">
-	<title>HackRU - Dashboard</title>
+	<title>HackRU - Admin</title>
 
 	<link rel="shortcut icon" href="./assets/logo-favicon.ico" type="image/x-icon">
 	<link rel="icon" href="./assets/logo-favicon.ico" type="image/x-icon">
@@ -40,8 +40,8 @@
 			<div class="row subpage-hero">
 				<div class="col-xs-12 subpage-nav"></div>
 				<div class="col-xs-12 subpage-hero-title">
-					<h1 class="hidden-xs">Dashboard</h1>
-					<h3 class="visible-xs-block">Dashboard</h3>
+					<h1 class="hidden-xs">Admin</h1>
+					<h3 class="visible-xs-block">Admin</h3>
 				</div>
 			</div>
 
@@ -52,22 +52,15 @@
 					<h4 class="bg-danger"><%= message %></h4>
 					<% } %>
 
-					<% if(user.registration_status == 1) { %>
-						<h3>Currently: Registered </h3>
-						<a title="Being Registered doesn't mean you can attend. The next step is Confirming Your Attendance. We'll be emailing instructions on how to do that soon! Stay tuned!">What does this mean? Hover over me!</a>
-					<% } else if(user.registration_status == 2) { %>
-						<h3>Currently: Not Attending </h3>
-					<% } else if(user.registration_status == 3) { %>
-						<h3>Currently: Attending!</h3>
-					<% } else if(user.registration_status == 4 ) { %>
-						<h3>Currently: Waitlisted </h3>
-					<% } %>
+          <h3>Check-In</h3>
+          <form action="/check-in" method="post">
+            <input type="text" name="email" value="Email Address">
+            <input type="submit" value="Submit">
+          </form>
 
-					<img src="http://qru.hackru.org:8080/images/<%= user.local.email %>.png">
+					<!-- -->
 
-					<h3>Need to change something?</h3>
-					<a href="/account" class="btn btn-default content-button">Account Settings</a>
-					<a href="/confirm-status" class="btn btn-default content-button">Change Confirmation Status</a>
+					<a href="/dashboard" class="btn btn-default content-button">Dashboard</a>
 				</div>
 			</div>
 
