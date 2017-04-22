@@ -390,7 +390,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.get('/admin', (req, res)=>{
     User.count({ 'registration_status': 5 }, (err, count)=>{
-      res.render('admin.ejs', { checkin: count });
+      res.render('admin.ejs', { checkin: count, message: req.flash('admin') });
     })
   })
 
