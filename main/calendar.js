@@ -120,7 +120,7 @@ module.exports.loadEvents = function loadEvents() {
     auth: AUTH,
     calendarId: CALENDAR_ID,
     timeMin: (new Date(2017,3,21)).toISOString(),
-    timeMax: (new Date(2017,3,25)).toISOString()
+    timeMax: (new Date(2017,3,25)).toISOString(),
     showDeleted:true,
     maxResults: 100,
     singleEvents: true,
