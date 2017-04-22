@@ -17,8 +17,4 @@ Notes:
 - Please don't look at my horrendous code lol.
 
 TODO:
-- Hookup QRU
-- Push Notifications for Calendar (Google) [Realtime update of cards]
-- Add Push Notifications (button or text) on Client side
-- Have the client update automatically or add an "alert/notification" to reload changes
-- Ask for help to make things look pretty.
+- OMG AM I DONE???

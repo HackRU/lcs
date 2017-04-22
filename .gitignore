@@ -50,3 +50,5 @@ client_secret.json
 .credentials
 messages
 messages.txt
+log*
+watchlist.json

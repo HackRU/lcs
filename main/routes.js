@@ -14,6 +14,7 @@ const Tweet     = require('../models/Tweet.js');
 const User      = require('../models/user.js');
 const GCEvent   = require('../models/GCEvent.js');
 const SlackMsg  = require('../models/SlackMsg.js');
+const calendar  = require('./calendar.js');
 
 // Middleware
 // Authentication Check
@@ -161,6 +162,16 @@ const init = function RouteHandler(app, config, passport, upload) {
       eventsState: JSON.stringify(req.body.events)//Pass current state to client side #MAGIC
     });
     
+  });
+
+  app.post('/callback/calendar',(req,res)=>{
+    if(req.headers['x-goog-resource-state'] == 'sync'){
+      res.sendStatus(201);
+    }else{
+        console.log(req);
+        res.sendStatus(200);
+        calendar.loadEvents();
+    }
   });
 
   app.post('/slack',(req,res)=>{

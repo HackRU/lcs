@@ -7,9 +7,13 @@ var request = require('request');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-var TOKEN_DIR = './.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs.json';
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const TOKEN_DIR = './.credentials/';
+const TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs.json';
+const CALENDAR_ID = 'hl4bsn6030jr76nql68cen2jto@group.calendar.google.com';
+const CALLBACK_ADDRESS = 'https://ea4a786f.ngrok.io/callback/calendar';
+var   TOKEN;
+var   CHANNEL_ID;
 
 var AUTH;
 var WATCH_LIST;
@@ -43,6 +47,8 @@ function authorize(credentials, callback) {
     if (err) {
       getNewToken(oauth2Client, callback);
     } else {
+      var parsed = JSON.parse(token); 
+      TOKEN = parsed.access_token;
       oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);
     }
@@ -112,8 +118,10 @@ module.exports.loadEvents = function loadEvents() {
   var calendar = google.calendar('v3');
   calendar.events.list({
     auth: AUTH,
-    calendarId: 'primary',
+    calendarId: CALENDAR_ID,
     timeMin: (new Date()).toISOString(),
+    timeMax: (new Date(2017,4,24)).toISOString(),
+    showDeleted:true,
     maxResults: 100,
     singleEvents: true,
     orderBy: 'startTime'
@@ -125,7 +133,7 @@ module.exports.loadEvents = function loadEvents() {
     var events = response.items;
     if (events.length == 0) {
       console.log('No upcoming events found.');
-    } else {
+  } else {
       for (var i = 0; i < events.length; i++) {
         var data = events[i];
 
@@ -142,11 +150,14 @@ module.exports.loadEvents = function loadEvents() {
         };
 
 
-    
-        GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{ 
+        if(data.status == 'cancelled'){
+          GCEvent.remove({eventid:data.id},(err,res)=>{
+            if(err) console.log(err);
+          });
+        }else{GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{ 
           if(err) console.log(err);
         });
-
+        }
       
       }
       console.log("DONE LOADING EVENTS");
@@ -154,17 +165,53 @@ module.exports.loadEvents = function loadEvents() {
   });
 }
 
-module.exports.setUpPushNotifications = () =>{  
-  fs.readFile('../config/watchlist.json',(err,data) =>{
+module.exports.setUpPushNotifications = function pushNotifications(){  
+  fs.readFile('./config/watchlist.json',(err,data) =>{
     if(err){
       setupNewWatchList();
     }
-
-    WATCH_LIST = JSON.parse(data); 
-
+    else{
+      WATCH_LIST = JSON.parse(data); 
+      if(WATCH_LIST.expiration < Date.now()){
+        setupNewWatchList();
+      }
+    }
   });
 }
 
 function setupNewWatchList(){
+ 
+
+  var xurl = 'https://www.googleapis.com/calendar/v3/calendars/' + CALENDAR_ID + '/events/watch';
+  CHANNEL_ID = guid();
+  var xtoken = 'dashboard-calendar-notifications';
+  var xaddress = CALLBACK_ADDRESS;
+  EXPIRATION = Date.now() + (5 * 60 * 1000);
   
+  var bodyParams ={
+    id: CHANNEL_ID,
+    type: 'web_hook',
+    address: xaddress,
+    expiration:EXPIRATION 
+  }
+  var pathParams = {calendarId: CALENDAR_ID,resource:bodyParams};
+
+  google.options({auth:AUTH});
+  var calendar = google.calendar('v3');
+  calendar.events.watch(pathParams,function(err, response) {
+    console.log("ERROR: ",err);
+    console.log("RESPONSE: ", response);
+    WATCH_LIST = response;
+    fs.writeFile('./config/watchlist.json',JSON.stringify(WATCH_LIST));
+  });
 }
+
+function guid(){
+  function s4(){
+    return Math.floor((1+Math.random()) * 0x10000).toString(16).substring(1);
+  }
+  
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+
+}
+module.exports.setUpNewWatchList = setupNewWatchList;

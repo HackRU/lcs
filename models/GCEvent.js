@@ -18,7 +18,7 @@ schema.statics.getEvents = function(page,skip,callback){
     var events = [];
     var start = (page*10)+(skip*1);
 
-    GCEvent.find({},'eventid active title description loc startDate startDateTime endDate endDateTime',{skip:start, limit: 10}).sort({startDateTime:'desc'}).exec(function(err,docs){
+    GCEvent.find({},'eventid active title description loc startDate startDateTime endDate endDateTime',{skip:start}).sort({startDateTime:'asc'}).exec(function(err,docs){
         if(!err){
         
             events = docs;

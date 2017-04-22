@@ -59,10 +59,12 @@ routes(app, config, passport, upload);
 errors(app);
 
 setTimeout(eventfeed.loadEvents,5000);
+setTimeout(eventfeed.setUpPushNotifications,5000);
 twitterfeed.loadTweets();
 slackfeed.loadMsgs();
 
+
 // Launch
-var server = app.listen(port);
+app.listen(port);
 console.log('Listening on port: %d', port);
 
