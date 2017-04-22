@@ -479,6 +479,8 @@ body {
       .subpage-section .subpage-content form #file-selector-notif {
         white-space: nowrap; }
 
+#dashboarddayof .row div {
+  overflow: hidden; }
 #dashboarddayof .greeting {
   color: #4BCF7E;
   border-bottom: 7px solid;
