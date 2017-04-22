@@ -159,6 +159,10 @@ const init = function RouteHandler(app, config, passport, upload) {
     }
   });
 
+  app.get('/google4c0be74dc18e6027.html',(req,res)=>{
+    res.render('google4c0be74dc18e6027.html');
+  });
+
   app.post('/callback/calendar',(req,res)=>{
     if(req.headers['x-goog-resource-state'] == 'sync'){
       res.sendStatus(201);
