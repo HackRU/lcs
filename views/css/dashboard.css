@@ -1,8 +1,11 @@
+/* unused
+
+
 .card {
     padding:10px;
     max-height: 450px;
 }
-.card section{   
+.card section{
     overflow-y:auto;
     background-color:white;
 }
@@ -15,7 +18,7 @@
     margin-bottom: 10px;
 }
 .tweet a{
-    font-size: 23px;    
+    font-size: 23px;
     padding-left: 10px;
 }
 .tweet-user{
@@ -46,3 +49,4 @@
     background-color:#4BCF7E;
 }
 
+*/

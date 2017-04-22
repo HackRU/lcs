@@ -257,7 +257,6 @@ body {
 					}
 				}
 
-
 			}
 
 			#hero-webosphere {
@@ -294,7 +293,6 @@ body {
 					width: 100%;
 				}
 			}
-
 
 			h4 {
 				margin: 0px;
@@ -371,7 +369,6 @@ body {
 				height: 200px;
 				border: 1px $dark-green solid;
 				overflow: hidden;
-				
 
 				iframe {
 					pointer-events: none;
@@ -433,7 +430,6 @@ body {
 				font-weight: bold;
 			}
 		}
-
 
 		#full-sched-button {
 			text-transform: uppercase;
@@ -550,14 +546,10 @@ body {
 	float: none;
 }
 
-
-
 .subpage-section {
 	background-color: white;
 	min-height: $browser-height;
 	padding-bottom: 7vh;
-	
-
 
 	.subpage-hero {
 
@@ -604,7 +596,6 @@ body {
 				font-size: 15px;
 				margin: 0px;
 
-				
 			}
 
 			ul {
@@ -731,7 +722,6 @@ body {
 				margin: 5vh 0;
 				font-size: 17px;
 
-
 				a {
 					color: inherit;
 					text-decoration: none;
@@ -748,7 +738,6 @@ body {
 					font-size: 17px;
 					text-align: left;
 					margin: 0 0 0 20px;
-
 
 					input {
 						color: $dark-green;
@@ -768,11 +757,18 @@ body {
 
 #dashboarddayof {
 
+	.row {
+		div {
+			overflow: hidden;
+		}
+	}
+
 	.greeting {
 		color: #4BCF7E;
 		border-bottom: 7px solid;
 		padding: 10px;
 	}
+
 
 	.user-info {
 		.qr {
@@ -873,7 +869,6 @@ body {
 			}
 
 		}
-		
 
 		#attending-label.active {
 			background-color: $dark-green;
@@ -882,7 +877,6 @@ body {
 		#not-attending-label.active {
 			background-color: #ea4c48;
 		}
-
 
 		// #attending-label:hover {
 		// 	border: $dark-green solid 1px;
