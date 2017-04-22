@@ -388,6 +388,12 @@ const init = function RouteHandler(app, config, passport, upload) {
     });
   });
 
+  app.get('/admin', (req, res)=>{
+    User.count({ 'registration_status': 5 }, (err, count)=>{
+      res.render('admin.ejs', { checkin: count });
+    })
+  })
+
   app.get('/auth/fake/test', (req, res)=>{
     if(config.devmode) {
       req.session = req.session || {};
