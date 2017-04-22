@@ -52,7 +52,7 @@
             <div class="row">
 
                 <div class="col-md-12">
-                    <h1 class="greeting">Welcome, <%=user.mlh_data.first_name %>!</h1>
+                    <h1 class="greeting">Welcome, <%= user.mlh_data.first_name %>!</h1>
                 </div>
             </div>
 
@@ -62,9 +62,9 @@
                     <div class="row">
                         <div class="col-md-12 card user-info">
                             <div>
-                                <img class="qr" src="data:image/png;charset=utf-8;base64,<%=qrimage%>">
+                                <img class="qr" src="data:image/png;charset=utf-8;base64,<%= qrimage %>">
 
-                                <h1><%= user.mlh_data.first_name +  " " + user.mlh_data.last_name  %> </h1>
+                                <h1><%= user.mlh_data.first_name + " " + user.mlh_data.last_name %> </h1>
 
                                 <div class="card-text">
                                     <h4>
@@ -88,7 +88,7 @@
                                     <h4>
                                         <i class="fa fa-fw fa-github" aria-hidden="true"></i>
                                         <strong>
-                                            <%if (user.github != null) {%>
+                                            <% if (user.github != null) { %>
                                             <a href='https://github.com/<%= user.github %>'>
                                                 <%= user.github %>
                                             </a>
@@ -98,7 +98,7 @@
                                     <h4>
                                         <i class="fa fa-fw fa-file-text" aria-hidden="true"></i>
                                         <strong>
-                                            <%if (user.resume != null) {%>
+                                            <% if (user.resume != null) { %>
                                             <a href='/resume/<%= user.resume %>'>
                                                 <%= user.resume %>
                                             </a>
@@ -144,7 +144,7 @@
                             <div class="card-text">
 
 
-                                 <section class="card-section" id="anouncements-app"><%- anouncementsMarkup %></section>
+                                <section class="card-section" id="anouncements-app"><%- anouncementsMarkup %></section>
                             </div>
                         </div>
 
@@ -152,7 +152,7 @@
                             <h1>/upcoming</h1>
                             <div class="card-text upcoming">
                                 <section class="card-section" id="events-app"><%- eventsMarkup %></section>
-               
+
                             </div>
                         </div>
 
@@ -166,9 +166,15 @@
                         <div class="col-md-12 card info-bar">
                             <h1>/info</h1>
                             <div class="row">
-                                <div class="col-md-4"><a href=""><img class="info-bar-pic" src="http://logonoid.com/images/google-maps-logo.png" alt=""></a></div>
-                                <div class="col-md-4"><a href=""><img class="info-bar-pic" src="https://cdn.worldvectorlogo.com/logos/slack-1.svg" alt=""></a></div>
-                                <div class="col-md-4"><a href=""><img class="info-bar-pic" src="https://devpost-challengepost.netdna-ssl.com/assets/reimagine2/devpost-icon-900856edde1e4a510a65f29a1bde7a2b.svg" alt=""></a></div>
+                                <div class="col-md-4"><a href=""><img class="info-bar-pic"
+                                                                      src="http://logonoid.com/images/google-maps-logo.png"
+                                                                      alt=""></a></div>
+                                <div class="col-md-4"><a href=""><img class="info-bar-pic"
+                                                                      src="https://cdn.worldvectorlogo.com/logos/slack-1.svg"
+                                                                      alt=""></a></div>
+                                <div class="col-md-4"><a href=""><img class="info-bar-pic"
+                                                                      src="https://devpost-challengepost.netdna-ssl.com/assets/reimagine2/devpost-icon-900856edde1e4a510a65f29a1bde7a2b.svg"
+                                                                      alt=""></a></div>
 
                                 <div class="col-md-12 emergenums">
                                     <h3>Emergency Numbers</h3>
@@ -182,7 +188,9 @@
 
                         <div class="col-md-12 card">
                             <h1>/twitter feed</h1>
-                            <a class="twitter-timeline" data-lang="en" data-height="500" data-theme="light" data-link-color="#4BCF7E" href="https://twitter.com/theHackRU">Tweets by theHackRU</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            <a class="twitter-timeline" data-lang="en" data-height="500" data-theme="light"
+                               data-link-color="#4BCF7E" href="https://twitter.com/theHackRU">Tweets by theHackRU</a>
+                            <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
                         </div>
 
 
@@ -191,7 +199,6 @@
 
             </div>
         </div>
-
 
 
     </div>

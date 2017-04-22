@@ -33,10 +33,10 @@
 </head>
 
 <body>
-	<div class="container-fluid">
+<div class="container-fluid">
 
-		<div class="row subpage-section" id="dashboard">
-
+	<div class="row subpage-section" id="dashboard">
+		<div class="col-xs-12">
 			<div class="row subpage-hero">
 				<div class="col-xs-12 subpage-nav"></div>
 				<div class="col-xs-12 subpage-hero-title">
@@ -48,29 +48,29 @@
 			<div class="row subpage-content text-center">
 				<div class="col-xs-10 col-sm-5">
 
-					<% if(message) { %>
+                    <% if(message) { %>
 					<h4 class="bg-danger"><%= message %></h4>
-					<% } %>
+                    <% } %>
 
-          <h3>Check-In</h3>
-          <form action="/check-in" method="post">
-            <input type="text" name="email" value="Email Address">
-            <input type="submit" value="Submit">
-          </form>
+					<h3>Check-In</h3>
+					<form action="/check-in" method="post">
+						<input type="text" name="email" value="Email Address">
+						<input type="submit" value="Submit">
+					</form>
 
 					<!-- -->
 
 					<a href="/dashboard" class="btn btn-default content-button">Dashboard</a>
 				</div>
 			</div>
-
 		</div>
-
-		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-		<div class="row" id="footer"></div>
-
 	</div>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+	<div class="row" id="footer"></div>
+
+</div>
 </body>
 
 </html>
