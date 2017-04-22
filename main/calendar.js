@@ -11,7 +11,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const TOKEN_DIR = './.credentials/';
 const TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs.json';
 const CALENDAR_ID = 'hl4bsn6030jr76nql68cen2jto@group.calendar.google.com';
-const CALLBACK_ADDRESS = 'https://ea4a786f.ngrok.io/callback/calendar';
+const CALLBACK_ADDRESS = 'https://hackru.org/callback/calendar';
 var   TOKEN;
 var   CHANNEL_ID;
 

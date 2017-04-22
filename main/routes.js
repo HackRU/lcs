@@ -155,7 +155,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         eventsMarkup: req.body.eventsmarkup
       });
     } else {
-      res.render('dashboard.ejs', { user: req.user, message: req.flash('dashboard') });
+      res.render('dashboard.ejs', { user: req.user, qrimage:req.body.qrimage, message: req.flash('dashboard') });
     }
   });
 
@@ -185,7 +185,7 @@ const init = function RouteHandler(app, config, passport, upload) {
             text:slackEvent.text,
             user:slackEvent.user
           };
-          if(message.text.search("has joinced the channel") == -1){
+          if(slackEvent.subtype == null || slackEvent.subtype != 'channel_join'){
             SlackMsg.findOneAndUpdate({ts:message.ts},message,{upsert:true,new:true},(err,res)=>{
               if(err) console.log(err);
             });
