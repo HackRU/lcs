@@ -47,7 +47,7 @@ function authorize(credentials, callback) {
     if (err) {
       getNewToken(oauth2Client, callback);
     } else {
-      var parsed = JSON.parse(token); 
+      var parsed = JSON.parse(token);
       TOKEN = parsed.access_token;
       oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);
@@ -119,8 +119,8 @@ module.exports.loadEvents = function loadEvents() {
   calendar.events.list({
     auth: AUTH,
     calendarId: CALENDAR_ID,
-    timeMin: (new Date(2017,4,22)).toISOString(),
-    timeMax: (new Date(2017,4,24)).toISOString(),
+    timeMin: (new Date(2017,3,21)).toISOString(),
+    timeMax: (new Date(2017,3,25)).toISOString()
     showDeleted:true,
     maxResults: 100,
     singleEvents: true,
@@ -154,24 +154,24 @@ module.exports.loadEvents = function loadEvents() {
           GCEvent.remove({eventid:data.id},(err,res)=>{
             if(err) console.log(err);
           });
-        }else{GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{ 
+        }else{GCEvent.findOneAndUpdate({eventid:gcevent.eventid} ,gcevent,{upsert:true, new:true},(err,res)=>{
           if(err) console.log(err);
         });
         }
-      
+
       }
       console.log("DONE LOADING EVENTS");
     }
   });
 }
 
-module.exports.setUpPushNotifications = function pushNotifications(){  
+module.exports.setUpPushNotifications = function pushNotifications(){
   fs.readFile('./config/watchlist.json',(err,data) =>{
     if(err){
       setupNewWatchList();
     }
     else{
-      WATCH_LIST = JSON.parse(data); 
+      WATCH_LIST = JSON.parse(data);
       if(WATCH_LIST.expiration < Date.now()){
         setupNewWatchList();
       }
@@ -180,13 +180,13 @@ module.exports.setUpPushNotifications = function pushNotifications(){
 }
 
 function setupNewWatchList(){
- 
+
 
   var xurl = 'https://www.googleapis.com/calendar/v3/calendars/' + CALENDAR_ID + '/events/watch';
   CHANNEL_ID = guid();
   var xtoken = 'dashboard-calendar-notifications';
   var xaddress = CALLBACK_ADDRESS;
-  
+
   var bodyParams ={
     id: CHANNEL_ID,
     type: 'web_hook',
@@ -208,7 +208,7 @@ function guid(){
   function s4(){
     return Math.floor((1+Math.random()) * 0x10000).toString(16).substring(1);
   }
-  
+
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 
 }
