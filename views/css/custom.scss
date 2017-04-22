@@ -759,8 +759,10 @@ body {
 
 	.row {
 		div {
-			overflow: hidden;
-		}
+			overflow-x: hidden;
+		        overflow-y: auto;
+                }
+
 	}
 
 	.greeting {
