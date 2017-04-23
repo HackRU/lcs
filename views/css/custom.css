@@ -480,7 +480,8 @@ body {
         white-space: nowrap; }
 
 #dashboarddayof .row div {
-  overflow: hidden; }
+  overflow-x: hidden;
+  overflow-y: auto; }
 #dashboarddayof .greeting {
   color: #4BCF7E;
   border-bottom: 7px solid;
@@ -508,6 +509,19 @@ body {
   width: 75%; }
 #dashboarddayof .info-bar .emergenums {
   margin-top: 25px; }
+#dashboarddayof .foodstats .foodstats-chart {
+  border-left: 3px solid black;
+  padding-left: 0px; }
+#dashboarddayof .foodstats h4 {
+  padding: 20px 0px; }
+#dashboarddayof .foodstats .food-bar h4 {
+  border: 1px solid #4BCF7E;
+  border-left: 0px;
+  width: 20%;
+  padding-left: 20px;
+  padding-right: 20px; }
+#dashboarddayof .foodstats .food-bar-label {
+  color: black; }
 #dashboarddayof .card-text {
   padding: 10px 0px; }
 #dashboarddayof .subpage-hero {
