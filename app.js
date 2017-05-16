@@ -6,7 +6,7 @@ const morgan          = require('morgan'); // Request Logging
 const bodyParser      = require('body-parser'); // Helps parse Body presponses from HTTP Requests.
 const ejs             = require('ejs'); // Templating Engine
 const flash           = require('connect-flash'); // Flash messages at users. Messages go in the <%= message %> tags in the .ejs files in /views
-const mongoose        = require('mongoose'); // MongoDB helper. Helps with intereaction between Node.js Application and MongoDB
+const mongoose        = require('mongoose'); // MongoDB helper. Helps with interaction between Node.js Application and MongoDB
 const session         = require('express-session'); // Sets up cookies so our application can remember users
 const RedisStore      = require('connect-redis')(session); // Saves cookies with Redis
 const passport        = require('passport'); // Helps with Authentication
@@ -21,24 +21,27 @@ const eventfeed       = require('./main/calendar.js');
 const slackfeed       = require('./main/loadmsgs.js');
 
 // Set up Application
-const app = express();
-var port = process.env.PORT || 8080;
+// ***********************************************************
+// Everything here is done in sequential order.
+// Please don't move anything unless you are adding something.
+// ***********************************************************
+const app = express(); // Initialize Express
+var port = process.env.PORT || 8080; // Determine Port to listen on
 
+mongoose.connect(config.db.url); // Connect to MongoDB
+passConfig(passport); // Setup passport with configurations
 
-mongoose.connect(config.db.url);
-passConfig(passport);
+var upload = multerConfig(multer, config); // Set up multer into varibale upload to pass to routes.js
 
-var upload = multerConfig(multer, config);
+app.use(helmet()); // For Protection
+app.use(morgan('dev')); // Logging
+app.use(bodyParser.urlencoded({ extended: true })); // Enable x-www-form-urlencoded parsing
+app.use(bodyParser.json()); // Enable JSON parsing
+app.use(express.static(__dirname + "/views")); // Look for templates in /views
+app.set('view engine', 'ejs'); // Use EJS as templating engine
+app.use(flash()); // Enable Flash messages
 
-app.use(helmet());
-app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(express.static(__dirname + "/views"));
-app.set('view engine', 'ejs');
-app.use(flash());
-
-// Set up Sessions
+// Set up Sessions for Redis
 app.use(session({
   store: new RedisStore(config.session.options),
   secret: config.session.secret,
@@ -48,14 +51,15 @@ app.use(session({
     maxAge: config.session.maxAge
   }
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize()); // Start up passport
+app.use(passport.session()); // Authenticates users from their cookies
 
 // Initialize Routes Handler
 routes(app, config, passport, upload);
 // Load Error Handling last
 errors(app);
 
+// #dashboard things
 setTimeout(eventfeed.loadEvents,5000);
 //setTimeout(eventfeed.setUpPushNotifications,5000);
 slackfeed.loadMsgs();
