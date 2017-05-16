@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt   = require('bcrypt-nodejs');
 
 var Schema = mongoose.Schema;
-
+// Model of what each user looks like in MongoDB
 var userSchema = new Schema({
   // MLH Data
   mlh_data: {

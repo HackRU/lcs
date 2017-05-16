@@ -17,16 +17,19 @@ const calendar  = require('./calendar.js');
 // Middleware
 // Authentication Check
 const isLoggedIn = function checkLoggedIn(req, res, next) {
+  // If load testing
   if(req && req.session && req.session.user_tmp && config.devmode) {
     req.user == req.session.user_tmp;
     return next();
   }
+  // Checks if the user is already logged in by checking cookies
   if (req.isAuthenticated()) {
     return next();
   }
   req.flash('info', 'Something happened with authentication! Please log in again.');
   res.redirect('/');
 }
+
 //Get Event data
 const getEvents = function getEventsData(req, res, next){
 
@@ -106,8 +109,9 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('index.ejs', { user: req.user, message: req.flash('info') });
   });
 
-  app.get('/authenticate', passport.authenticate('mymlh'), (req, res)=>{
-    //
+  app.get('/authenticate', passport.authenticate('mymlh', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/'
   });
 
   app.get('/logout', (req, res)=>{
@@ -215,6 +219,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.post('/register-mymlh', isLoggedIn, (req, res)=>{
+    // Age Check. Ensures user is older than 18
     let dob = new Date(req.user.mlh_data.date_of_birth);
     let eventdate = new Date(config.event_date);
     let deltaTime = Math.abs(dob.getTime() - eventdate.getTime());
@@ -225,6 +230,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         return res.redirect('/');
       }
     }
+    // Handles resume uploading from multer
     upload.single('resume')(req, res, (err)=>{
       if(err) {
         if(err.code == 'LIMIT_FILE_SIZE') {
@@ -240,12 +246,14 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
       let github = false;
       let resume = false;
+      // Checks if these values changed, if not don't save this part in database.
       if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
         github = true;
       }
       if((req.file) && (req.user.resume !== req.file.originalname)) {
         resume = true;
       }
+      // Save user in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
           throw err;
@@ -254,11 +262,11 @@ const init = function RouteHandler(app, config, passport, upload) {
           user.github = req.body.github;
         }
         if(resume) {
-
           user.resume = req.file.originalname;
         }
         user.data_sharing = true;
         user.registration_status = 1;
+        // Save user to database and send email.
         user.save((err)=>{
           if (err) {
             console.log(err);
@@ -273,6 +281,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.post('/account', isLoggedIn, (req, res)=>{
+    // Handles Resume Uploading
     upload.single('resume')(req, res, (err)=>{
       if(err) {
         if(err.code == 'LIMIT_FILE_SIZE') {
@@ -287,12 +296,14 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
       let github = false;
       let resume = false;
+      // Checks if these values changed, if not don't save this part in database.
       if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
         github = true;
       }
       if((req.file) && (req.user.resume !== req.file.originalname)) {
         resume = true;
       }
+      // Save changes in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
           throw err;
@@ -301,7 +312,6 @@ const init = function RouteHandler(app, config, passport, upload) {
           user.github = req.body.github;
         }
         if(resume) {
-
           user.resume = req.file.originalname;
         }
         user.data_sharing = true;
@@ -329,10 +339,14 @@ const init = function RouteHandler(app, config, passport, upload) {
       // Determine attendance from POST request
       // if Attending, see if there's space, else set Not Attending
       if (req.body.attendance === 'attending') {
+        // if not already registered
         if (user.registration_status != 3) {
           User.count({'registration_status': 3}, (err, count)=>{
+            // If current amount of users who are confirmed is less than set capacity
             if (count < config.capacity) {
+              // Set confirmed
               user.registration_status = 3;
+              // Save status and send confirmation email
               user.save((err)=>{
                 if (err) {
                   throw err;
@@ -344,13 +358,16 @@ const init = function RouteHandler(app, config, passport, upload) {
             } else {
               // Capacity has been filled, check space in waitlist
               Waitlist.count({}, (err, queueSize)=>{
+                // If the current size of the waitlist is less than waitlist capacity
                 if (queueSize < config.waitlistCapacity) {
+                  // If there's space in waitlist, set waitlist status
                   user.registration_status = 4;
+                  // Create alog of this user being wailisted in the Waitlist Collection in database
                   var waitlisted = new Waitlist();
 
                   waitlisted.id = user.id;
                   waitlisted.mlhid = user.mlh_data.mlhid;
-
+                  // Save user in Waitlist Collection
                   waitlisted.save((err)=>{
                     if (err) {
                       throw err;
@@ -366,6 +383,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                   });
 
                 } else {
+                  // If there's no space in Confirmed Attandance and Waitlist is full the user can't attend at all.
                   req.flash('dashboard', 'Sorry, our waitlist is full. Currently, you may not attend HackRU, but check back later; spots on the waitlist may open up.');
                   res.redirect('/dashboard');
                 }
@@ -378,6 +396,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       } else {
         // Set Not Attending
         user.registration_status = 2;
+        // Save in User Collection
         user.save((err)=>{
           if (err) {
             throw err;
