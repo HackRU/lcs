@@ -1,21 +1,21 @@
 // Dependencies
-const express         = require('express');
-const helmet          = require('helmet');
-const path            = require('path');
-const morgan          = require('morgan');
-const bodyParser      = require('body-parser');
-const ejs             = require('ejs');
-const flash           = require('connect-flash');
-const mongoose        = require('mongoose');
-const session         = require('express-session');
-const RedisStore      = require('connect-redis')(session);
-const passport        = require('passport');
-const multer          = require('multer');
-const routes          = require('./main/routes.js');
-const errors          = require('./main/errors.js');
-const passConfig      = require('./main/passport.js');
-const multerConfig    = require('./main/multer.js');
-const config          = require('./config/config.js');
+const express         = require('express'); // Handling Routes
+const helmet          = require('helmet'); // Protects from various attacks. Put helmet on before everything to protect us
+const path            = require('path'); // Helps with defining file paths in file system
+const morgan          = require('morgan'); // Request Logging
+const bodyParser      = require('body-parser'); // Helps parse Body presponses from HTTP Requests.
+const ejs             = require('ejs'); // Templating Engine
+const flash           = require('connect-flash'); // Flash messages at users. Messages go in the <%= message %> tags in the .ejs files in /views
+const mongoose        = require('mongoose'); // MongoDB helper. Helps with intereaction between Node.js Application and MongoDB
+const session         = require('express-session'); // Sets up cookies so our application can remember users
+const RedisStore      = require('connect-redis')(session); // Saves cookies with Redis
+const passport        = require('passport'); // Helps with Authentication
+const multer          = require('multer'); // Helps with File Uploading for resumes and stuff
+const routes          = require('./main/routes.js'); // Contains Routes
+const errors          = require('./main/errors.js'); // Contains Response for invalid HTTP Requests
+const passConfig      = require('./main/passport.js'); // Contains Passport Setup, Deserialization and Serialization of Users.
+const multerConfig    = require('./main/multer.js'); // Contains the set up of file storage for uploads
+const config          = require('./config/config.js'); // Contains secrets
 //Dashboard specific stuff
 const eventfeed       = require('./main/calendar.js');
 const slackfeed       = require('./main/loadmsgs.js');
