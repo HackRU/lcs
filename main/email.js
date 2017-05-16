@@ -1,7 +1,7 @@
 // Dependencies
 const fs        = require('fs');
 const path      = require('path');
-const sparkpost = require('sparkpost');
+const sparkpost = require('sparkpost'); // Use SparkPost to send emails. Email Templates are saved in SparkPost
 const config    = require('../config/config.js');
 
 class EmailClient {
@@ -15,7 +15,7 @@ class EmailClient {
 
         },
         content: {
-          template_id: 'sp2017-goconfirm'
+          template_id: 'sp2017-goconfirm' // Template inside SparkPost Account
         },
         recipients: [
           {address: email_address}
@@ -35,7 +35,7 @@ class EmailClient {
 
         },
         content: {
-          template_id: 'sp2017-confirmed'
+          template_id: 'sp2017-confirmed' // Template inside SparkPost Account
         },
         recipients: [
           {address: email_address}
@@ -55,7 +55,7 @@ class EmailClient {
 
         },
         content: {
-          template_id: 'sp2017-waitlist'
+          template_id: 'sp2017-waitlist' // Template inside SparkPost Account
         },
         recipients: [
           {address: email_address}
