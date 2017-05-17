@@ -112,7 +112,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   app.get('/authenticate', passport.authenticate('mymlh', {
     successRedirect: '/dashboard',
     failureRedirect: '/'
-  });
+  }));
 
   app.get('/logout', (req, res)=>{
     req.logout();
@@ -402,6 +402,39 @@ const init = function RouteHandler(app, config, passport, upload) {
             throw err;
           }
           return res.redirect('/dashboard');
+        });
+        // After setting someone to "Not Attending" status, determine whether or not there's space for someone on waitlist.
+        Users.count({'registration_status': 3}, (err, count)=>{
+          // If amount of confirmed users is less than the capacity, move oldest user from waitlist into confirmed.
+          // if there isn't enough space then do nothing.
+          if (count < config.capacity) {
+            // If there is space, check if the waitlist has anyone waiting.
+            Waitlist.count({}, (err, waitlistCount)=>{
+              if (waitlistCount > 0) {
+                // Loop Waitlist Collection in DB to find oldest document
+                Waitlist.find({}).sort({'datetime': 1}).limit(1).exec((err, waitlistUser)=>{
+                  if (err) {
+                    console.log('Could not find user in waitlist');
+                  }
+                  // user's ID is in waitlistUser[0].id
+                  // user is an array of objects
+                  // Take Oldest document's id and find it in User's Collection
+                  User.find({'id': waitlistUser[0].id}, (err, newConfirmedUser)=>{
+                    // Set that user to Confirmed
+                    newConfirmedUser.registration_status = 3;
+                    newConfirmedUser.save((err)=>{
+                      if (err) {
+                        throw err;
+                      }
+                      email.sendConfirmedEmail(newConfirmedUser.local.email);
+                    });
+                  });
+                  // Remove Oldest Document from Waitlist Collection
+                  Waitlist.find({'id': waitlistUser[0].id}).remove().exec();
+                });
+              }
+            });
+          }
         });
       }
     });
