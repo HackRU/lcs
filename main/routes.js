@@ -214,6 +214,10 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.download('resumes/Spring2017/' + req.params.file);
   });
 
+  app.get('/sponsorship', (req, res)=>{
+    res.render('sponsorship.ejs');
+  });
+
   app.get('/confirm-status', isLoggedIn, (req, res)=>{
     res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance') });
   });
