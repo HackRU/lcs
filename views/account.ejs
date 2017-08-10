@@ -81,6 +81,14 @@
                             <div class="col-xs-12 col-md-2"><p id="file-selector-notif"></p></div>
                         </div>
 
+                        <div class="form-group">
+                            <label for="short-answer-handle-input" class="col-xs-12 col-md-6 control-label"><h6>Short Answer qs</h6></label>
+                            <div class="col-xs-12 col-md-6">
+                                <input type="text" name="short_answer" class="form-control" id="short-answer-handle-input"
+                                       pattern="\S+" placeholder=<%= user.short_answer %>>
+                            </div>
+                        </div>
+
                         <input class="btn btn-default content-button" type="submit" value="Save">
                         <a href="/dashboard" class="btn btn-default content-button">Dashboard</a>
                     </form>

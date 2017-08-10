@@ -13,6 +13,7 @@ module.exports.loadMsgs= function loadMsgs() {
   var pathparam = '/api/channels.history?channel='+config.slack.channel+'&token='+config.slack.token;
   
   var url = 'https://slack.com'+pathparam;
+  console.log(url);
 
   const options = {
     hostname:'slack.com',
@@ -37,6 +38,9 @@ module.exports.loadMsgs= function loadMsgs() {
         if(err) throw err;
       });
       
+
+      console.log(data);
+      if(!data.messages) return;
 
       for(var i = 0; i < data.messages.length;i++){
         var message = data.messages[i];

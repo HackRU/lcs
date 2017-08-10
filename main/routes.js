@@ -77,6 +77,10 @@ const getAnouncements = function getAnouncementsData(req,res,next){
 
 const getQRImage = function getQRImageData(req,res,next){
   var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
+
+  //this is just some shit for dev
+  return next();
+
   var r = request.defaults({encoding:null});
   r.get(url,(err,response,body)=>{
     if(err){
@@ -148,9 +152,11 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/dashboard',isLoggedIn,getEvents, getAnouncements, getQRImage,(req,res) =>{
+    console.log("here");
     if(req.user.registration_status==0){
       res.redirect('/register-mymlh');
     } else if (req.user.registration_status == 5) {
+      console.log("here 1");
       res.render('dashboard-dayof.ejs',{
         user: req.user,
         qrimage:req.body.qrimage,
@@ -159,6 +165,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         eventsMarkup: req.body.eventsmarkup
       });
     } else {
+      console.log("here 2");
       res.render('dashboard.ejs', { user: req.user, qrimage:req.body.qrimage, message: req.flash('dashboard') });
     }
   });
@@ -250,6 +257,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
       let github = false;
       let resume = false;
+      let short_answer = false;
       // Checks if these values changed, if not don't save this part in database.
       if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
         github = true;
@@ -257,6 +265,9 @@ const init = function RouteHandler(app, config, passport, upload) {
       if((req.file) && (req.user.resume !== req.file.originalname)) {
         resume = true;
       }
+
+      short_answer = req.body.short_answer && req.body.short_answer !== req.user.short_answer;
+      console.log(req.body.short_answer);
       // Save user in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
@@ -267,6 +278,10 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         if(resume) {
           user.resume = req.file.originalname;
+        }
+
+        if(short_answer) {
+          user.short_answer = req.body.short_answer;
         }
         user.data_sharing = true;
         user.registration_status = 1;
@@ -300,6 +315,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
       let github = false;
       let resume = false;
+      let short_answer = false;
       // Checks if these values changed, if not don't save this part in database.
       if ((req.user.github !== req.body.github) && (req.body.github !== "")) {
         github = true;
@@ -307,6 +323,8 @@ const init = function RouteHandler(app, config, passport, upload) {
       if((req.file) && (req.user.resume !== req.file.originalname)) {
         resume = true;
       }
+
+      short_answer = req.body.short_answer && req.body.short_answer !== req.user.short_answer;
       // Save changes in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
@@ -317,6 +335,9 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         if(resume) {
           user.resume = req.file.originalname;
+        }
+        if(short_answer) {
+          user.short_answer = req.body.short_answer;
         }
         user.data_sharing = true;
         user.save((err)=>{

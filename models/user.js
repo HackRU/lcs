@@ -41,6 +41,7 @@ var userSchema = new Schema({
   registration_status: Number,
   github: String,
   resume: String,
+  short_answer: String,
   data_sharing: Boolean
   // registration_status:
   // 0 = Fresh User, Only has MyMLH Data
