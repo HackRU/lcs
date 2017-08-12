@@ -97,11 +97,40 @@ const getQRImage = function getQRImageData(req,res,next){
           }
           getQRImageData(req,res,next);
       });
-    }
-    else{
+    } else{
       req.body.qrimage = new Buffer(body).toString('base64');
       return next();
     }
+  });
+}
+
+const aggregateUserData = function aggregateUserData(queries, then) {
+  const inner = function (idx, data){
+    if (idx == queries.length) then(data);
+    else {
+      User.aggregate([{'$match': {'registration_status': {'$in': [1, 2, 3, 4, 5]}}},
+                      { '$group': queries[idx]}])
+          .exec((newData) => {
+        inner(idx + 1, data + newData);
+      });
+    }
+  }
+
+  inner(0, []);
+}
+
+const suggestNextUser = function nextUser(next){
+  aggregateUserData([
+    {'_id': '$mlh_data.school.id', 'count': {'$sum': 1} },
+    {'_id': '$mlh_data.gender', 'count': {'$sum': 1}},
+    {'_id': '$grad_year', 'count': {'$sum': 1}}], (counts) => {
+    User.findOne({'registration_status' : 7 }, (err, user) => {
+      if(err || user == null){
+        next({done: true, counts: counts});
+      }else{
+        next({user: user, counts: counts});
+      }
+    });
   });
 }
 
@@ -152,11 +181,9 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/dashboard',isLoggedIn,getEvents, getAnouncements, getQRImage,(req,res) =>{
-    console.log("here");
     if(req.user.registration_status==0){
       res.redirect('/register-mymlh');
     } else if (req.user.registration_status == 5) {
-      console.log("here 1");
       res.render('dashboard-dayof.ejs',{
         user: req.user,
         qrimage:req.body.qrimage,
@@ -164,8 +191,9 @@ const init = function RouteHandler(app, config, passport, upload) {
 
         eventsMarkup: req.body.eventsmarkup
       });
+    } else if(req.user.role.admin) {
+      res.redirect('/admin');
     } else {
-      console.log("here 2");
       res.render('dashboard.ejs', { user: req.user, qrimage:req.body.qrimage, message: req.flash('dashboard') });
     }
   });
@@ -267,7 +295,6 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
 
       short_answer = req.body.short_answer && req.body.short_answer !== req.user.short_answer;
-      console.log(req.body.short_answer);
       // Save user in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
@@ -284,15 +311,16 @@ const init = function RouteHandler(app, config, passport, upload) {
           user.short_answer = req.body.short_answer;
         }
         user.data_sharing = true;
-        user.registration_status = 1;
+        user.registration_status = 7;
         // Save user to database and send email.
         user.save((err)=>{
           if (err) {
             console.log(err);
             throw err;
           }
-          var email = new EmailClient();
-          email.sendConfirmAttendanceEmail(user.local.email);
+          // move to admin accept route
+          // var email = new EmailClient();
+          // email.sendConfirmAttendanceEmail(user.local.email);
           res.redirect('/register-confirmation');
         });
       });
@@ -465,11 +493,32 @@ const init = function RouteHandler(app, config, passport, upload) {
     });
   });
 
-  app.get('/admin', (req, res)=>{
-    User.count({ 'registration_status': 5 }, (err, count)=>{
-      res.render('admin.ejs', { checkin: count, message: req.flash('admin') });
+  app.get('/admin-swiped', (req, res) => {
+    User.findOneAndUpdate({_id: req.user_id}, { 'registration_status': (req.accepted)? 1: 6}, {}, (err, result) => {
+      if(err) console.log(err);
+
+      suggestNextUser((data) => res.send(JSON.stringify(data)));
     })
-  })
+  });
+
+  app.get('/admin', (req, res)=>{
+    let eventdate = new Date(config.event_date);
+    let nowDate = new Date();
+    let now = nowDate.getTime() === eventdate.getTime()
+    if(now){
+      User.count({ 'registration_status': 5 }, (err, count)=>{
+        res.render('admin.ejs', { now: now, checkin: count, message: req.flash('admin') });
+      });
+    }else{
+      suggestNextUser((user) => {
+        if(user.done){
+          res.render('admin.ejs', { now: now, done: true, message: req.flash('admin') });
+        }else{
+          res.render('admin.ejs', { now: now, done: false, user: user.user, counts: user.counts, message: req.flash('admin') });
+        }
+      });
+    }
+  });
 
   app.get('/auth/fake/test', (req, res)=>{
     if(config.devmode) {

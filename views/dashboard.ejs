@@ -63,6 +63,12 @@
                     <h3>Currently: Attending!</h3>
                     <% } else if(user.registration_status == 4 ) { %>
                     <h3>Currently: Waitlisted </h3>
+                    <% } else if(user.registration_status == 7 ) { %>
+                    <h3>Currently: Pending Review </h3>
+                    <a title="Fingers Crossed!">We are currently reviewing applications! Thank you for applying!</a>
+                    <% } else if(user.registration_status == 6 ) { %>
+                    <h3>Currently: Rejected </h3>
+                    <a title="Fingers Crossed!">Sorry! Better luck next time!</a>
                     <% } %>
 
 

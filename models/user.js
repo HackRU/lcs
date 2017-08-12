@@ -41,6 +41,7 @@ var userSchema = new Schema({
   registration_status: Number,
   github: String,
   resume: String,
+  grad_year: String,
   short_answer: String,
   data_sharing: Boolean
   // registration_status:
@@ -49,6 +50,9 @@ var userSchema = new Schema({
   // 2 = Not Attending
   // 3 = Confirmed Attendance
   // 4 = Waitlisted
+  // 5 = Day of
+  // 6 = Rejected
+  // 7 = Fresh User, not yet accepted
 });
 
 // Methods for Dealing with Local Logins and Non-MyMLH Users in the future

@@ -28,6 +28,7 @@
 
 	<script src="./js/jquery-3.1.1.min.js"></script>
 	<script src="./js/bootstrap.min.js"></script>
+    <% if(!now && !done){ %><script src="./js/admin-accept-users.js"></script><% } %>
 	<script src="https://use.fontawesome.com/8dec7403ea.js"></script>
 	<script src="./js/custom.js"></script>
 </head>
@@ -52,12 +53,28 @@
 					<h4 class="bg-danger"><%= message %></h4>
                     <% } %>
 
+
+                    <% if(now) { %>
 					<h3>Check-In</h3>
 					<!-- <form action="/check-in" method="post">
 						<input type="text" name="email" value="Email Address">
 						<input type="submit" value="Submit">
 					</form> -->
 					<%= checkin %>
+                    <% }else{ %>
+                    <h3>Accept users!</h3>
+                        <% if(done) { %>
+                        <p>All done!</p>
+                        <% }else{ %>
+                        <p>Right arrow key = accept, left arrow key = reject</p>
+                        <p>Remember the question is: short answer q</p>
+                        <p>Short answer: <span id="user_answer"><%= user.short_answer%></span></p>
+                        <p>This person will graduate in <span id="user_level_of_study"><%= user.grad_year %></span> majoring in <span id="user_major"><%= user.mlh_data.major %></span></p>
+                        <!-- Don't make me do PHP all summer and then be surprised by this. -->
+                        <input type="hidden" id="user_id" value=<%=user.id%>></input>
+                        <p> Aggregates: <span id="counts"><%= counts %></span></p>
+                        <% } %>
+                    <% } %>
 
 					<!-- -->
 
