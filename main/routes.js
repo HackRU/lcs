@@ -120,6 +120,7 @@ const aggregateUserData = function aggregateUserData(queries, then) {
 }
 
 const suggestNextUser = function nextUser(next){
+  console.log(next);
   aggregateUserData([
     {'_id': '$mlh_data.school.id', 'count': {'$sum': 1} },
     {'_id': '$mlh_data.gender', 'count': {'$sum': 1}},
@@ -295,6 +296,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
 
       short_answer = req.body.short_answer && req.body.short_answer !== req.user.short_answer;
+      let grad_year = req.body.grad_year !== req.user.grad_year;
       // Save user in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
@@ -309,6 +311,9 @@ const init = function RouteHandler(app, config, passport, upload) {
 
         if(short_answer) {
           user.short_answer = req.body.short_answer;
+        }
+        if(grad_year) {
+          user.grad_year = req.body.grad_year;
         }
         user.data_sharing = true;
         user.registration_status = 7;
@@ -353,6 +358,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       }
 
       short_answer = req.body.short_answer && req.body.short_answer !== req.user.short_answer;
+      let grad_year = req.body.grad_year !== req.user.grad_year;
       // Save changes in database
       User.findOne({ '_id': req.user._id }, (err, user)=>{
         if (err) {
@@ -366,6 +372,9 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         if(short_answer) {
           user.short_answer = req.body.short_answer;
+        }
+        if(grad_year) {
+          user.grad_year = req.body.grad_year;
         }
         user.data_sharing = true;
         user.save((err)=>{
@@ -494,10 +503,13 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/admin-swiped', (req, res) => {
-    User.findOneAndUpdate({_id: req.user_id}, { 'registration_status': (req.accepted)? 1: 6}, {}, (err, result) => {
-      if(err) console.log(err);
+    User.findOneAndUpdate({'id': req.query.user_id}, { 'registration_status': (req.query.accepted == '1')? 1: 6}, {}, (err, result) => {
+      if(err) {
+        console.log(err);
+      }
 
-      suggestNextUser((data) => res.send(JSON.stringify(data)));
+      //can't be point-free because JS is not Haskell
+      suggestNextUser((data) => res.json(data));
     })
   });
 

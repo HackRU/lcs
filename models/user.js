@@ -41,7 +41,7 @@ var userSchema = new Schema({
   registration_status: Number,
   github: String,
   resume: String,
-  grad_year: String,
+  grad_year: Number,
   short_answer: String,
   data_sharing: Boolean
   // registration_status:

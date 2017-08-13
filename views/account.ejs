@@ -88,6 +88,13 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label for="grad-year-handle-input" class="col-xs-12 col-md-6 control-label"><h6>Graduation Year</h6> (2017 - 2023)</label>
+                            <div class="col-xs-12 col-md-6">
+                                <input type="number" name="grad_year" min="2017" max="2023" class="form-control" id="short-answer-handle-input" pattern="\S+" <% if(user.registration_status != 7) { %> readonly <% } %> value=<%= user.grad_year %>></input>
+                            </div>
+                        </div>
+
                         <input class="btn btn-default content-button" type="submit" value="Save">
                         <a href="/dashboard" class="btn btn-default content-button">Dashboard</a>
                     </form>

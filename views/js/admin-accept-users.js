@@ -6,8 +6,8 @@ $(document).ready(function () {
       var accept = (event.which == 39)? '1' : '0';
       var url = "/admin-swiped?user_id=" + user_id + "&accepted=" + accept;
       $.get(url).done(function(data){
-        data = JSON.parse(data);
-        if(data.all_done){
+        console.log(data);
+        if(data.done){
           window.location.reload(true);
         }else{
           console.log(data);
