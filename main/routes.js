@@ -76,10 +76,7 @@ const getAnouncements = function getAnouncementsData(req,res,next){
 }
 
 const getQRImage = function getQRImageData(req,res,next){
-  var url = 'http://qru.hackru.org:8080/images/'+req.user.mlh_data.email+'.png';
-
-  //this is just some shit for dev
-  return next();
+  var url = 'http://ec2-54-186-192-209.us-west-2.compute.amazonaws.com:8080/images/'+req.user.mlh_data.email+'.png';
 
   var r = request.defaults({encoding:null});
   r.get(url,(err,response,body)=>{
