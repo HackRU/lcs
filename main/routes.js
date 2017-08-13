@@ -526,9 +526,15 @@ const init = function RouteHandler(app, config, passport, upload) {
         if(user.done){
           res.render('admin.ejs', { now: now, done: true, message: req.flash('admin') });
         }else{
+          redacted_user = {
+            short_answer: user.user.short_answer,
+            grad_year: user.user.grad_year,
+            mlh_data: {gender: user.user.mlh_data.gender},
+            id: user.user.id
+          };
           res.render('admin.ejs', {
             question: config.user_filtering.short_answer_q,
-            now: now, done: false, user: user.user,
+            now: now, done: false, user: redacted_user,
             counts: user.counts, message: req.flash('admin')
           });
         }
