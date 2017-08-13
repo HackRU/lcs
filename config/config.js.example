@@ -2,8 +2,7 @@ module.exports =
 {
   'devmode': false,
   'user_filtering': { //examples
-    'rutgers_quota': 0.75,
-    'registration_cap': 800,
+    'aggregates': ['mlh_data.school.id', 'mlh_data.gender', 'grad_year'],
     'short_answer_q': 'short answer q'
   },
   'SemesterID': 'Spring2017',

@@ -121,10 +121,10 @@ const aggregateUserData = function aggregateUserData(queries, then) {
 
 const suggestNextUser = function nextUser(next){
   console.log(next);
-  aggregateUserData([
-    {'_id': '$mlh_data.school.id', 'count': {'$sum': 1} },
-    {'_id': '$mlh_data.gender', 'count': {'$sum': 1}},
-    {'_id': '$grad_year', 'count': {'$sum': 1}}], (counts) => {
+  aggregateUserData(
+      config.user_filtering.aggregates.map(
+        (agg) => ({'_id': '$' + agg, 'count': {'$sum': 1}})
+      ), (counts) => {
     User.findOne({'registration_status' : 7 }, (err, user) => {
       if(err || user == null){
         next({done: true, counts: counts});
@@ -166,7 +166,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       return res.redirect('/dashboard');
     }
 
-    res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
+    res.render('register-mymlh.ejs', { question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('register') });
   });
 
   app.get('/register-confirmation', isLoggedIn, (req, res)=>{
@@ -242,7 +242,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
 
   app.get('/account', isLoggedIn, (req, res)=>{
-    res.render('account.ejs', { user: req.user, message: req.flash('account') });
+    res.render('account.ejs', { question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('account') });
   });
 
   app.get('/resume/:file', isLoggedIn, (req, res)=>{
@@ -526,7 +526,11 @@ const init = function RouteHandler(app, config, passport, upload) {
         if(user.done){
           res.render('admin.ejs', { now: now, done: true, message: req.flash('admin') });
         }else{
-          res.render('admin.ejs', { now: now, done: false, user: user.user, counts: user.counts, message: req.flash('admin') });
+          res.render('admin.ejs', {
+            question: config.user_filtering.short_answer_q,
+            now: now, done: false, user: user.user,
+            counts: user.counts, message: req.flash('admin')
+          });
         }
       });
     }

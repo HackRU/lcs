@@ -82,7 +82,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="short-answer-handle-input" class="col-xs-12 col-md-6 control-label"><h6>Short Answer qs</h6></label>
+                            <label for="short-answer-handle-input" class="col-xs-12 col-md-6 control-label"><h6><%= question %></h6></label>
                             <div class="col-xs-12 col-md-6">
                                 <textarea name="short_answer" class="form-control" id="short-answer-handle-input" pattern="\S+" <% if(user.registration_status != 7) { %> readonly <% } %>><%= user.short_answer %></textarea>
                             </div>
