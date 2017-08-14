@@ -85,7 +85,7 @@ const getQRImage = function getQRImageData(req,res,next){
     }else if(response.statusCode === 404 && (req.body.qrRetries == null || req.body.qrRetries < 3)){
       console.log('404 ERROR');
       //NOT SURE IF THIS IS COOL-> generate a new QRImage by passing in email to QRU server
-      var qrurl = 'http://qru.hackru.org:8080/viewqr?email='+req.user.mlh_data.email;
+      var qrurl = 'http://ec2-54-186-192-209.us-west-2.compute.amazonaws.com:8080/viewqr?email='+req.user.mlh_data.email;
       request.get(qrurl,(error,resp,bod)=>{
           if(req.body.qrRetries == null){
             req.body.qrRetries = 1;
@@ -103,24 +103,23 @@ const getQRImage = function getQRImageData(req,res,next){
 
 const aggregateUserData = function aggregateUserData(queries, then) {
   const inner = function (idx, data){
-    if (idx == queries.length) then(data);
-    else {
-      User.aggregate([{'$match': {'registration_status': {'$in': [1, 2, 3, 4, 5]}}},
-                      { '$group': queries[idx]}])
-          .exec((newData) => {
-        inner(idx + 1, data + newData);
-      });
+    console.log(data);
+    if (idx == queries.length){
+      return then(data);
+    }else {
+      User.aggregate([{$match: {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+                      { $group: queries[idx]}],
+            (err, newData) => inner(idx + 1, data.concat([newData])));
     }
   }
 
-  inner(0, []);
+  return inner(0, []);
 }
 
 const suggestNextUser = function nextUser(next){
-  console.log(next);
   aggregateUserData(
       config.user_filtering.aggregates.map(
-        (agg) => ({'_id': '$' + agg, 'count': {'$sum': 1}})
+        (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (counts) => {
     User.findOne({'registration_status' : 7 }, (err, user) => {
       if(err || user == null){
@@ -532,7 +531,7 @@ const init = function RouteHandler(app, config, passport, upload) {
           res.render('admin.ejs', {
             question: config.user_filtering.short_answer_q,
             now: now, done: false, user: redacted_user,
-            counts: user.counts, message: req.flash('admin')
+            counts: JSON.stringify(user.counts, null, '\t'), message: req.flash('admin')
           });
         }
       });

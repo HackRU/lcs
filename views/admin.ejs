@@ -68,11 +68,11 @@
                         <% }else{ %>
                         <p>Right arrow key = accept, left arrow key = reject</p>
                         <p>Remember the question is: <%= question %></p>
-                        <p>Short answer: <span id="user_answer"><%= user.short_answer%></span></p>
-                        <p>This person will graduate in <span id="user_level_of_study"><%= user.grad_year %></span> majoring in <span id="user_major"><%= user.mlh_data.major %></span></p>
+                        <p>Short answer: <h2 id="user_answer"><%= user.short_answer%></h2></p>
+                        <p>This <span id="user_gender"><%= user.mlh_data.gender %></span> gender person will graduate in <span id="user_level_of_study"><%= user.grad_year %></span></p>
                         <!-- Don't make me do PHP all summer and then be surprised by this. -->
                         <input type="hidden" id="user_id" value=<%=user.id%>></input>
-                        <p> Aggregates: <span id="counts"><%= counts %></span></p>
+                        <p> Aggregates: <pre id="counts"><%= counts %></pre></p>
                         <% } %>
                     <% } %>
 

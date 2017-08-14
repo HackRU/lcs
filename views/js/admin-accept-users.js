@@ -11,10 +11,10 @@ $(document).ready(function () {
           window.location.reload(true);
         }else{
           console.log(data);
-          $('#user_answer').text(data.user.short_answer);
-          $('#user_level_of_study').text(data.user.grad_year);
-          $('#user_major').text(data.user.major);
-          $('#counts').text(data.counts);
+          $('#user_answer').text(data.user.short_answer || '');
+          $('#user_level_of_study').text(data.user.grad_year || '');
+          $('#user_gender').text(data.user.mlh_data.gender || '');
+          $('#counts').text(JSON.stringify(data.counts, null, '\t'));
           $('#user_id').val(data.user.id);
         }
       });
