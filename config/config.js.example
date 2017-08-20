@@ -5,6 +5,7 @@ module.exports =
     'aggregates': ['mlh_data.school.id', 'mlh_data.gender', 'grad_year'],
     'short_answer_q': 'short answer q'
   },
+  'views': 'path/to/the/views/directory',
   'SemesterID': 'Spring2017',
   'event_date': 'yyyy-mm-dd',
   'SPARKPOST_KEY': 'key',

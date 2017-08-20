@@ -134,6 +134,8 @@ const suggestNextUser = function nextUser(next){
 // Initialization function
 const init = function RouteHandler(app, config, passport, upload) {
 
+  app.set('views', path.join(__dirname, config.views));
+
   app.get('/', (req, res)=>{
     //console.log(req.session);
     res.render('index.ejs', { user: req.user, message: req.flash('info') });
