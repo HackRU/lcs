@@ -103,7 +103,6 @@ const getQRImage = function getQRImageData(req,res,next){
 
 const aggregateUserData = function aggregateUserData(queries, then) {
   const inner = function (idx, data){
-    console.log(data);
     if (idx == queries.length){
       return then(data);
     }else {
