@@ -46,13 +46,14 @@ var userSchema = new Schema({
   data_sharing: Boolean
   // registration_status:
   // 0 = Fresh User, Only has MyMLH Data
-  // 1 = Registered, filled in all Account details
+  // 1 = Registered, filled in all Account details (accepted through admin)
   // 2 = Not Attending
   // 3 = Confirmed Attendance
   // 4 = Waitlisted
   // 5 = Day of
   // 6 = Rejected
   // 7 = Fresh User, not yet accepted
+  // 8 = admin is viewing the user
 });
 
 // Methods for Dealing with Local Logins and Non-MyMLH Users in the future

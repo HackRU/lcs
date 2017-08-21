@@ -121,11 +121,23 @@ const suggestNextUser = function nextUser(next){
       config.user_filtering.aggregates.map(
         (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (counts) => {
-    User.findOne({'registration_status' : 7 }, (err, user) => {
+    User.findOne({'registration_status' : 7}, (err, user) => {
       if(err || user == null){
         next({done: true, counts: counts});
       }else{
-        next({user: user, counts: counts});
+        user.registration_status = 8;
+        setTimeout(() => {
+          User.findOne({'id': user.id}, (err, user) => {
+            if (!err && user.registration_status == 8){
+              user.registration_status = 7;
+              user.save((err) => console.log(err));
+            }
+          });
+        }, 1000 * 60 * 10); //assume invalidation after 10 minutes
+        user.save((err) => {
+          if (err) console.log(err);
+          next({user: user, counts: counts});
+        });
       }
     });
   });
