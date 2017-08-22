@@ -533,6 +533,9 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/admin', (req, res)=>{
+    if(!req.user || !req.user.role.admin)
+      res.redirect('/dashboard');
+
     let eventdate = new Date(config.event_date);
     let nowDate = new Date();
     let now = nowDate.getTime() === eventdate.getTime()
