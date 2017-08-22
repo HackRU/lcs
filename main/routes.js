@@ -1,6 +1,7 @@
 // Dependencies
 const request     = require('request');
 const path        = require('path');
+const express     = require('express');
 const Waitlist    = require('../models/waitlist.js');
 const EmailClient = require('./email.js');
 const config      = require('../config/config.js');
@@ -146,6 +147,7 @@ const suggestNextUser = function nextUser(next){
 const init = function RouteHandler(app, config, passport, upload) {
 
   app.set('views', path.join(__dirname, config.views));
+  app.use(express.static(path.join(__dirname, config.views)));
 
   app.get('/', (req, res)=>{
     //console.log(req.session);
@@ -175,7 +177,7 @@ const init = function RouteHandler(app, config, passport, upload) {
       return res.redirect('/dashboard');
     }
 
-    res.render('register-mymlh.ejs', { question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('register') });
+    res.render('registration.ejs', { show_mlh_cc: true, question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('register') });
   });
 
   app.get('/register-confirmation', isLoggedIn, (req, res)=>{
@@ -528,12 +530,12 @@ const init = function RouteHandler(app, config, passport, upload) {
     let now = nowDate.getTime() === eventdate.getTime()
     if(now){
       User.count({ 'registration_status': 5 }, (err, count)=>{
-        res.render('admin.ejs', { now: now, checkin: count, message: req.flash('admin') });
+        res.render('admin.ejs', { counts: false, now: now, checkin: count, message: req.flash('admin') });
       });
     }else{
       suggestNextUser((user) => {
         if(user.done){
-          res.render('admin.ejs', { now: now, done: true, message: req.flash('admin') });
+          res.render('admin.ejs', { now: now, counts: false, done: true, message: req.flash('admin') });
         }else{
           redacted_user = {
             short_answer: user.user.short_answer,
@@ -559,6 +561,7 @@ const init = function RouteHandler(app, config, passport, upload) {
     }
     return res.redirect('/');
   });
+
 };
 
 module.exports = init;
