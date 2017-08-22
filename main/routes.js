@@ -181,7 +181,10 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/register-confirmation', isLoggedIn, (req, res)=>{
-    res.render('registration-confirmation.ejs');
+    if( req.user.registration_status == 2 || req.user.registration_status == 3)
+        res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance')});
+    else
+        res.redirect('/dashboard');
   });
 
   app.get('/gavelQuery',(req,res)=>{
@@ -252,8 +255,8 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
 
-  app.get('/account', isLoggedIn, (req, res)=>{
-    res.render('account.ejs', { question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('account') });
+  app.get('/registration', isLoggedIn, (req, res)=>{
+    res.render('registration.ejs', { show_mlh_cc: false, question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('account') });
   });
 
   app.get('/resume/:file', isLoggedIn, (req, res)=>{
@@ -292,7 +295,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         } else {
           req.flash('register', err.code);
         }
-        res.render('register-mymlh.ejs', { user: req.user, message: req.flash('register') });
+        res.render('registration.ejs', { show_mlh_cc: false, user: req.user, message: req.flash('register') });
         return;
       }
       let github = false;
@@ -328,6 +331,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         user.data_sharing = true;
         user.registration_status = 7;
+        console.log("FASDFASDFASDFAS");
         // Save user to database and send email.
         user.save((err)=>{
           if (err) {
@@ -394,7 +398,7 @@ const init = function RouteHandler(app, config, passport, upload) {
             throw err;
           }
           req.flash('account', 'Success! Your information was saved.')
-          res.redirect('/account');
+          res.redirect('/registration');
         });
       });
     });
