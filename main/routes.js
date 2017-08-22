@@ -152,7 +152,8 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.set('views', path.join(__dirname, config.views));
   app.use(express.static(path.join(__dirname, config.views)));
-  app.use('/waiver', express.static(path.join(__dirname, config.views, '/assets/hackru_f17_waiver.pdf')));
+
+  app.get('/waiver', (req, res) => res.sendFile(path.join(__dirname, config.views, '/assets/hackru_f17_waiver.pdf')));
 
   app.get('/', (req, res)=>{
     //console.log(req.session);
@@ -363,7 +364,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         } else {
           req.flash('account', err.code);
         }
-        res.render('registration.ejs', { user: req.user, message: req.flash('account') });
+        res.render('registration.ejs', { question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('account') });
         return;
       }
       let github = false;
