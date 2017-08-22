@@ -127,13 +127,17 @@ const suggestNextUser = function nextUser(next){
       }else{
         user.registration_status = 8;
         setTimeout(() => {
-          User.findOne({'id': user.id}, (err, user) => {
+          console.log("In time out");
+          User.findOne({'_id': user._id}, (err, user) => {
             if (!err && user.registration_status == 8){
               user.registration_status = 7;
+              console.log("Found and altered user.");
               user.save((err) => console.log(err));
+            } else if (err) {
+              console.log(err);
             }
           });
-        }, 1000 * 60 * 10); //assume invalidation after 10 minutes
+        }, 1000 * 60 * 5); //assume invalidation after 5 minutes
         user.save((err) => {
           if (err) console.log(err);
           next({user: user, counts: counts});
@@ -518,7 +522,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/admin-swiped', (req, res) => {
-    User.findOneAndUpdate({'id': req.query.user_id}, { 'registration_status': (req.query.accepted == '1')? 1: 6}, {}, (err, result) => {
+    User.findOneAndUpdate({'_id': req.query.user_id}, { 'registration_status': (req.query.accepted == '1')? 1: 6}, {}, (err, result) => {
       if(err) {
         console.log(err);
       }
@@ -539,13 +543,13 @@ const init = function RouteHandler(app, config, passport, upload) {
     }else{
       suggestNextUser((user) => {
         if(user.done){
-          res.render('admin.ejs', { now: now, counts: false, done: true, message: req.flash('admin') });
+          res.render('admin.ejs', { now: now, counts: JSON.stringify(user.counts, null, '\t'), done: true, message: req.flash('admin') });
         }else{
           redacted_user = {
             short_answer: user.user.short_answer,
             grad_year: user.user.grad_year,
             mlh_data: {gender: user.user.mlh_data.gender},
-            id: user.user.id
+            id: user.user._id
           };
           res.render('admin.ejs', {
             question: config.user_filtering.short_answer_q,
