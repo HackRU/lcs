@@ -43,7 +43,8 @@ var userSchema = new Schema({
   resume: String,
   grad_year: Number,
   short_answer: String,
-  data_sharing: Boolean
+  data_sharing: Boolean,
+  rules_and_conditions: Boolean
   // registration_status:
   // 0 = Fresh User, Only has MyMLH Data
   // 1 = Registered, filled in all Account details (accepted through admin)

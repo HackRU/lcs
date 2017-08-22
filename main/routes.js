@@ -334,6 +334,7 @@ const init = function RouteHandler(app, config, passport, upload) {
           user.grad_year = req.body.grad_year;
         }
         user.data_sharing = true;
+        user.rules_and_conditions = true;
         user.registration_status = 7;
         // Save user to database and send email.
         user.save((err)=>{
