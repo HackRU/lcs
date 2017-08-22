@@ -152,6 +152,7 @@ const init = function RouteHandler(app, config, passport, upload) {
 
   app.set('views', path.join(__dirname, config.views));
   app.use(express.static(path.join(__dirname, config.views)));
+  app.use('/waiver', express.static(path.join(__dirname, config.views, '/assets/hackru_f17_waiver.pdf')));
 
   app.get('/', (req, res)=>{
     //console.log(req.session);
