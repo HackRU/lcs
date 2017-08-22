@@ -185,7 +185,7 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/register-confirmation', isLoggedIn, (req, res)=>{
-    if( req.user.registration_status == 2 || req.user.registration_status == 3)
+    if( req.user.registration_status == 1 || req.user.registration_status == 2 || req.user.registration_status == 3)
         res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance')});
     else
         res.redirect('/dashboard');
@@ -299,7 +299,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         } else {
           req.flash('register', err.code);
         }
-        res.render('registration.ejs', { show_mlh_cc: false, user: req.user, message: req.flash('register') });
+        res.render('registration.ejs', { question: config.user_filtering.short_answer_q, show_mlh_cc: false, user: req.user, message: req.flash('register') });
         return;
       }
       let github = false;
@@ -335,7 +335,6 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         user.data_sharing = true;
         user.registration_status = 7;
-        console.log("FASDFASDFASDFAS");
         // Save user to database and send email.
         user.save((err)=>{
           if (err) {
@@ -362,7 +361,7 @@ const init = function RouteHandler(app, config, passport, upload) {
         } else {
           req.flash('account', err.code);
         }
-        res.render('account.ejs', { user: req.user, message: req.flash('account') });
+        res.render('registration.ejs', { user: req.user, message: req.flash('account') });
         return;
       }
       let github = false;
@@ -533,8 +532,10 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/admin', (req, res)=>{
-    if(!req.user || !req.user.role.admin)
+    if(!req.user || !req.user.role.admin){
       res.redirect('/dashboard');
+      return;
+    }
 
     let eventdate = new Date(config.event_date);
     let nowDate = new Date();

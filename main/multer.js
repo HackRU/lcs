@@ -9,7 +9,7 @@ const init = function multerConfiguration(multer, config) {
 
   var fileFilter = function checkFileType(req, file, callback) {
     // parse file MIMEType
-    const validMIMEtypes = ['application/pdf', 'application/msword', 'application/rtf', 'text/rtf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    const validMIMEtypes = ['application/pdf', 'application/msword', 'application/rtf', 'text/rtf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'image/png', 'image/jpeg'];
     if(validMIMEtypes.includes(file.mimetype)) {
       // Correct MIMEType
       callback(null, true);
