@@ -344,9 +344,6 @@ const init = function RouteHandler(app, config, passport, upload) {
             console.log(err);
             throw err;
           }
-          // move to admin accept route
-          // var email = new EmailClient();
-          // email.sendConfirmAttendanceEmail(user.local.email);
           res.redirect('/register-confirmation');
         });
       });
@@ -529,6 +526,11 @@ const init = function RouteHandler(app, config, passport, upload) {
         console.log(err);
       }
 
+      let is_post_batch = (new Date()).getTime() > (new Date(config.batch_email_date)).getTime();
+      if(req.query.accepted == '1' && is_post_batch){
+        let email = new EmailClient();
+        email.sendConfirmAttendanceEmail(user.local.email);
+      }
       //can't be point-free because JS is not Haskell
       suggestNextUser((data) => res.json(data));
     })
