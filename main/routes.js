@@ -274,6 +274,13 @@ const init = function RouteHandler(app, config, passport, upload) {
     res.render('sponsorship.ejs');
   });
 
+  app.post('/sponsorship', (req, res)=>{
+    var email = new EmailClient();
+    email.sendSponsorshipEmail(req.body.sp_email, req.body.sp_message);
+    res.render('sponsorship.ejs');
+    // res.redirect('/sponsorship');
+  });
+
   app.get('/confirm-status', isLoggedIn, (req, res)=>{
     res.render('manage-confirmation.ejs', { user: req.user, message: req.flash('attendance') });
   });

@@ -75,12 +75,12 @@ class EmailClient {
 
         },
         content: {
-          from: sponsor_email,
-          subject: "Interest in HackRU sponsorship for" + config.SemesterID,
-          html: "<html><body><p>" + email_content + "</p></body></html>"
+          from: "team@hackru.org",
+          text: email_content,
+          subject: "Interest in HackRU sponsorship for " + config.SemesterID + " from " + sponsor_email
         },
         recipients: [
-          {address: email_address}
+          {address: "sponsorship@hackru.org"}
         ]
       })
       .then(data => {
