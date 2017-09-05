@@ -68,6 +68,28 @@ class EmailClient {
         console.log(err);
       });
   }
+
+  sendSponsorshipEmail(sponsor_email, email_content){
+    this.client.transmissions.send({
+        options: {
+
+        },
+        content: {
+          from: sponsor_email,
+          subject: "Interest in HackRU sponsorship for" + config.SemesterID,
+          html: "<html><body><p>" + email_content + "</p></body></html>"
+        },
+        recipients: [
+          {address: email_address}
+        ]
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 }
 
 module.exports = EmailClient;
