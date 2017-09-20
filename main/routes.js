@@ -402,6 +402,9 @@ const init = function RouteHandler(app, config, passport, upload) {
           user.grad_year = req.body.grad_year;
         }
         user.data_sharing = true;
+        if((grad_year || short_answer) && user.registration_status == 6){
+          user.registration_status = 7;
+        }
         user.save((err)=>{
           if (err) {
             console.log(err);
