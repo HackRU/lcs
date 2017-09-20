@@ -107,7 +107,7 @@ const aggregateUserData = function aggregateUserData(queries, then) {
     if (idx == queries.length){
       return then(data);
     }else {
-      User.aggregate([{$match: {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+      User.aggregate([{ $match: {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
                       { $group: queries[idx]}],
             (err, newData) => inner(idx + 1, data.concat([newData])));
     }
@@ -584,6 +584,16 @@ const init = function RouteHandler(app, config, passport, upload) {
       isLoggedIn(req, res, res.redirect('/'));
     }
     return res.redirect('/');
+  });
+
+  app.get('/all-the-data', (req, res) => {
+    aggregateUserData(
+      config.user_filtering.aggregates.map(
+        (agg) => ({_id: '$' + agg, count: {$sum: 1}})
+      ), (count) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(count, null, 3));
+      })
   });
 
 };
