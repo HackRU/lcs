@@ -108,10 +108,12 @@ const aggregateUserData = function aggregateUserData(filters, queries, then) {
       return then(data);
     }else {
       let currObj = [{ $match: filters},
-                      { $group: queries[idx]}];
+                     { $group: queries[idx]}];
       if(filters === undefined){
-        currObj = [ currObj[1]];
+        currObj = [currObj[1]];
       }
+      console.log("Ross John Brown");
+      console.log(JSON.stringify(currObj, null, 4));
 
       User.aggregate(currObj,
             (err, newData) => inner(idx + 1, data.concat([newData])));
@@ -601,21 +603,19 @@ const init = function RouteHandler(app, config, passport, upload) {
       return;
     }
 
-    const filter_rejected = {'registration_status': {$in: [1, 2, 3, 4, 5, 7]}};
-    const filter_pending = {'registration_status': {$in: [1, 2, 3, 4, 5, 6]}};
-    const filter_admins = {'admin': false};
-
-    console.log(req.query);
-    console.log("And then there were none");
     if(!req.query || Object.keys(req.query).length === 0){
+      const mlh_keys = Object.keys(req.user.mlh_data).map((key) => 'mlh_data.' + key);
       res.render('all-the-data.ejs', {
         data: {instructions: "Check the boxes and click."},
-        fields: Object.keys(req.user._doc).concat(Object.keys(req.user.mlh_data)),
+        fields: Object.keys(req.user._doc).concat(mlh_keys),
         excludes: ["Admins", "Rejected", "Pending"]
       });
       return;
     }
 
+    const filter_rejected = {'registration_status': {$in: [1, 2, 3, 4, 5, 7]}};
+    const filter_pending = {'registration_status': {$in: [1, 2, 3, 4, 5, 6]}};
+    const filter_admins = {'role.admin': false};
     const excludes_to_objs = {
       "Admins": filter_admins,
       "Rejected": filter_rejected,
