@@ -102,12 +102,12 @@ const getQRImage = function getQRImageData(req,res,next){
   });
 }
 
-const aggregateUserData = function aggregateUserData(queries, then) {
+const aggregateUserData = function aggregateUserData(filters, queries, then) {
   const inner = function (idx, data){
     if (idx == queries.length){
       return then(data);
     }else {
-      User.aggregate([{ $match: {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+      User.aggregate([{ $match: filters,
                       { $group: queries[idx]}],
             (err, newData) => inner(idx + 1, data.concat([newData])));
     }
@@ -118,6 +118,7 @@ const aggregateUserData = function aggregateUserData(queries, then) {
 
 const suggestNextUser = function nextUser(next){
   aggregateUserData(
+      {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
       config.user_filtering.aggregates.map(
         (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (counts) => {
@@ -590,8 +591,29 @@ const init = function RouteHandler(app, config, passport, upload) {
   });
 
   app.get('/all-the-data', (req, res) => {
+    if(!req.user || !req.user.role.admin){
+      res.redirect('/dashboard');
+      return;
+    }
+
+    const filter_rejected = {'registration_status': {$in: [1, 2, 3, 4, 5, 7]}}};
+    const filter_pending = {'registration_status': {$in: [1, 2, 3, 4, 5, 6]}}};
+    const filter_admins = {'admin': false};
+
+    if(!req.query){
+      res.render('all-the-data.ejs', {
+        data: {instructions: "Check the boxes and click."},
+        fields: Object.keys(req.user._doc),
+        excludes: ["Admins", "Rejected", "Pending"]
+      });
+      return;
+    }
+
+    console.log(req.query);
+
     aggregateUserData(
-      config.user_filtering.aggregates.map(
+      {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+      req.query.data.map(
         (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (count) => {
         res.setHeader('Content-Type', 'application/json');
