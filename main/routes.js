@@ -107,8 +107,13 @@ const aggregateUserData = function aggregateUserData(filters, queries, then) {
     if (idx == queries.length){
       return then(data);
     }else {
-      User.aggregate([{ $match: filters,
-                      { $group: queries[idx]}],
+      let currObj = [{ $match: filters},
+                      { $group: queries[idx]}];
+      if(filters === undefined){
+        currObj = [ currObj[1]];
+      }
+
+      User.aggregate(currObj,
             (err, newData) => inner(idx + 1, data.concat([newData])));
     }
   }
@@ -118,7 +123,7 @@ const aggregateUserData = function aggregateUserData(filters, queries, then) {
 
 const suggestNextUser = function nextUser(next){
   aggregateUserData(
-      {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+      {'registration_status': {$in: [1, 2, 3, 4, 5]}},
       config.user_filtering.aggregates.map(
         (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (counts) => {
@@ -596,23 +601,40 @@ const init = function RouteHandler(app, config, passport, upload) {
       return;
     }
 
-    const filter_rejected = {'registration_status': {$in: [1, 2, 3, 4, 5, 7]}}};
-    const filter_pending = {'registration_status': {$in: [1, 2, 3, 4, 5, 6]}}};
+    const filter_rejected = {'registration_status': {$in: [1, 2, 3, 4, 5, 7]}};
+    const filter_pending = {'registration_status': {$in: [1, 2, 3, 4, 5, 6]}};
     const filter_admins = {'admin': false};
 
-    if(!req.query){
+    console.log(req.query);
+    console.log("And then there were none");
+    if(!req.query || Object.keys(req.query).length === 0){
       res.render('all-the-data.ejs', {
         data: {instructions: "Check the boxes and click."},
-        fields: Object.keys(req.user._doc),
+        fields: Object.keys(req.user._doc).concat(Object.keys(req.user.mlh_data)),
         excludes: ["Admins", "Rejected", "Pending"]
       });
       return;
     }
 
-    console.log(req.query);
+    const excludes_to_objs = {
+      "Admins": filter_admins,
+      "Rejected": filter_rejected,
+      "Pending": filter_pending
+    };
+
+
+    if(!req.query.data) req.query.data = [];
+    if(!req.query.data.map) req.query.data = [ req.query.data ];
+
+    let filters;
+    if(!req.query.exclude) filters = undefined;
+    else if(!req.query.exclude.map) filters = excludes_to_objs[req.query.exclude];
+    else filters = {
+      $and: req.query.exclude.map((value) => excludes_to_objs[value])
+    };
 
     aggregateUserData(
-      {'registration_status': {$in: [1, 2, 3, 4, 5]}}},
+      filters,
       req.query.data.map(
         (agg) => ({_id: '$' + agg, count: {$sum: 1}})
       ), (count) => {
