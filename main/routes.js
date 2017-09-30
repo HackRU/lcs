@@ -189,6 +189,9 @@ const init = function RouteHandler(app, config, passport, upload) {
     //console.log(User.findOne());
     if(req.user.registration_status > 1) {
       return res.redirect('/dashboard');
+    }else if((new Date()).getTime() >= (new Date(config.user_filtering.app_deadline)).getTime()){
+      req.flash('info', 'Sorry, registration is closed');
+      return res.redirect('/');
     }
 
     res.render('registration.ejs', { show_mlh_cc: true, question: config.user_filtering.short_answer_q, user: req.user, message: req.flash('register') });
@@ -304,6 +307,9 @@ const init = function RouteHandler(app, config, passport, upload) {
         req.flash('info', 'Sorry, you have to be at least 18 to attend this event.');
         return res.redirect('/');
       }
+    }else if((new Date()).getTime() >= (new Date(config.user_filtering.app_deadline)).getTime()){
+      req.flash('info', 'Sorry, registration is closed');
+      return res.redirect('/');
     }
     // Handles resume uploading from multer
     upload.single('resume')(req, res, (err)=>{
@@ -411,7 +417,10 @@ const init = function RouteHandler(app, config, passport, upload) {
         }
         user.data_sharing = true;
         if((grad_year || short_answer) && user.registration_status == 6){
-          user.registration_status = 7;
+          //Don't reset users after deadline.
+	  if((new Date()).getTime() >= (new Date(config.user_filtering.app_deadline)).getTime()){
+	    user.registration_status = 7;
+	  }
         }
         user.save((err)=>{
           if (err) {
