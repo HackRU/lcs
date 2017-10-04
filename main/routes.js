@@ -511,7 +511,7 @@ const init = function RouteHandler(app, config, passport, upload) {
           return res.redirect('/dashboard');
         });
         // After setting someone to "Not Attending" status, determine whether or not there's space for someone on waitlist.
-        Users.count({'registration_status': 3}, (err, count)=>{
+        User.count({'registration_status': 3}, (err, count)=>{
           // If amount of confirmed users is less than the capacity, move oldest user from waitlist into confirmed.
           // if there isn't enough space then do nothing.
           if (count < config.capacity) {
