@@ -458,7 +458,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                 if (err) {
                   throw err;
                 }
-                email.sendConfirmedEmail(user.local.email);
+                // email.sendConfirmedEmail(user.local.email);
                 req.flash('dashboard', 'Thanks for confirming! We\'ve sent an email with some information');
                 return res.redirect('/dashboard');
               });
@@ -480,7 +480,7 @@ const init = function RouteHandler(app, config, passport, upload) {
                       throw err;
                     }
                     req.flash('dashboard', 'You\'re on the waitlist! We\'ve sent an email with some information');
-                    email.sendWaitlistEmail(user.local.email);
+                    //email.sendWaitlistEmail(user.local.email);
                     user.save((err)=>{
                       if (err) {
                         throw err;
