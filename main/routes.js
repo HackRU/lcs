@@ -4,6 +4,7 @@ const path        = require('path');
 const express     = require('express');
 const Waitlist    = require('../models/waitlist.js');
 const EmailClient = require('./email.js');
+const loadMsgs = require('./loadmsgs.js');
 const config      = require('../config/config.js');
 const React     = require('react');
 const ReactDOMServer = require('react-dom/server');
@@ -111,8 +112,6 @@ const aggregateUserData = function aggregateUserData(filters, queries, then) {
       if(filters === undefined){
         currObj = [currObj[1]];
       }
-      console.log("Ross John Brown");
-      console.log(JSON.stringify(currObj, null, 4));
 
       User.aggregate(currObj,
             (err, newData) => inner(idx + 1, data.concat([newData])));
@@ -603,6 +602,16 @@ const init = function RouteHandler(app, config, passport, upload) {
       isLoggedIn(req, res, res.redirect('/'));
     }
     return res.redirect('/');
+  });
+
+  app.get('/reload-msgs', (req, res) => {
+    if(!req.user || !req.user.role.admin){
+      res.redirect('/dashboard');
+      return;
+    }
+
+    loadMsgs.loadMsgs();
+    res.send('Success');
   });
 
   app.get('/all-the-data', (req, res) => {
