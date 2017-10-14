@@ -45,6 +45,7 @@ function authorize(credentials, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, function(err, token) {
     if (err) {
+      console.log('getting new calender token');
       getNewToken(oauth2Client, callback);
     } else {
       var parsed = JSON.parse(token);
@@ -119,8 +120,8 @@ module.exports.loadEvents = function loadEvents() {
   calendar.events.list({
     auth: AUTH,
     calendarId: CALENDAR_ID,
-    timeMin: (new Date(2017,3,21)).toISOString(),
-    timeMax: (new Date(2017,3,25)).toISOString(),
+    timeMin: (new Date(2017,9,13)).toISOString(),
+    timeMax: (new Date(2017,9,16)).toISOString(),
     showDeleted:true,
     maxResults: 100,
     singleEvents: true,
@@ -133,7 +134,8 @@ module.exports.loadEvents = function loadEvents() {
     var events = response.items;
     if (events.length == 0) {
       console.log('No upcoming events found.');
-  } else {
+      console.log(events);
+    } else {
       for (var i = 0; i < events.length; i++) {
         var data = events[i];
 

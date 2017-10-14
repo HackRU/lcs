@@ -36,10 +36,9 @@ const getEvents = function getEventsData(req, res, next){
 
   GCEvent.getEvents(0,0, function(events){
 
-
     req.body.eventsmarkup = ReactDOMServer.renderToString(
       EventsApp({
-        events:events
+        events:events.filter((event) => Date.parse(event.startDateTime) >= Date.now())
       })
     );
 

@@ -1,6 +1,7 @@
 var React = require('react');
 
 function normalize(time){
+  if(!time) return "all day";
   var hours =  parseInt(time.slice(0,2));
   var meridiem = "am";
   if(hours >= 12){
@@ -14,6 +15,7 @@ function normalize(time){
 module.exports = Event = React.createClass({
   render: function(){
     var event = this.props.event;
+    console.log(event);
     return (
       <div className={'event' + ' active'}>
           <h3>{event.title}</h3>
