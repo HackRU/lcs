@@ -1,16 +1,20 @@
 import string
 import random
+import json
 def authorize(event,context):
-
-
-
+    if('email' not in event  or 'password' not in event):
+        return ({"statusCode":400,"body":"Invalid Request"})
     email = event['email']
-    hash_ = event['hash']
+    pass_ = event['password']
+
+     
     #querydb 
     
     #generate auth token
     token = gen()
-    ret_val = { 'authtoken' : token }
+    bod_ = {"authtoken":token}
+    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "test":"test" },"body" :json.dumps(bod_)}
     return ret_val
 def gen (size = 20, chars = string.ascii_lowercase + string.digits + string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
+
