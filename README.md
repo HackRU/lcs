@@ -1,20 +1,14 @@
 # HackRU-Application
-Steps to set up:
-- Get MongoDB
-- Get Redis - https://www.digitalocean.com/community/tutorials/how-to-install-and-use-redis
-- Git Clone this Repo
-- npm install
-- node app.js
-- https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-14-04#set-up-reverse-proxy-server
 
-Dashboard stuff:
-- To see dashboard go to: localhost:8080/dashboard-dayof
-- Ask for client_secret.json from me on Slack.
-- Any questions: Slack - @jcatarata
+Checkout master for the working node thingy we used before (TODO: archive it).
 
-Notes:
-- There are two Twitter cards, "#twitter" is my shitty implementation that will be removed if I can't setup grabbing and displaying the medias in time.
-- Please don't look at my horrendous code lol.
+## What is LCS?!
 
-TODO:
-- OMG AM I DONE???
+The ludicrous card system is a system where
+applications offer "cards" so that users
+can see everything in the same page.
+
+This is the main authentication system.
+It handles a bunch.
+The hope is to deploy this as a bunch of AWS
+Lambdas.
