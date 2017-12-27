@@ -1,2 +1,7 @@
 def authorize(event,context):
-    reutrn "hello from lambda"
+    email = event['email']
+    hash_ = event['hash']
+    #querydb 
+    
+    #generate auth token
+    token = ""
