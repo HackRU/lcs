@@ -9,7 +9,7 @@ def authorize(event,context):
         return ({"statusCode":400,"body":"Invalid Request"})
     email = event['email']
     pass_ = event['password']
-    client = MongoClient('mongodb://hackru-architect:theRealDB@ds157624.mlab.com:57624/camelot-test')
+    client = MongoClient(config.DB_URI)
      
     #querydb 
     
