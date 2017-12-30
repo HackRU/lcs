@@ -1,13 +1,15 @@
 import string
 import random
 import json
-import pymongo
+from pymongo import MongoClient
+import config
 def authorize(event,context):
+
     if('email' not in event  or 'password' not in event):
         return ({"statusCode":400,"body":"Invalid Request"})
     email = event['email']
     pass_ = event['password']
-
+    client = MongoClient('mongodb://hackru-architect:theRealDB@ds157624.mlab.com:57624/camelot-test')
      
     #querydb 
     
