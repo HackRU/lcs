@@ -19,11 +19,16 @@ def authorize(event,context):
     dat = tests.find_one({"email":event['email'], "password":event['password']})
     if dat == None or dat == [] or dat == ():
         return ({"statusCode":403,"body":"invalid email,hash combo"})
+    #chck if the hash is correct
+    checkhash  = tests.find_one({"email":event['email']})
+    if(checkhash['password'] != event['password']):
+        return ({"statusCode":403,"Body":"Wrong Password"})
     #querydb 
     
     #generate auth token
     token = gen()
     bod_ = {"authtoken":token}
+    #append to list of auth tokens
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
     return ret_val
 def gen (size = 20, chars = string.ascii_lowercase + string.digits + string.ascii_uppercase):
