@@ -52,3 +52,5 @@ messages
 messages.txt
 log*
 watchlist.json
+
+config.py
