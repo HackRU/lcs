@@ -23,11 +23,9 @@ def authorize(event,context):
     checkhash  = tests.find_one({"email":event['email']})
     if(checkhash['password'] != event['password']):
         return ({"statusCode":403,"Body":"Wrong Password"})
-    #querydb 
-    
-    #generate auth token
     token = gen()
     bod_ = {"authtoken":token}
+    tests.update({"email":event['email']},{"$push":{"authtokens":token}})
     #append to list of auth tokens
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
     return ret_val
