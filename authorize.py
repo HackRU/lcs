@@ -41,10 +41,15 @@ def create_user(event, context):
 
 def mlh_callback(event, context):
     params = config.MLH.copy()
-    params['code'] = event['queryStringParameters']['code']
-    access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
-    access_token = access_tok_json[u'access_token']
-    scopes = access_tok_json[u'scope']
+    if 'code' not in event['queryStringParameters']:
+        access_token = event['queryStringParameters'].get('access_token')
+        if access_token is None:
+            return ({"statusCode":400,"body":"MLH Troubles! No access token."})
+    else:
+        params['code'] = event['queryStringParameters']['code']
+        access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
+        access_token = access_tok_json[u'access_token']
+        scopes = access_tok_json[u'scope']
 
     mlh_user = requests.get(MLH_TOK_BASE_URL, params={'access_token': access_token}).json()
 
