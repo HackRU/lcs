@@ -37,7 +37,7 @@ def authorize(event,context):
     return ret_val
 
 def create_user(event, context):
-    pass
+    return ({"statusCode":200,"body":"create_user called"})
 
 def mlh_callback(event, context):
     params = config.MLH.copy()
