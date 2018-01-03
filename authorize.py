@@ -59,7 +59,7 @@ def mlh_callback(event, context):
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
     db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db['test']
+    test = db['test']
     user = test.find_one({'email': mlh_user[u'data'][u'email']})
     if user == None or user == [] or user == ():
         #making new user here
