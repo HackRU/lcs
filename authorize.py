@@ -51,7 +51,7 @@ def mlh_callback(event, context):
         access_token = access_tok_json[u'access_token']
         scopes = access_tok_json[u'scope']
 
-    mlh_user = requests.get(MLH_TOK_BASE_URL, params={'access_token': access_token}).json()
+    mlh_user = requests.get(MLH_USER_BASE_URL, params={'access_token': access_token}).json()
 
     if mlh_user[u'status'] != 'OK':
         return ({"statusCode":400,"body":"MLH Troubles!"})
