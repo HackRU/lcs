@@ -7,12 +7,11 @@ import requests
 
 def validate(event, context):
     
-    if 'authtokens' not in event:
-        return false
-    
-    f_name = event['first_name']
-    l_name = event['last_name']
-    token = event['authtokens']
+    if 'email' not in event or 'authtokens' not in event:
+        return ({"statusCode":400, "body":"Data not submitted."})
+
+    email = event['email']
+    token = event['authtoken']
 
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
@@ -20,17 +19,24 @@ def validate(event, context):
     
     tests = db['test']
 
-    results = tests.find_one({"authtokens":token})
+    results = tests.find_one({"email":email})
 
     if results == None or results == [] or results == ():
-        return false
+        return ({"statusCode":400,body:"Email not found."})
 
-    return results['first_name'] == f_name and results['last_name'] == l_name
+    if token not in results['authtokens']:
+        return ({"statusCode":400,body:"Authentication token is invalid."})
+
+    return ({"statusCode":200,"body":"Successful request."})
+
 
 def validate_qr(event, context):
 
-    email_address = event['email']
-    token = event['authtokens']
+    if 'user_email' not in event or 'authtoken' not in event:
+        return ({"statusCode":400, "body":"Data not submitted."})
+
+    u_email = event['user_email']
+    token = event['authtoken']
 
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
@@ -38,10 +44,13 @@ def validate_qr(event, context):
     
     tests = db['test']
 
-    results = tests.find_one({"authtokens":token})
-    
-    if results == None or results == [] or results == ():
-        return false
+    results = tests.find_one({"email":u_email})
 
-    return email_address == results['email']
+    if results == None or results == [] or results == {}:
+        return ({"statusCode":400,"body":"User email not found."})
+
+    if token not in results['authtokens']:
+        return ({"statusCode":400, "body":"Authentication token not found."})
+
+    return ({"statusCode":200, "body":"Successful request."})
 
