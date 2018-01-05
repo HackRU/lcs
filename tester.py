@@ -1,7 +1,17 @@
 import requests
 import json
 
-def test(url, user_email = "team@hackru.org", passhash="42"):
+def test(url):
+    user_email = "team@hackru.org"
+    passhash = "42"
+    auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
+    print("Non-existant: ", auth.body)
+
+    user_email = "hemangandhi@gmail.com"
+    auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
+    print("Bad password: ", auth.body)
+
+    passhash = "49"
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
     token = auth.json()['authtoken']
