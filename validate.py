@@ -7,7 +7,7 @@ import requests
 
 def validate(event, context):
     
-    if 'email' not in event or 'authtokens' not in event:
+    if 'email' not in event or 'authtoken' not in event:
         return ({"statusCode":400, "body":"Data not submitted."})
 
     email = event['email']
