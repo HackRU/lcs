@@ -30,7 +30,7 @@ def validate(event, context):
     return ({"statusCode":200,"body":"Successful request."})
 
 
-def validate_qr(event, context):
+def update(event, context):
 
     if 'user_email' not in event or 'authtoken' not in event or 'auth_email' not in event:
         return ({"statusCode":400, "body":"Data not submitted."})

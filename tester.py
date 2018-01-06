@@ -2,8 +2,8 @@ import requests
 import json
 
 def test(url):
-    user_email = "team@hackru.org"
-    passhash = "42"
+    user_email = "team@nonruhackathon.notemail.com"
+    passhash = 42
     auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
     print("Non-existant: ", auth.body)
 
@@ -11,7 +11,7 @@ def test(url):
     auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
     print("Bad password: ", auth.body)
 
-    passhash = "49"
+    passhash = 12345
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=json.dumps(usr_dict))
     token = auth.json()['authtoken']
@@ -20,6 +20,11 @@ def test(url):
     val_dict = {'email': user_email, 'authtoken': token}
     valid = requests.get(url + '/validate', json=json.dumps(val_dict))
     print("From validate:", valid.body)
+
+    rando = "the.scrub@rutgers.edu"
+    val_dict = {'user_email': rando, 'authtoken': token, 'auth_email': user_email}
+    valid = requests.get(url + '/update', json=json.dumps(val_dict))
+    print("From update:", valid.body)
 
 if __name__ == "__main__":
     import sys
