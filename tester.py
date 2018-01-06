@@ -20,6 +20,7 @@ def test(url):
     print("Got token:", token)
     if token is None:
         print("Bad token")
+        print("Got: ", auth.text)
         return
 
     val_dict = {'email': user_email, 'authtoken': token}
