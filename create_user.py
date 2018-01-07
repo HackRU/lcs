@@ -33,7 +33,7 @@ def create(event, context):
             "email": u_email,
             "role": role, 
             "sp_password": hashlib.md5(sp_pass.encode('utf-8')).hexdigest(),
-            "password": hashlib.md5(password.encode('utf-8')).hexdigest()
+            "hash_password": hashlib.md5(password.encode('utf-8')).hexdigest()
     }
 
     tests.insert(doc)
