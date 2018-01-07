@@ -6,7 +6,6 @@ import config
 import requests
 
 def validate(event, context):
-    
     if 'email' not in event or 'authtoken' not in event:
         return ({"statusCode":400, "body":"Data not submitted."})
 
@@ -31,7 +30,6 @@ def validate(event, context):
 
 
 def update(event, context):
-
     if 'user_email' not in event or 'authtoken' not in event or 'auth_email' not in event:
         return ({"statusCode":400, "body":"Data not submitted."})
 
@@ -50,7 +48,7 @@ def update(event, context):
     if results == None or results == [] or results == {}:
         return ({"statusCode":400,"body":"User email not found."})
 
-    a_res = test.find_one({"email": a_email})
+    a_res = tests.find_one({"email": a_email})
 
     if a_res == None or a_res == [] or a_res == {}:
         return ({"statusCode":400,"body":"Auth email not found."})

@@ -16,7 +16,7 @@ def test(url):
     passhash = 12345
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=(usr_dict))
-    token = auth.json().get('authtoken')
+    token = json.loads(auth.json()['body']).get('authtoken')
     print("Got token:", token)
     if token is None:
         print("Bad token")
@@ -24,13 +24,16 @@ def test(url):
         return
 
     val_dict = {'email': user_email, 'authtoken': token}
-    valid = requests.get(url + '/validate', json=(val_dict))
+    valid = requests.post(url + '/validate', json=(val_dict))
     print("From validate:", valid.text)
 
     rando = "the.scrub@rutgers.edu"
     val_dict = {'user_email': rando, 'authtoken': token, 'auth_email': user_email}
-    valid = requests.get(url + '/update', json=(val_dict))
+    valid = requests.post(url + '/update', json=(val_dict))
     print("From update:", valid.text)
+
+    #trying to test MLH Callback
+    mlh_url = 'https://my.mlh.io/oauth/authorize?client_id={}&redirect_uri={}&response_type={}&scope=email+education+birthday'
 
 if __name__ == "__main__":
     from sys import argv
