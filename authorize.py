@@ -60,8 +60,9 @@ def mlh_callback(event, context):
     user = test.find_one({'email': mlh_user['data']['email']})
     if user == None or user == [] or user == ():
         #making new user here
-        event['user_data'] = mlh_user['data']
-        return create_user(event, context)
+        mlh_user['data']['role'] = 'hacker'
+        mlh_user['data']['sp_pass'] = 'fudging Hari'
+        return create_user(mlh_user['data'], context)
     else:
         #auth
         event['email'] = user['email']
@@ -100,4 +101,4 @@ def create_user(event, context):
 
     tests.insert(doc)
 
-    return ({"statusCode":200, "body":"Successful request."})
+    return authorize(event, context)

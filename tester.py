@@ -1,5 +1,7 @@
 import requests
 import json
+import config
+from pymongo import MongoClient
 
 def test(url):
     user_email = "team@nonruhackathon.notemail.com"
@@ -34,6 +36,22 @@ def test(url):
 
     #trying to test MLH Callback
     mlh_url = 'https://my.mlh.io/oauth/authorize?client_id={}&redirect_uri={}&response_type={}&scope=email+education+birthday'
+
+    #create user
+    fake_user = {
+            'email': 'testing@hackru.org',
+            'role': 'hacker',
+            'password': 'defacto',
+            'sp_pass': 'why do I exist?'
+    }
+    auth = requests.post(url + '/create', json=fake_user)
+    print("Token for our new user:", auth.text)
+
+    client = MongoClient(config.DB_URI)
+    db = client['camelot-test']
+    db.authenticate(config.DB_USER, config.DB_PASS)
+    test = db['test']
+    test.delete_one({'email': 'testing@hackru.org'})
 
 if __name__ == "__main__":
     from sys import argv
