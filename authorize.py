@@ -22,12 +22,12 @@ def authorize(event,context):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db['test']
 
-    dat = tests.find_one({"email":event['email'], "password":event['password']})
+    dat = tests.find_one({"email":event['email'], "hash_password":event['password']})
     if dat == None or dat == [] or dat == ():
         return ({"statusCode":403,"body":"invalid email,hash combo"})
     #check if the hash is correct
     checkhash  = tests.find_one({"email":event['email']})
-    if(checkhash['password'] != event['password']):
+    if(checkhash['hash_password'] != event['password']):
         return ({"statusCode":403,"Body":"Wrong Password"})
     token = gen()
     bod_ = {"authtoken":token}
