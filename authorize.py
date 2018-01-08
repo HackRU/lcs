@@ -36,9 +36,6 @@ def authorize(event,context):
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
     return ret_val
 
-def create_user(event, context):
-    return ({"statusCode":200,"body":"create_user called"})
-
 def mlh_callback(event, context):
     params = config.MLH.copy()
     if 'code' not in event['queryStringParameters']:
