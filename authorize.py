@@ -5,9 +5,9 @@ import pymongo
 from pymongo import MongoClient
 import config
 import requests
-
-def gen (size = 20, chars = string.ascii_lowercase + string.digits + string.ascii_uppercase):
-    return ''.join(random.choice(chars) for _ in range(size))
+import hashlib
+from datetime import datetime, timedelta
+import uuid
 
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
@@ -15,23 +15,40 @@ MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 def authorize(event,context):
     if('email' not in event  or 'password' not in event):
         return ({"statusCode":400,"body":"Invalid Request"})
+    
     email = event['email']
     pass_ = event['password']
     client = MongoClient(config.DB_URI)
+    
     db = client['camelot-test']
     db.authenticate(config.DB_USER,config.DB_PASS)
+    
     tests = db['test']
 
     dat = tests.find_one({"email":event['email'], "hash_password":event['password']})
     if dat == None or dat == [] or dat == ():
         return ({"statusCode":403,"body":"invalid email,hash combo"})
+    
     #check if the hash is correct
     checkhash  = tests.find_one({"email":event['email']})
+    
     if(checkhash['hash_password'] != event['password']):
         return ({"statusCode":403,"Body":"Wrong Password"})
-    token = gen()
+    
+    token = str(uuid.uuid4())
+    
     bod_ = {"authtoken":token}
-    tests.update({"email":event['email']},{"$push":{"authtokens":token}})
+    
+    update_val = 
+    {"auth":
+        {
+            "token":token,
+            "valid_until":(datetime.datetime.now() + timedelta(hours=3)).isoformat()
+        }
+    }
+
+    tests.update({"email":event['email']},{"$push":update_val})
+    
     #append to list of auth tokens
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
     return ret_val
@@ -102,3 +119,4 @@ def create_user(event, context):
     tests.insert(doc)
 
     return authorize(event, context)
+
