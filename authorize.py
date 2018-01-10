@@ -7,6 +7,7 @@ import config
 import requests
 import hashlib
 from datetime import datetime, timedelta
+from validate_email import validate_email
 import uuid
 
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
@@ -25,12 +26,12 @@ def authorize(event,context):
     
     tests = db['test']
 
-    dat = tests.find_one({"email":event['email'], "hash_password":event['password']})
+    dat = tests.find_one({"email":email, "hash_password":pass_})
     if dat == None or dat == [] or dat == ():
         return ({"statusCode":403,"body":"invalid email,hash combo"})
     
     #check if the hash is correct
-    checkhash  = tests.find_one({"email":event['email']})
+    checkhash  = tests.find_one({"email":email})
     
     if(checkhash['hash_password'] != event['password']):
         return ({"statusCode":403,"Body":"Wrong Password"})
@@ -39,8 +40,7 @@ def authorize(event,context):
     
     bod_ = {"authtoken":token}
     
-    update_val = 
-    {"auth":
+    update_val = {"auth":
         {
             "token":token,
             "valid_until":(datetime.datetime.now() + timedelta(hours=3)).isoformat()
