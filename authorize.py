@@ -120,3 +120,20 @@ def create_user(event, context):
 
     return authorize(event, context)
 
+# context param should have info of accessor account
+
+def change_password(event, context):
+    if event['password'].len() < 8:
+        return ({"statusCode":200, "body":"invalid password"})
+
+    client = MongoClient(config.DB_URI)
+
+    db = client['camelot-test']
+    db.authenticate(config.DB_USER, config.DB_PASS)
+
+    tests = db['test']
+
+    tests.update({"email": context['email'], "$push":{"password": hashlib.md5(event['password'].encode('utf-8')).hexdigest()}})
+
+    return authorize(event, context)
+
