@@ -5,10 +5,9 @@ from pymongo import MongoClient
 import config
 import hashlib
 
-# input JSON-documents for MongoDB query (aggregation queries only work if director or organizer)
-# NOTE: don't need to do hard error-checking - will be implemented by another script and not directly by the user, so it probably can't be broken.
+# assume frontend can parse userdata rendered from graphical menu to a MongoDB query
 
-def read_info(query, role):
+def read_info(event, context):
     client = MongoClient(config.DB_URI)
 
     db = client['camelot-test']
@@ -16,9 +15,9 @@ def read_info(query, role):
 
     tests = db['test']
 
-    if role == 'director' or role == 'organizer':
-        return list(tests.aggregate(query))
+    if context['role'] == 'director' or context['role'] == 'organizer':
+        return list(tests.aggregate(event['query']))
 
     else:
-        return tests.find_one(query)
+        return tests.find_one(event['query'])
 
