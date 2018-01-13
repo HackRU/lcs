@@ -5,15 +5,10 @@ from pymongo import MongoClient
 import config
 import hashlib
 
-# context param for should include info of account the method is accessed from 
+# input JSON-documents for MongoDB query (aggregation queries only work if director or organizer)
+# NOTE: don't need to do hard error-checking - will be implemented by another script and not directly by the user, so it probably can't be broken.
 
-def read_info(event, context):
-    # queries based on email, role and password - leave as empty string if not specified
-    email = event['email']
-    role = event['role']
-    if email == '' and role == '':
-        return {"statusCode":200, body:"no data to query on"}
-
+def read_info(query, role):
     client = MongoClient(config.DB_URI)
 
     db = client['camelot-test']
@@ -21,22 +16,9 @@ def read_info(event, context):
 
     tests = db['test']
 
-    if context['role'] == 'director' or context['role'] == 'organizer':
-        query = {} 
-        
-        if email != '':
-            query['email'] = email
-
-        if role != '':
-            query['role'] = role
-
-        query = json.dumps(query)
-    
-        pipeline = [{"$match": query}]
-
-        return db.command('aggregate', 'test', pipeline = pipeline, explain = True) # explain set to true for testing 
+    if role == 'director' or role == 'organizer':
+        return list(tests.aggregate(query))
 
     else:
-        data = tests.find_one({"email":context['email']})
-        return ({"email":data['email'], "role":data['role']}) 
+        return tests.find_one(query)
 
