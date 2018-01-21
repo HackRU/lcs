@@ -26,6 +26,8 @@ def validate(event, context):
     if token not in results['authtokens']:
         return ({"statusCode":400,body:"Authentication token is invalid."})
 
+    if any(i['auth']['token'] == token and i['auth']['valid_until'] for i in results['authtokens'])
+
     return ({"statusCode":200,"body":"Successful request."})
 
 
