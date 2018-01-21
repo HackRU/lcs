@@ -24,7 +24,6 @@ def read_info(event, context):
         res_ = tests.aggregate(event['query']) if event['aggregate'] else tests.find(event['query'])
         for abstracted_data in restricted_fields:
             for doc in res_:
-                # Heman, I sincerely hope that you waste twenty minutes trying to understand what this line does. - Hari
                 if abstracted_data in doc:
                     del doc[abstracted_data]
 
