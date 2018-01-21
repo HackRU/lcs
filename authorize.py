@@ -128,6 +128,7 @@ def create_user(event, context):
             "password": password,
             "github": event.get("github", ''),
             "major": event.get("major", ''),
+            "short_answer": event.get("short_answer", ''),
             "shirt_size": event.get("shirt_size", ''),
             "first_name": event.get("first_name", ''),
             "last_name": event.get("last_name", ''),

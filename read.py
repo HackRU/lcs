@@ -3,25 +3,42 @@ import json
 import pymongo
 from pymongo import MongoClient
 import config
-import hashlib
 
-# assume frontend can parse userdata rendered from graphical menu to a MongoDB query
 def validate_user(db, token, email):
-    if not token:
+    """
+    Returns the user if the authtoken provided as token is valid.
+    """
+    if not token or not email:
         return False
 
     user = db.find_one({'email': email})
+    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in results['authtokens']):
+        return False
+
+    return user
 
 def read_info(event, context):
+    if not event['query']:
+        return {"statusCode": 400, "body": "We query for your query."}
+    if not event['aggregate']:
+        event['aggregate'] = False
+
     client = MongoClient(config.DB_URI)
 
     db = client['camelot-test'].authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
+    user = validate_user(tests,
+            event['token'] if 'token' in event else False,
+            event['email'] if 'email' in event else False)
 
-    if context['role'] == 'director' or context['role'] == 'organizer':
-        return list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
-
+    #directors and organizers see all and know all
+    if user and user['roles']['director'] or user['roles']['organizer']:
+        res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
+    #users can see anything about themselves - in a find.
+    elif user and not event['aggregate']:
+        res_ = (res for res in tests.find(event['query']) if res['email'] == event['email'])
+    #redact! Don't give public/non-organizers access to sensitive aggregations.
     else:
         restricted_fields = ['mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
 
@@ -31,4 +48,4 @@ def read_info(event, context):
                 if abstracted_data in doc:
                     del doc[abstracted_data]
 
-        return res_
+    return {"statusCode": 200, "body": res_}
