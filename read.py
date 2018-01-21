@@ -6,6 +6,11 @@ import config
 import hashlib
 
 # assume frontend can parse userdata rendered from graphical menu to a MongoDB query
+def validate_user(db, token, email):
+    if not token:
+        return False
+
+    user = db.find_one({'email': email})
 
 def read_info(event, context):
     client = MongoClient(config.DB_URI)

@@ -25,7 +25,7 @@ def validate(event, context):
     if results == None or results == [] or results == ():
         return ({"statusCode":400,body:"Email not found."})
 
-    if results['auth']['token'] != token or datetime.now() < dp.parse(results['auth']['valid_until']):
+    if any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in results['authtokens']):
         return ({"statusCode":400,body:"Authentication token is invalid."})
 
     return ({"statusCode":200,"body":"Successful request."})
