@@ -10,8 +10,7 @@ import hashlib
 def read_info(event, context):
     client = MongoClient(config.DB_URI)
 
-    db = client['camelot-test']
-    db.authenticate(config.DB_USER, config.DB_PASS)
+    db = client['camelot-test'].authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
 
