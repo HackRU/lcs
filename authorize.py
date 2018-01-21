@@ -89,20 +89,19 @@ def mlh_callback(event, context):
 
 
 def create_user(event, context):
-
     # check if valid email
     try:
        email = validate_email(event['email'])
     except EmailNotValidError as e:
        return ({"statusCode":400, "body":e})
+    except KeyError:
+       return ({"statusCode":400, "body":"No email provided!"})
+
+    if 'password' not in event:
+       return ({"statusCode":400, "body":"No password provided"})
 
     u_email = event['email']
-    role = event['role']
-    sp_pass = event['sp_pass']
     password = event['password']
-
-    if role != 'hacker' and sp_pass == '':
-      return ({"statusCode":400, "body":"Special password needed."})
 
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
@@ -110,10 +109,36 @@ def create_user(event, context):
 
     tests = db['test']
 
+    default_school = {
+            #RU-RAH!
+            "id": 2,
+            "name": "Rutgers University"
+    }
+
     doc = { "email": u_email,
-            "role": role,
-            "sp_password": hashlib.md5(sp_pass.encode('utf-8')).hexdigest(),
-            "password": hashlib.md5(password.encode('utf-8')).hexdigest()
+            "role": {
+                "hacker": True,
+                "volunteer": False,
+                "judge": False,
+                "sponsor": False,
+                "mentor": False,
+                "organizer": False,
+                "director": False
+            },
+            "password": password,
+            "github": event.get("github", ''),
+            "major": event.get("major", ''),
+            "shirt_size": event.get("shirt_size", ''),
+            "first_name": event.get("first_name", ''),
+            "last_name": event.get("last_name", ''),
+            "dietary_restrictions": event.get("dietary_restrictions", ''),
+            "special_needs": event.get("special_needs", ''),
+            "date_of_birth": event.get("date_of_birth", ''),
+            "school": event.get("school", default_school),
+            "grad_year": event.get("grad_year", ''),
+            "gender": event.get("gender", ''),
+            "registration_status": event.get("registration_status", 0),
+            "level_of_study": event.get("level_of_study", ""),
           }
 
     tests.insert(doc)

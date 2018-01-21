@@ -18,9 +18,13 @@ def read_info(event, context):
         return list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
 
     else:
-	restricted_fields = ['mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
-	
-	res_ = tests.aggregate(event['query']) if event['aggregate'] else tests.find(event['query'])
-	del doc[abstracted_data] if abstracted_data in doc for abstracted_data in restricted_fields for doc in res_ # Heman, I sincerely hope that you waste twenty minutes trying to understand what this line does. - Hari 
-	 
-	return res_
+        restricted_fields = ['mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
+
+        res_ = tests.aggregate(event['query']) if event['aggregate'] else tests.find(event['query'])
+        for abstracted_data in restricted_fields:
+            for doc in res_:
+                # Heman, I sincerely hope that you waste twenty minutes trying to understand what this line does. - Hari
+                if abstracted_data in doc:
+                    del doc[abstracted_data]
+
+        return res_
