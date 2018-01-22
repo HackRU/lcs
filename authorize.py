@@ -13,7 +13,7 @@ import uuid
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
-def authorize(event,context):
+def authorize(event,context, is_mlh = False):
     if('email' not in event  or 'password' not in event):
         return ({"statusCode":400,"body":"Invalid Request"})
 
@@ -26,14 +26,17 @@ def authorize(event,context):
 
     tests = db['test']
 
-    dat = tests.find_one({"email":email, "hash_password":pass_})
+    dat = tests.find_one({"email":email, "password":pass_})
     if dat == None or dat == [] or dat == ():
         return ({"statusCode":403,"body":"invalid email,hash combo"})
 
     # check if the hash is correct
     checkhash  = tests.find_one({"email":email})
 
-    if(checkhash['hash_password'] != event['password']):
+    if checkhash['mlh'] and not is_mlh:
+        return ({"statusCode":403,"Body":"Please use MLH to log in."})
+
+    if(checkhash['password'] != event['password']) and not is_mlh:
         return ({"statusCode":403,"Body":"Wrong Password"})
 
     token = str(uuid.uuid4())
@@ -77,15 +80,14 @@ def mlh_callback(event, context):
     user = test.find_one({'email': mlh_user['data']['email']})
     if user == None or user == [] or user == ():
         #making new user here
-        mlh_user['data']['role'] = 'hacker'
-        mlh_user['data']['sp_pass'] = 'fudging Hari'
+        mlh_user['data']['mlh_user'] = True
         return create_user(mlh_user['data'], context)
     else:
         #auth
         event['email'] = user['email']
         event['password'] = user['password']
         #Kosher?
-        return authorize(event, context)
+        return authorize(event, context, True)
 
 
 def create_user(event, context):
