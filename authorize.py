@@ -28,16 +28,16 @@ def authorize(event,context, is_mlh = False):
 
     dat = tests.find_one({"email":email, "password":pass_})
     if dat == None or dat == [] or dat == ():
-        return ({"statusCode":403,"body":"invalid email,hash combo"})
+        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
 
     # check if the hash is correct
     checkhash  = tests.find_one({"email":email})
 
     if checkhash['mlh'] and not is_mlh:
-        return ({"statusCode":403,"Body":"Please use MLH to log in."})
+        return config.add_cors_headers({"statusCode":403,"Body":"Please use MLH to log in."})
 
     if(checkhash['password'] != event['password']) and not is_mlh:
-        return ({"statusCode":403,"Body":"Wrong Password"})
+        return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
 
     token = str(uuid.uuid4())
 
@@ -54,7 +54,7 @@ def authorize(event,context, is_mlh = False):
 
     #append to list of auth tokens
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
-    return ret_val
+    return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
     params = config.MLH.copy()
@@ -95,9 +95,9 @@ def create_user(event, context):
     try:
        email = validate_email(event['email'])
     except EmailNotValidError as e:
-       return ({"statusCode":400, "body":e})
+       return config.add_cors_headers({"statusCode":400, "body":e})
     except KeyError:
-       return ({"statusCode":400, "body":"No email provided!"})
+       return config.add_cors_headers({"statusCode":400, "body":"No email provided!"})
 
     if 'password' not in event:
        return ({"statusCode":400, "body":"No password provided"})
@@ -152,7 +152,7 @@ def create_user(event, context):
 
 def change_password(event, context):
     if event['password'].len() < 8:
-        return ({"statusCode":200, "body":"invalid password"})
+        return config.add_cors_headers({"statusCode":200, "body":"invalid password"})
 
     client = MongoClient(config.DB_URI)
 

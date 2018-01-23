@@ -19,7 +19,7 @@ def validate_user(db, token, email):
 
 def read_info(event, context):
     if not event['query']:
-        return {"statusCode": 400, "body": "We query for your query."}
+        return config.add_cors_headers({"statusCode": 400, "body": "We query for your query."})
     if not event['aggregate']:
         event['aggregate'] = False
 
@@ -48,4 +48,4 @@ def read_info(event, context):
                 if abstracted_data in doc:
                     del doc[abstracted_data]
 
-    return {"statusCode": 200, "body": res_}
+    return config.add_cors_headers({"statusCode": 200, "body": res_})
