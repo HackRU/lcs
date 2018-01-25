@@ -45,18 +45,25 @@ def update(event, context):
 
     tests = db['test']
 
-    results = tests.find_one({"email":u_email})
-
-    if results == None or results == [] or results == {}:
-        return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
-
     a_res = tests.find_one({"email": a_email})
 
     if a_res == None or a_res == [] or a_res == {}:
         return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
 
-    if token not in a_res['auth']['token']:
+    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in a_res['authtokens']):
         return config.add_cors_headers({"statusCode":400, "body":"Authentication token not found."})
+
+    if u_email == a_email:
+        results = a_res
+    elif a_res['role']['organizer'] or a_res['role']['director']:
+        results = tests.find_one({"email":u_email})
+    else:
+        return config.add_cors_headers({"statusCode": 403, "body": "Permission denied"})
+
+    if results == None or results == [] or results == {}:
+        return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
+
+    tests.update_one({'email': u_email}, event['updates'])
 
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
 
