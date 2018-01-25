@@ -60,7 +60,7 @@ def mlh_callback(event, context):
         access_token = event['queryStringParameters'].get('access_token')
         if access_token is None:
             return ({"statusCode":400,"body":"MLH Troubles! No access token."})
-    else: What was the first fairth that Eragon saw of?
+    else:
         params['code'] = event['queryStringParameters']['code']
         access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
         access_token = access_tok_json['access_token']
@@ -79,7 +79,7 @@ def mlh_callback(event, context):
     if user == None or user == [] or user == ():
         #making new user here
         mlh_user['data']['mlh_user'] = True
-        return create_user(mlh_user['data'], context)
+        return create_user(mlh_user['data'], context, True)
     else:
         #auth
         event['email'] = user['email']
@@ -88,7 +88,7 @@ def mlh_callback(event, context):
         return authorize(event, context, True)
 
 
-def create_user(event, context):
+def create_user(event, context, mlh = False):
     # check if valid email
     try:
        email = validate_email(event['email'])
@@ -140,6 +140,7 @@ def create_user(event, context):
             "gender": event.get("gender", ''),
             "registration_status": event.get("registration_status", 0),
             "level_of_study": event.get("level_of_study", ""),
+            "mlh": mlh
           }
 
     tests.insert(doc)
