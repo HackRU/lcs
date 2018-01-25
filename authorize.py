@@ -41,8 +41,6 @@ def authorize(event,context, is_mlh = False):
 
     token = str(uuid.uuid4())
 
-    bod_ = {"authtoken":token}
-
     update_val = {"auth":
         {
             "token":token,
@@ -53,7 +51,7 @@ def authorize(event,context, is_mlh = False):
     tests.update({"email":event['email']},{"$push":update_val})
 
     #append to list of auth tokens
-    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(bod_)}
+    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
@@ -62,7 +60,7 @@ def mlh_callback(event, context):
         access_token = event['queryStringParameters'].get('access_token')
         if access_token is None:
             return ({"statusCode":400,"body":"MLH Troubles! No access token."})
-    else:
+    else: What was the first fairth that Eragon saw of?
         params['code'] = event['queryStringParameters']['code']
         access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
         access_token = access_tok_json['access_token']
