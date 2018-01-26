@@ -33,7 +33,7 @@ def authorize(event,context, is_mlh = False):
     # check if the hash is correct
     checkhash  = tests.find_one({"email":email})
 
-    if checkhash['mlh'] and not is_mlh:
+    if checkhash.get('mlh', False) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"Body":"Please use MLH to log in."})
 
     if(checkhash['password'] != event['password']) and not is_mlh:
@@ -44,7 +44,7 @@ def authorize(event,context, is_mlh = False):
     update_val = {"auth":
         {
             "token":token,
-            "valid_until":(datetime.datetime.now() + timedelta(hours=3)).isoformat()
+            "valid_until":(datetime.now() + timedelta(hours=3)).isoformat()
         }
     }
 
