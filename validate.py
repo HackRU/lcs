@@ -25,7 +25,7 @@ def validate(event, context):
     if results == None or results == [] or results == ():
         return config.add_cors_headers({"statusCode":400,body:"Email not found."})
 
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in results['authtokens']):
+    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in results['auth']['token']):
         return config.add_cors_headers({"statusCode":400,body:"Authentication token is invalid."})
 
     return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
@@ -50,7 +50,7 @@ def update(event, context):
     if a_res == None or a_res == [] or a_res == {}:
         return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
 
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in a_res['authtokens']):
+    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in a_res['auth']['token']):
         return config.add_cors_headers({"statusCode":400, "body":"Authentication token not found."})
 
     if u_email == a_email:
