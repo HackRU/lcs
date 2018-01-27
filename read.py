@@ -18,14 +18,15 @@ def validate_user(db, token, email):
     return user
 
 def read_info(event, context):
-    if not event['query']:
+    if 'query' not in event or not event['query']:
         return config.add_cors_headers({"statusCode": 400, "body": "We query for your query."})
-    if not event['aggregate']:
+    if 'aggregate' not in event:
         event['aggregate'] = False
 
     client = MongoClient(config.DB_URI)
 
-    db = client['camelot-test'].authenticate(config.DB_USER, config.DB_PASS)
+    db = client['camelot-test']
+    db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
     user = validate_user(tests,
@@ -33,7 +34,7 @@ def read_info(event, context):
             event['email'] if 'email' in event else False)
 
     #directors and organizers see all and know all
-    if user and user['roles']['director'] or user['roles']['organizer']:
+    if user and (user['roles']['director'] or user['roles']['organizer']):
         res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
     #users can see anything about themselves - in a find.
     elif user and not event['aggregate']:
