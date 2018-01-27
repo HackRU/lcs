@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import config
 import requests
 import dateutil.parser as dp
-import datetime
+from datetime import datetime
 
 def validate(event, context):
     if 'email' not in event or 'token' not in event:
