@@ -55,6 +55,7 @@ def authorize(event,context, is_mlh = False):
     return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
+    print('Here!')
     params = config.MLH.copy()
     if 'code' not in event['queryStringParameters']:
         access_token = event['queryStringParameters'].get('access_token')
@@ -63,6 +64,7 @@ def mlh_callback(event, context):
     else:
         params['code'] = event['queryStringParameters']['code']
         access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
+        print('MLH resp', access_tok_json)
         access_token = access_tok_json['access_token']
         scopes = access_tok_json['scope']
 
