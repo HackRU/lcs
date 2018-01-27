@@ -15,10 +15,12 @@ def test(url):
     auth = requests.post(url + '/authorize', json=(usr_dict))
     print("Bad password: ", auth.text)
 
-    passhash = 12345
+    passhash = "12345"
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=(usr_dict))
-    token = json.loads(auth.json()['body']).get('authtoken')
+    res = auth.json()['body']
+    token = json.loads(res).get('auth')
+    token = token is not None and token.get('token')
     print("Got token:", token)
     if token is None:
         print("Bad token")
@@ -30,7 +32,7 @@ def test(url):
     print("From validate:", valid.text)
 
     rando = "the.scrub@rutgers.edu"
-    val_dict = {'user_email': rando, 'authtoken': token, 'auth_email': user_email}
+    val_dict = {'user_email': rando, 'auth': token, 'auth_email': user_email}
     valid = requests.post(url + '/update', json=(val_dict))
     print("From update:", valid.text)
 
@@ -40,12 +42,19 @@ def test(url):
     #create user
     fake_user = {
             'email': 'testing@hackru.org',
-            'role': 'hacker',
             'password': 'defacto',
-            'sp_pass': 'why do I exist?'
     }
     auth = requests.post(url + '/create', json=fake_user)
-    print("Token for our new user:", auth.text)
+    token = auth.json()['body']
+    token = json.loads(token)['auth']['token']
+
+    query_d = {
+            'email': 'testing@hackru.org',
+            'token': token,
+            'query': {'email': 'testing@hackru.org'}
+    }
+    read = requests.post(url + '/read', json=(query_d))
+    print(read.text)
 
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']

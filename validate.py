@@ -32,7 +32,7 @@ def validate(event, context):
 
 
 def update(event, context):
-    if 'user_email' not in event or 'authtoken' not in event or 'auth_email' not in event:
+    if 'user_email' not in event or 'auth' not in event or 'auth_email' not in event:
         return config.add_cors_headers({"statusCode":400, "body":"Data not submitted."})
 
     u_email = event['user_email']
