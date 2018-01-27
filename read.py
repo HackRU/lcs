@@ -12,7 +12,7 @@ def validate_user(db, token, email):
         return False
 
     user = db.find_one({'email': email})
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i['token'] in results['auth']):
+    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i['token'] in user['auth']):
         return False
 
     return user
@@ -41,7 +41,7 @@ def read_info(event, context):
         res_ = (res for res in tests.find(event['query']) if res['email'] == event['email'])
     #redact! Don't give public/non-organizers access to sensitive aggregations.
     else:
-        restricted_fields = ['mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
+        restricted_fields = ['auth', 'mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
 
         res_ = tests.aggregate(event['query']) if event['aggregate'] else list(tests.find(event['query']))
         for abstracted_data in restricted_fields:

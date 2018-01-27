@@ -2,3 +2,4 @@ pymongo==3.6.0
 requests==2.18.4
 email_validator
 beautifulsoup4
+python-dateutil
