@@ -3,6 +3,8 @@ import json
 import pymongo
 from pymongo import MongoClient
 import config
+from datetime import datetime
+import dateutil.parser as dp
 
 def validate_user(db, token, email):
     """
@@ -12,7 +14,7 @@ def validate_user(db, token, email):
         return False
 
     user = db.find_one({'email': email})
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i['token'] in user['auth']):
+    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in user['auth']):
         return False
 
     return user
@@ -34,11 +36,11 @@ def read_info(event, context):
             event['email'] if 'email' in event else False)
 
     #directors and organizers see all and know all
-    if user and (user['roles']['director'] or user['roles']['organizer']):
+    if user and (user['role']['director'] or user['role']['organizer']):
         res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
     #users can see anything about themselves - in a find.
     elif user and not event['aggregate']:
-        res_ = (res for res in tests.find(event['query']) if res['email'] == event['email'])
+        res_ = [res for res in tests.find(event['query']) if res['email'] == event['email']]
     #redact! Don't give public/non-organizers access to sensitive aggregations.
     else:
         restricted_fields = ['auth', 'mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
