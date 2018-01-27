@@ -50,7 +50,7 @@ def update(event, context):
     if a_res == None or a_res == [] or a_res == {}:
         return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
 
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in a_res['auth']['token']):
+    if not any(i['token'] == auth_val and datetime.now() < dp.parse(i['valid_until']) for i in a_res['auth']):
         return config.add_cors_headers({"statusCode":400, "body":"Authentication token not found."})
 
     if u_email == a_email:
