@@ -56,10 +56,21 @@ def test(url):
     read = requests.post(url + '/read', json=(query_d))
     print(read.text)
 
+    upd_val = {
+            'user_email': 'testing@hackru.org',
+            'auth_email': 'testing@hackru.org',
+            'auth': token,
+            'updates': {'github': '11'}
+    }
+    upd = requests.post(url + '/update', json=upd_val)
+    print(upd.text)
+
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
     db.authenticate(config.DB_USER, config.DB_PASS)
     test = db['test']
+    u = test.find_one({'email': 'testing@hackru.org'})
+    print(u['github'])
     test.delete_one({'email': 'testing@hackru.org'})
 
 if __name__ == "__main__":

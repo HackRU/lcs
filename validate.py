@@ -63,6 +63,8 @@ def update(event, context):
     if results == None or results == [] or results == {}:
         return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
 
+    if '_id' in event['updates']: del event['updates']['_id']
+
     tests.update_one({'email': u_email}, {'$set': event['updates']})
 
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
