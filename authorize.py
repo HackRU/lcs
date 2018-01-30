@@ -112,7 +112,8 @@ def create_user(event, context, mlh = False):
     tests = db['test']
 
     usr = tests.find_one({'email': u_email})
-    if usr is not None or usr != [] or usr != {}:
+    print(usr == None)
+    if usr != None and usr != [] and usr != {}:
         return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
 
     default_school = {
