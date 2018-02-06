@@ -5,7 +5,10 @@ import PIL
 import base64
 
 def email2qr(event, context):
-    color = (0,0,192)
+    if 'color' not in event:
+        color = (0,0,192)
+    else:
+        color = event['color']
     if 'email' not in event:
         return config.add_cors_headers({'statusCode':400, 'body':'Invalid request format.'})
     email = event['email']
