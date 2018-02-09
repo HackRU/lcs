@@ -167,6 +167,9 @@ def change_password(event, context):
 
     tests = db['test']
 
+    if len(list(tests.find({"role":{"hacker":True}}))) >= 500:
+        return {"statusCode":403, "body":"Event capacity reached."}
+
     tests.update({"email": context['email'], "$push":{"password": hashlib.md5(event['password'].encode('utf-8')).hexdigest()}})
 
     return authorize(event, context)
