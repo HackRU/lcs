@@ -57,6 +57,7 @@ def authorize(event,context, is_mlh = False):
 def mlh_callback(event, context):
     print('Here!')
     params = config.MLH.copy()
+    print(event['queryStringParameters'])
     if 'code' not in event['queryStringParameters']:
         access_token = event['queryStringParameters'].get('access_token')
         if access_token is None:
@@ -74,13 +75,14 @@ def mlh_callback(event, context):
         return ({"statusCode":400,"body":"MLH Troubles!"})
 
     client = MongoClient(config.DB_URI)
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER,config.DB_PASS)
     test = db['test']
     user = test.find_one({'email': mlh_user['data']['email']})
     if user == None or user == [] or user == ():
         #making new user here
         mlh_user['data']['mlh_user'] = True
+        print(mlh_user)
         return create_user(mlh_user['data'], context, True)
     else:
         #auth
