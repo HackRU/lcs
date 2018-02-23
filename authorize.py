@@ -1,14 +1,15 @@
-import string
-import random
-import json
-import pymongo
-from pymongo import MongoClient
 import config
-import requests
 import hashlib
-from datetime import datetime, timedelta
-from validate_email import validate_email
+import json
+import random
+import string
 import uuid
+from datetime import datetime, timedelta
+
+import pymongo
+import requests
+from pymongo import MongoClient
+from validate_email import validate_email
 
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
@@ -21,7 +22,7 @@ def authorize(event,context, is_mlh = False):
     pass_ = event['password']
     client = MongoClient(config.DB_URI)
 
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER,config.DB_PASS)
 
     tests = db['test']
@@ -51,7 +52,7 @@ def authorize(event,context, is_mlh = False):
     tests.update({"email":event['email']},{"$push":update_val})
 
     #append to list of auth tokens
-    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" :json.dumps(update_val)}
+    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
@@ -89,9 +90,10 @@ def mlh_callback(event, context):
         event['email'] = user['email']
         event['password'] = user['password']
         #Kosher?
-        return authorize(event, context, True)
-
-
+        a = authorize(event, context, True)
+        print(a)
+        if(a['statusCode'] == 200):
+            return a
 def create_user(event, context, mlh = False):
     # check if valid email
     try:
@@ -100,6 +102,9 @@ def create_user(event, context, mlh = False):
        return config.add_cors_headers({"statusCode":400, "body":e})
     except KeyError:
        return config.add_cors_headers({"statusCode":400, "body":"No email provided!"})
+    
+    if mlh == True:
+        event['password'] = "defacto"
 
     if 'password' not in event:
        return ({"statusCode":400, "body":"No password provided"})
@@ -108,7 +113,7 @@ def create_user(event, context, mlh = False):
     password = event['password']
 
     client = MongoClient(config.DB_URI)
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
@@ -175,4 +180,3 @@ def change_password(event, context):
     tests.update({"email": context['email'], "$push":{"password": hashlib.md5(event['password'].encode('utf-8')).hexdigest()}})
 
     return authorize(event, context)
-
