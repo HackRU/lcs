@@ -92,7 +92,12 @@ def mlh_callback(event, context):
         #Kosher?
         a = authorize(event, context, True)
         print(a)
+
         if(a['statusCode'] == 200):
+            a["statusCode"] = 302
+            a['headers']['Location'] = "http://www.hackru.org/"
+            a['headers']['Set-Cookie'] = "authdata=" + a['body']
+
             return a
 def create_user(event, context, mlh = False):
     # check if valid email
