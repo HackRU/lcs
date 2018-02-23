@@ -9,13 +9,17 @@ def email2qr(event, context):
         color = (0,0,192)
     else:
         color = event['color']
+    if 'background' not  in event:
+        background = (255,255,255)
+    else:
+        background = event['background']
     if 'email' not in event:
         return config.add_cors_headers({'statusCode':400, 'body':'Invalid request format.'})
     email = event['email']
     pilImg = qrcode.make(email)
-    r = pilImg.point(lambda x: color[0] if x == 0 else 255, mode='L')
-    g = pilImg.point(lambda x: color[1] if x == 0 else 255, mode='L')
-    b = pilImg.point(lambda x: color[2] if x == 0 else 255, mode='L')
+    r = pilImg.point(lambda x: color[0] if x == 0 else background[0], mode='L')
+    g = pilImg.point(lambda x: color[1] if x == 0 else background[1], mode='L')
+    b = pilImg.point(lambda x: color[2] if x == 0 else background[2], mode='L')
     img = PIL.Image.merge('RGB', (r,g,b))
     byteArr = io.BytesIO()
     img.save(byteArr, format='PNG')
