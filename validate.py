@@ -1,4 +1,5 @@
 import string
+import re
 import json
 import pymongo
 from pymongo import MongoClient
@@ -30,6 +31,79 @@ def validate(event, context):
 
     return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
 
+def validate_updates(user, updates, auth_usr = user):
+    say_no = lambda x, y: False
+    say_no_to_non_admin = lambda x, y: auth_usr['role']['organizer'] or\
+            auth_usr['role']['director']
+
+    def check_registration(old, new):
+        state_graph = {
+                "unregistered": {
+                    "registered": True
+                },
+                "registered": {
+                    "rejected": False,
+                    "confirmation": False,
+                    "waitlist": False
+                },
+                "rejected": {
+                    "checked-in": False
+                },
+                "confirmation": {
+                    "coming": True,
+                    "not-coming": True
+                },
+                "coming": {
+                    "not-coming": True,
+                    "confirmed": False
+                },
+                "not-coming": {
+                    "coming": True,
+                    "waitlist": False
+                },
+                "waitlist": {
+                    "checked-in": True
+                },
+                "confirmed": {
+                    "checked-in": True
+                }
+        }
+
+        return old in state_graph and new in state_graph[old] \
+                and (state_graph[new][old] or say_no_to_non_admin(1, 2))
+
+    validator = {
+            #we have to figure out "forgot password"
+            'password': say_no,
+            #can't me self-made judge?
+            'role\\.judge': say_no, #TODO: do magic links need these?
+            #can't unmake hacker
+            'role\\.hacker': say_no_to_non_admin,
+            #can't self-make organizer or director
+            'role\\.director': say_no_to_non_admin,
+            'role\\.organizer': say_no_to_non_admin,
+            #can't change email
+            'email': say_no,
+            #or MLH info
+            'mlh': say_no,
+            #no hacks on the role object
+            '^role$': say_no,
+            #no destroying the day-of object
+            'day_of': say_no_to_non_admin,
+            'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
+            'registration_status': check_registration
+    }
+
+    def validate(key):
+        if key not in user:
+            return True
+
+        for item in validator:
+            if re.match(item, key) is not None:
+                return validator[item](user[key], updates[key])
+
+    return {i: updates[i] for i in updates if validate(key)}
+
 
 def update(event, context):
     if 'user_email' not in event or 'auth' not in event or 'auth_email' not in event:
@@ -55,6 +129,7 @@ def update(event, context):
 
     if u_email == a_email:
         results = a_res
+        event['updates'] = validate_updates(a_res, event['updates']
     elif a_res['role']['organizer'] or a_res['role']['director']:
         results = tests.find_one({"email":u_email})
     else:
