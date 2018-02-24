@@ -73,7 +73,7 @@ def e2e_test(url):
     print(u['github'])
     test.delete_one({'email': 'testing@hackru.org'})
 
-def update_validation_test():
+def update_validation_test(random = False):
     from validate import validate_updates
     fake_usr = {
         "email": "doesnt@matter.horn",
@@ -133,8 +133,44 @@ def update_validation_test():
         "the role object": try_to_alter_key("role", False, False),
         "the innards of role": try_to_alter_key("role.director", False, True),
         "being a volunteer": try_to_alter_key("role.volunteer", True, True),
+        "not being a hacker": try_to_alter_key("role.hacker", False, False),
         "being a mentor": try_to_alter_key("role.mentor", True, True),
+        "being an organizer": try_to_alter_key("role.organizer", True, True),
+        "email key": try_to_alter_key("email", False, False),
+        "mlh key": try_to_alter_key("mlh", False, False),
+        "password key": try_to_alter_key("password", False, False),
+        "adding a new key": try_to_alter_key("shite", True, True)
     }
+
+    if random:
+        #making arbitrary intersections of the above
+        def intersect(t1, t2):
+            return lambda x: t1(x) and t2(x)
+
+        def merge_dicts(d1, d2):
+            d = dict()
+            d.update(d1)
+            d.update(d2)
+            return d
+
+        from random import sample, randint
+        from functools import reduce
+        for i in range(5):
+            #we randomly sample a random number of tests
+            #and "and" all the lambdas. We also merge the
+            new_test = sample(list(try_to_fuck_with),\
+                    randint(2, len(try_to_fuck_with)))
+            new_dict = reduce(merge_dicts, (try_to_fuck_with[i][0] for i in new_test))
+            new_usr_valid = reduce(intersect, (try_to_fuck_with[i][1] for i in new_test))
+            new_admin_valid = reduce(intersect, (try_to_fuck_with[i][2] for i in new_test))
+            try_to_fuck_with[str(new_dict)] = (new_dict, new_usr_valid, new_admin_valid)
+
+    #these tests cannot intersect one another, so we have them after intersections.
+    try_to_fuck_with.update({
+        "getting registered": try_to_alter_key("registration_status", True, True, "registered"),
+        "registration state leaps": try_to_alter_key("registration_status", False, False, "checked-in"),
+        "bad registration values": try_to_alter_key("registration_status", False, False)
+    })
 
     for name in try_to_fuck_with:
         upd, usr_valid, admin_valid = try_to_fuck_with[name]
