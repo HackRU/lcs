@@ -31,7 +31,9 @@ def validate(event, context):
 
     return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
 
-def validate_updates(user, updates, auth_usr = user):
+def validate_updates(user, updates, auth_usr = None):
+    if auth_usr is None: auth_usr = user
+
     say_no = lambda x, y: False
 
     def say_no_to_non_admin(x, y):
@@ -118,7 +120,7 @@ def validate_updates(user, updates, auth_usr = user):
             if re.match(item, key) is not None:
                 return validator[item](user[key], updates[key])
 
-    return {i: updates[i] for i in updates if validate(key)}
+    return {i: updates[i] for i in updates if validate(i)}
 
 def update(event, context):
     if 'user_email' not in event or 'auth' not in event or 'auth_email' not in event:
