@@ -147,7 +147,10 @@ def create_user(event, context, mlh = False):
             "gender": event.get("gender", ''),
             "registration_status": event.get("registration_status", 0),
             "level_of_study": event.get("level_of_study", ""),
-            "mlh": mlh
+            "mlh": mlh,
+            "day_of":{
+                "checkIn": False
+            }
           }
 
     tests.insert(doc)

@@ -85,7 +85,9 @@ def validate_updates(user, updates, auth_usr = user):
                 #remember that say_no_to_non_admin ignores arguments.
 
     validator = {
-            #we have to figure out "forgot password"
+            #this is a Mongo internal. DO NOT TOUCH.
+            '_id': say_no,
+            #TODO: we have to figure out "forgot password"
             'password': say_no,
             #can't me self-made judge?
             'role\\.judge': say_no, #TODO: do magic links need these?
@@ -108,6 +110,8 @@ def validate_updates(user, updates, auth_usr = user):
 
     def validate(key):
         if key not in user:
+            #we allow the addition of arbitrary keys,
+            #just to make life easier.
             return True
 
         for item in validator:
@@ -140,7 +144,6 @@ def update(event, context):
 
     if u_email == a_email:
         results = a_res
-        event['updates'] = validate_updates(a_res, event['updates']
     elif a_res['role']['organizer'] or a_res['role']['director']:
         results = tests.find_one({"email":u_email})
     else:
@@ -149,8 +152,8 @@ def update(event, context):
     if results == None or results == [] or results == {}:
         return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
 
-    if '_id' in event['updates']: del event['updates']['_id']
+    updates = validate_updates(results, event['updates'], a_res)
 
-    tests.update_one({'email': u_email}, {'$set': event['updates']})
+    tests.update_one({'email': u_email}, {'$set': updates})
 
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
