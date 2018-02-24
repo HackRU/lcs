@@ -33,44 +33,56 @@ def validate(event, context):
 
 def validate_updates(user, updates, auth_usr = user):
     say_no = lambda x, y: False
-    say_no_to_non_admin = lambda x, y: auth_usr['role']['organizer'] or\
-            auth_usr['role']['director']
+
+    def say_no_to_non_admin(x, y):
+        return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
     def check_registration(old, new):
         state_graph = {
-                "unregistered": {
-                    "registered": True
+                "unregistered": { #unregistered = did not fill out all of application.
+                    "registered": True #they can fill out the application.
                 },
-                "registered": {
+                "registered": { #they have filled out the application.
+                    #all transitions out of this are through the voting
+                    #system are require admins to have voted.
                     "rejected": False,
                     "confirmation": False,
                     "waitlist": False
                 },
-                "rejected": {
+                "rejected": { #the user is "rejected". REMEMBER: they see "pending"
+                    #only an admin may check a user in.
                     "checked-in": False
                 },
-                "confirmation": {
+                "confirmation": { #This is when a user may or may not RSVP.
+                    #they get to choose if they're coming or not.
                     "coming": True,
                     "not-coming": True
                 },
-                "coming": {
+                "coming": { #they said they're coming.
+                    #they may change their mind, but only we can finalize
+                    #things.
                     "not-coming": True,
                     "confirmed": False
                 },
-                "not-coming": {
+                "not-coming": { #the user said they ain't comin'.
+                    #They can always make a better decision.
+                    #But only we can finalize their poor choice.
                     "coming": True,
                     "waitlist": False
                 },
-                "waitlist": {
-                    "checked-in": True
+                "waitlist": { #They were waitlisted. (Didn't RSVP, or not-coming.)
+                    #Only we can check them in.
+                    "checked-in": False
                 },
-                "confirmed": {
-                    "checked-in": True
+                "confirmed": { #They confirmed attendance and are guarenteed a spot!
+                    #But only we can check them in.
+                    "checked-in": False
                 }
         }
 
         return old in state_graph and new in state_graph[old] \
                 and (state_graph[new][old] or say_no_to_non_admin(1, 2))
+                #remember that say_no_to_non_admin ignores arguments.
 
     validator = {
             #we have to figure out "forgot password"
@@ -103,7 +115,6 @@ def validate_updates(user, updates, auth_usr = user):
                 return validator[item](user[key], updates[key])
 
     return {i: updates[i] for i in updates if validate(key)}
-
 
 def update(event, context):
     if 'user_email' not in event or 'auth' not in event or 'auth_email' not in event:
@@ -143,4 +154,3 @@ def update(event, context):
     tests.update_one({'email': u_email}, {'$set': event['updates']})
 
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
-
