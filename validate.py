@@ -41,49 +41,49 @@ def validate_updates(user, updates, auth_usr = None):
 
     def check_registration(old, new):
         state_graph = {
-                "unregistered": { #unregistered = did not fill out all of application.
-                    "registered": True #they can fill out the application.
-                },
-                "registered": { #they have filled out the application.
-                    #all transitions out of this are through the voting
-                    #system are require admins to have voted.
-                    "rejected": False,
-                    "confirmation": False,
-                    "waitlist": False
-                },
-                "rejected": { #the user is "rejected". REMEMBER: they see "pending"
-                    #only an admin may check a user in.
-                    "checked-in": False
-                },
-                "confirmation": { #This is when a user may or may not RSVP.
-                    #they get to choose if they're coming or not.
-                    "coming": True,
-                    "not-coming": True
-                },
-                "coming": { #they said they're coming.
-                    #they may change their mind, but only we can finalize
-                    #things.
-                    "not-coming": True,
-                    "confirmed": False
-                },
-                "not-coming": { #the user said they ain't comin'.
-                    #They can always make a better decision.
-                    #But only we can finalize their poor choice.
-                    "coming": True,
-                    "waitlist": False
-                },
-                "waitlist": { #They were waitlisted. (Didn't RSVP, or not-coming.)
-                    #Only we can check them in.
-                    "checked-in": False
-                },
-                "confirmed": { #They confirmed attendance and are guarenteed a spot!
-                    #But only we can check them in.
-                    "checked-in": False
-                }
+            "unregistered": { #unregistered = did not fill out all of application.
+                "registered": True #they can fill out the application.
+            },
+            "registered": { #they have filled out the application.
+                #all transitions out of this are through the voting
+                #system are require admins to have voted.
+                "rejected": False,
+                "confirmation": False,
+                "waitlist": False
+            },
+            "rejected": { #the user is "rejected". REMEMBER: they see "pending"
+                #only an admin may check a user in.
+                "checked-in": False
+            },
+            "confirmation": { #This is when a user may or may not RSVP.
+                #they get to choose if they're coming or not.
+                "coming": True,
+                "not-coming": True
+            },
+            "coming": { #they said they're coming.
+                #they may change their mind, but only we can finalize
+                #things.
+                "not-coming": True,
+                "confirmed": False
+            },
+            "not-coming": { #the user said they ain't comin'.
+                #They can always make a better decision.
+                #But only we can finalize their poor choice.
+                "coming": True,
+                "waitlist": False
+            },
+            "waitlist": { #They were waitlisted. (Didn't RSVP, or not-coming.)
+                #Only we can check them in.
+                "checked-in": False
+            },
+            "confirmed": { #They confirmed attendance and are guarenteed a spot!
+                #But only we can check them in.
+                "checked-in": False
+            }
         }
 
         return old in state_graph and new in state_graph[old] \
-                and (state_graph[new][old] or say_no_to_non_admin(1, 2))
+                and (state_graph[old][new] or say_no_to_non_admin(1, 2))
                 #remember that say_no_to_non_admin ignores arguments.
 
     validator = {
@@ -110,15 +110,25 @@ def validate_updates(user, updates, auth_usr = None):
             'registration_status': check_registration
     }
 
+    def find_dotted(key):
+        curr = user
+        for i in key.split('.'):
+            if i not in curr:
+                return None
+            curr = curr[i]
+        return curr
+
     def validate(key):
-        if key not in user:
+        usr_attr = find_dotted(key)
+        if usr_attr is None:
             #we allow the addition of arbitrary keys,
             #just to make life easier.
             return True
 
         for item in validator:
             if re.match(item, key) is not None:
-                return validator[item](user[key], updates[key])
+                return validator[item](usr_attr, updates[key])
+        return True
 
     return {i: updates[i] for i in updates if validate(i)}
 

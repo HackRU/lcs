@@ -73,9 +73,10 @@ def e2e_test(url):
     print(u['github'])
     test.delete_one({'email': 'testing@hackru.org'})
 
-def update_validation_test(random = False):
+def update_validation_test(random = True):
     from validate import validate_updates
     fake_usr = {
+        "_id": "The Mongo Longo",
         "email": "doesnt@matter.horn",
         "role": {
             "hacker": True,
@@ -109,12 +110,13 @@ def update_validation_test(random = False):
 
     fake_auth = {
         "role": {
-            "director": True
+            "director": True,
+            "organizer": True
         }
     }
 
     def try_to_alter_key(key, usr_can, admin_can, value = "Dummy"):
-        upd_dict = {key: "Dummy"}
+        upd_dict = {key: value}
 
         if usr_can:
             usr = lambda x: key in x
@@ -130,12 +132,13 @@ def update_validation_test(random = False):
 
 
     try_to_fuck_with = {
+        "the _id field": try_to_alter_key("_id", False, False),
         "the role object": try_to_alter_key("role", False, False),
         "the innards of role": try_to_alter_key("role.director", False, True),
         "being a volunteer": try_to_alter_key("role.volunteer", True, True),
-        "not being a hacker": try_to_alter_key("role.hacker", False, False),
+        "not being a hacker": try_to_alter_key("role.hacker", False, True),
         "being a mentor": try_to_alter_key("role.mentor", True, True),
-        "being an organizer": try_to_alter_key("role.organizer", True, True),
+        "being an organizer": try_to_alter_key("role.organizer", False, True),
         "email key": try_to_alter_key("email", False, False),
         "mlh key": try_to_alter_key("mlh", False, False),
         "password key": try_to_alter_key("password", False, False),
