@@ -12,6 +12,12 @@ MLH = {
 }
 
 def add_cors_headers(resp):
+    """
+    Adds headers to allow for cross-origin requests.
+
+    Not gonna lie, stackoverflow told us to do it
+    and it works. We don't know how or why.
+    """
     if 'headers' not in resp:
         resp['headers'] = dict()
     resp['headers']['Access-Control-Allow-Origin'] = '*',

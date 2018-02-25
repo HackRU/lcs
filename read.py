@@ -20,8 +20,15 @@ def validate_user(db, token, email):
     return user
 
 def read_info(event, context):
+    """
+    We allow for an arbitrary mongoose query to be passed in.
+    If the aggregate field is present and true, we aggregate
+    and otherwise "find_one."
+    """
+
     if 'query' not in event or not event['query']:
         return config.add_cors_headers({"statusCode": 400, "body": "We query for your query."})
+    #if aggregate is not present, it is false.
     if 'aggregate' not in event:
         event['aggregate'] = False
 
@@ -31,6 +38,7 @@ def read_info(event, context):
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
+    #get the user if they're logged in and making the request.
     user = validate_user(tests,
             event['token'] if 'token' in event else False,
             event['email'] if 'email' in event else False)
