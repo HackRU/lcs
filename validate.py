@@ -35,7 +35,7 @@ def validate(event, context):
         return config.add_cors_headers({"statusCode":400,body:"Email not found."})
 
     #if none of the user's unexpired tokens match the one given, complain.
-    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']['token']):
+    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
         return config.add_cors_headers({"statusCode":400,body:"Authentication token is invalid."})
 
     return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
