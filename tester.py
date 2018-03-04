@@ -124,7 +124,8 @@ def update_validation_test(random = True):
         "mlh": False,
         "day_of":{
             "checkIn": False
-        }
+        },
+        "votes": -1
     }
 
     #A fake director
@@ -165,6 +166,7 @@ def update_validation_test(random = True):
     #all the test cases. Test name maps to the update and whether the user and admin
     #should be able to perform the update.
     try_to_fuck_with = {
+        "the number of votes": try_to_alter_key("votes", False, True),
         "the _id field": try_to_alter_key("_id", False, False),
         "the role object": try_to_alter_key("role", False, False),
         "the innards of role": try_to_alter_key("role.director", False, True),

@@ -163,6 +163,7 @@ def create_user(event, context, mlh = False):
             "organizer": False,
             "director": False
         },
+        "votes": 0
         "password": password,
         "github": event.get("github", ''),
         "major": event.get("major", ''),

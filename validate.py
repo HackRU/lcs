@@ -128,6 +128,8 @@ def validate_updates(user, updates, auth_usr = None):
             'role\\.organizer': say_no_to_non_admin,
             #can't change email
             'email': say_no,
+            #can't change your own votes
+            'votes': say_no_to_non_admin,
             #or MLH info
             'mlh': say_no,
             #no hacks on the role object
