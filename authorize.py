@@ -110,7 +110,7 @@ def mlh_callback(event, context):
 
     if(a['statusCode'] == 200):
         a["statusCode"] = 302
-        a['headers']['Location'] = "http://www.hackru.org/"
+        a['headers']['Location'] = "http://ec2-34-217-103-53.us-west-2.compute.amazonaws.com:3000/"
         #yes, this works! This is how the frontend will get the token.
         a['headers']['Set-Cookie'] = "authdata=" + a['body']
     return a
