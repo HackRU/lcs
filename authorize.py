@@ -47,7 +47,7 @@ def authorize(event,context, is_mlh = False):
 
     #If the user ever used MLH log in, they must always use MLH login.
     if checkhash.get('mlh', False) and not is_mlh:
-        return config.add_cors_headers({"statusCode":403,"Body":"Please use MLH to log in."})
+        return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
 
     if(checkhash['password'] != event['password']) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
@@ -64,7 +64,8 @@ def authorize(event,context, is_mlh = False):
     tests.update({"email":event['email']},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
-    update_val['email'] = email
+    #throw in the email for frontend.
+    update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
