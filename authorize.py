@@ -112,7 +112,8 @@ def mlh_callback(event, context):
         a["statusCode"] = 302
         a['headers']['Location'] = "http://ec2-34-217-103-53.us-west-2.compute.amazonaws.com:3000/"
         #yes, this works! This is how the frontend will get the token.
-        a['headers']['Set-Cookie'] = "authdata=" + a['body']
+        #TODO: domain=.hackru.org on prod.
+        a['headers']['Set-Cookie'] = "authdata=" + a['body'] + ";path=/;domain=.compute.amazonaws.com"
     return a
 
 def create_user(event, context, mlh = False):
