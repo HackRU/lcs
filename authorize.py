@@ -64,6 +64,7 @@ def authorize(event,context, is_mlh = False):
     tests.update({"email":event['email']},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
+    update_val['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
