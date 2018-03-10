@@ -104,7 +104,7 @@ def mlh_callback(event, context):
         #authorize a pre-existing user
         event['email'] = user['email']
         event['password'] = user['password']
-        a = authorize(event, context, True)
+        a = authorize(event, context, is_mlh = True)
     #we make "a" to be our inner response.
     #for the frontend, we must convert this to the relevant re-direct.
 
@@ -189,7 +189,7 @@ def create_user(event, context, mlh = False):
 
     tests.insert(doc)
 
-    return authorize(event, context)
+    return authorize(event, context, mlh)
 
 # context param should have info of accessor account
 
