@@ -47,7 +47,7 @@ def validate(event, context):
     if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
         return config.add_cors_headers({"statusCode":400,body:"Authentication token is invalid."})
 
-    return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
+    return config.add_cors_headers({"statusCode":200,"body":event})
 
 def validate_updates(user, updates, auth_usr = None):
     """
