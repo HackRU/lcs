@@ -1,11 +1,9 @@
-import config
-import hashlib
 import json
 import random
 import string
 import uuid
 from datetime import datetime, timedelta
-
+import config
 import pymongo
 import requests
 from pymongo import MongoClient
@@ -109,11 +107,15 @@ def mlh_callback(event, context):
     #for the frontend, we must convert this to the relevant re-direct.
 
     if(a['statusCode'] == 200):
-        a["statusCode"] = 302
+        a["statusCode"] = 301
+
+        a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
         a['headers']['Location'] = "http://ec2-34-217-103-53.us-west-2.compute.amazonaws.com:3000/"
+
+        a['headers']['Content-Type'] = "application/json"
         #yes, this works! This is how the frontend will get the token.
         #TODO: domain=.hackru.org on prod.
-        a['headers']['Set-Cookie'] = "authdata=" + a['body'] + ";path=/;domain=.compute.amazonaws.com"
+
     return a
 
 def create_user(event, context, mlh = False):
