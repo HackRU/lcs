@@ -147,12 +147,6 @@ def create_user(event, context, mlh = False):
     if usr != None and usr != [] and usr != {}:
         return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
 
-    default_school = {
-            #RU-RAH!
-            "id": 2,
-            "name": "Rutgers University"
-    }
-
     #The goal here is to have a complete user.
     #Where ever a value is not provided, we put the empty string.
     doc = {
@@ -177,7 +171,7 @@ def create_user(event, context, mlh = False):
         "dietary_restrictions": event.get("dietary_restrictions", ''),
         "special_needs": event.get("special_needs", ''),
         "date_of_birth": event.get("date_of_birth", ''),
-        "school": event.get("school", default_school),
+        "school": event.get("school", "Rutgers University"),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
         "registration_status": event.get("registration_status", 0),

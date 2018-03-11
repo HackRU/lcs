@@ -15,6 +15,15 @@ def validate(event, context):
     unexpired token of the user with
     the provided email.
     """
+
+    #we either expect the info in the cookie
+    #or in the body.
+    #Cookie takes precedence.
+    if 'Cookie' in event:
+        event = json.loads(event['Cookie'])
+    else:
+        event = event['body']
+
     #make sure we have all the info we need.
     if 'email' not in event or 'token' not in event:
         return config.add_cors_headers({"statusCode":400, "body":"Data not submitted."})
