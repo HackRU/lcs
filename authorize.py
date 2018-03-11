@@ -68,6 +68,13 @@ def authorize(event,context, is_mlh = False):
     return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
+    if 'hackingCookie' in event['queryStringParameters']:
+        if 'Cookie' not in event:
+            return config.add_cors_headers({"statusCode":403,"body":"No cookie found."})
+
+    return config.add_cors_headers({"statusCode":200,"body":event['Cookie']})
+
+
     params = config.MLH.copy()
     if 'code' not in event['queryStringParameters']:
         #this is the primitive auth flow, we expect and access token.
