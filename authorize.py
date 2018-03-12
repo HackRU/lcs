@@ -109,7 +109,7 @@ def mlh_callback(event, context):
     else:
         #authorize a pre-existing user
         event['email'] = user['email']
-        event['password'] = user['password']
+        event['password'] = 'defacto'
         a = authorize(event, context, is_mlh = True)
     #we make "a" to be our inner response.
     #for the frontend, we must convert this to the relevant re-direct.
