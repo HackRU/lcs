@@ -8,7 +8,7 @@ import pymongo
 import requests
 from pymongo import MongoClient
 from validate_email import validate_email
-
+import hashlib
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
@@ -27,6 +27,7 @@ def authorize(event,context, is_mlh = False):
 
     email = event['email']
     pass_ = event['password']
+    pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
 
     #DB connection
     client = MongoClient(config.DB_URI)
@@ -143,6 +144,7 @@ def create_user(event, context, mlh = False):
 
     u_email = event['email']
     password = event['password']
+    password = hashlib.md5(password.encode('utf-8') ).hexdigest()
 
     #DB connection
     client = MongoClient(config.DB_URI)
