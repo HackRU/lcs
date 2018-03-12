@@ -48,7 +48,7 @@ def authorize(event,context, is_mlh = False):
     if checkhash.get('mlh', False) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
 
-    if(checkhash['password'] != event['password']) and not is_mlh:
+    if(checkhash['password'] != pass_) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
 
     token = str(uuid.uuid4())
