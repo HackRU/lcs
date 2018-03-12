@@ -72,7 +72,7 @@ def mlh_callback(event, context):
         if 'Cookie' not in event:
             return config.add_cors_headers({"statusCode":403,"body":"No cookie found."})
 
-    return config.add_cors_headers({"statusCode":200,"body":event['Cookie']})
+        return config.add_cors_headers({"statusCode":200,"body":event['Cookie']})
 
 
     params = config.MLH.copy()
@@ -183,7 +183,7 @@ def create_user(event, context, mlh = False):
         "school": event.get("school", "Rutgers University"),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
-        "registration_status": event.get("registration_status", 0),
+        "registration_status": event.get("registration_status", "unregistered"),
         "level_of_study": event.get("level_of_study", ""),
         "mlh": mlh, #we know this and the below too, depending on how the function is called.
         "day_of":{
