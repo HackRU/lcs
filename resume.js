@@ -26,7 +26,7 @@ function uploadResume(email) {
     */
 
     var params = {
-        Bucket: config.get('s3bucket'),
+        Bucket: config_resume.get('s3bucket'),
         Key: resumeKey
     };
     
@@ -48,7 +48,7 @@ function uploadResume(email) {
 // pass hacker's email if hacker = true, else pass {hacker = false, email = the set of emails the companies want resumes for}
 
 function download(email) {
-    return s3.getObject({Bucket: config.get('s3bucket'), Key: encodeURIComponent(email)}, 
+    return s3.getObject({Bucket: config_resume.get('s3bucket'), Key: encodeURIComponent(email)}, 
                         function(err, data) {
                             if (err) 
                                 return alert('Download error: ', err.message)
