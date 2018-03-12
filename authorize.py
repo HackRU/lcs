@@ -1,11 +1,9 @@
-import config
-import hashlib
 import json
 import random
 import string
 import uuid
 from datetime import datetime, timedelta
-
+import config
 import pymongo
 import requests
 from pymongo import MongoClient
@@ -47,7 +45,7 @@ def authorize(event,context, is_mlh = False):
 
     #If the user ever used MLH log in, they must always use MLH login.
     if checkhash.get('mlh', False) and not is_mlh:
-        return config.add_cors_headers({"statusCode":403,"Body":"Please use MLH to log in."})
+        return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
 
     if(checkhash['password'] != event['password']) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
@@ -64,10 +62,19 @@ def authorize(event,context, is_mlh = False):
     tests.update({"email":event['email']},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
+    #throw in the email for frontend.
+    update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
 def mlh_callback(event, context):
+    if 'hackingCookie' in event['queryStringParameters']:
+        if 'Cookie' not in event:
+            return config.add_cors_headers({"statusCode":403,"body":"No cookie found."})
+
+    return config.add_cors_headers({"statusCode":200,"body":event['Cookie']})
+
+
     params = config.MLH.copy()
     if 'code' not in event['queryStringParameters']:
         #this is the primitive auth flow, we expect and access token.
@@ -102,15 +109,20 @@ def mlh_callback(event, context):
         #authorize a pre-existing user
         event['email'] = user['email']
         event['password'] = user['password']
-        a = authorize(event, context, True)
+        a = authorize(event, context, is_mlh = True)
     #we make "a" to be our inner response.
     #for the frontend, we must convert this to the relevant re-direct.
 
     if(a['statusCode'] == 200):
-        a["statusCode"] = 302
-        a['headers']['Location'] = "http://www.hackru.org/"
+        a["statusCode"] = 301
+
+        a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
+        a['headers']['Location'] = "http://ec2-34-217-103-53.us-west-2.compute.amazonaws.com:3000/"
+
+        a['headers']['Content-Type'] = "application/json"
         #yes, this works! This is how the frontend will get the token.
-        a['headers']['Set-Cookie'] = "authdata=" + a['body']
+        #TODO: domain=.hackru.org on prod.
+
     return a
 
 def create_user(event, context, mlh = False):
@@ -144,12 +156,6 @@ def create_user(event, context, mlh = False):
     if usr != None and usr != [] and usr != {}:
         return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
 
-    default_school = {
-            #RU-RAH!
-            "id": 2,
-            "name": "Rutgers University"
-    }
-
     #The goal here is to have a complete user.
     #Where ever a value is not provided, we put the empty string.
     doc = {
@@ -163,6 +169,7 @@ def create_user(event, context, mlh = False):
             "organizer": False,
             "director": False
         },
+        "votes": 0,
         "password": password,
         "github": event.get("github", ''),
         "major": event.get("major", ''),
@@ -173,7 +180,7 @@ def create_user(event, context, mlh = False):
         "dietary_restrictions": event.get("dietary_restrictions", ''),
         "special_needs": event.get("special_needs", ''),
         "date_of_birth": event.get("date_of_birth", ''),
-        "school": event.get("school", default_school),
+        "school": event.get("school", "Rutgers University"),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
         "registration_status": event.get("registration_status", 0),
@@ -186,7 +193,7 @@ def create_user(event, context, mlh = False):
 
     tests.insert(doc)
 
-    return authorize(event, context)
+    return authorize(event, context, mlh)
 
 # context param should have info of accessor account
 
@@ -197,7 +204,7 @@ def change_password(event, context):
 
     client = MongoClient(config.DB_URI)
 
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']

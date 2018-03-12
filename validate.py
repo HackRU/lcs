@@ -15,6 +15,15 @@ def validate(event, context):
     unexpired token of the user with
     the provided email.
     """
+
+    #we either expect the info in the cookie
+    #or in the body.
+    #Cookie takes precedence.
+    if 'Cookie' in event:
+        event = json.loads(event['Cookie'])
+    else:
+        event = event['body']
+
     #make sure we have all the info we need.
     if 'email' not in event or 'token' not in event:
         return config.add_cors_headers({"statusCode":400, "body":"Data not submitted."})
@@ -24,7 +33,7 @@ def validate(event, context):
 
     #connect to DB
     client = MongoClient(config.DB_URI)
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
@@ -35,10 +44,10 @@ def validate(event, context):
         return config.add_cors_headers({"statusCode":400,body:"Email not found."})
 
     #if none of the user's unexpired tokens match the one given, complain.
-    if not any(i['auth']['token'] == token and datetime.now() < dp.parse(i['auth']['valid_until']) for i in results['auth']['token']):
+    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
         return config.add_cors_headers({"statusCode":400,body:"Authentication token is invalid."})
 
-    return config.add_cors_headers({"statusCode":200,"body":"Successful request."})
+    return config.add_cors_headers({"statusCode":200,"body":event})
 
 def validate_updates(user, updates, auth_usr = None):
     """
@@ -128,6 +137,8 @@ def validate_updates(user, updates, auth_usr = None):
             'role\\.organizer': say_no_to_non_admin,
             #can't change email
             'email': say_no,
+            #can't change your own votes
+            'votes': say_no_to_non_admin,
             #or MLH info
             'mlh': say_no,
             #no hacks on the role object
@@ -193,7 +204,7 @@ def update(event, context):
 
     #connect to the DB.
     client = MongoClient(config.DB_URI)
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']

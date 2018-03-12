@@ -34,7 +34,7 @@ def read_info(event, context):
 
     client = MongoClient(config.DB_URI)
 
-    db = client['camelot-test']
+    db = client['lcs-db']
     db.authenticate(config.DB_USER, config.DB_PASS)
 
     tests = db['test']
