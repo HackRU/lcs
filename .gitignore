@@ -52,3 +52,11 @@ messages
 messages.txt
 log*
 watchlist.json
+
+#lcs things
+config.py
+bin/
+dep.zip
+include/
+lib/
+pip-selfcheck.json
