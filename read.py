@@ -45,7 +45,7 @@ def read_info(event, context):
 
     #directors and organizers see all and know all
     if user and (user['role']['director'] or user['role']['organizer']):
-        res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else tests.find(event['query'])
+        res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else list(tests.find(event['query']))
     #users can see anything about themselves - in a find.
     elif user and not event['aggregate']:
         res_ = [res for res in tests.find(event['query']) if res['email'] == event['email']]
