@@ -59,7 +59,8 @@ def read_info(event, context):
                 if abstracted_data in doc:
                     del doc[abstracted_data]
 
-    for i in res_:
-        del i['_id']
+    if not event['aggregate']:
+        for i in res_:
+            del i['_id']
 
     return config.add_cors_headers({"statusCode": 200, "body": res_})
