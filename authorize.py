@@ -105,6 +105,8 @@ def mlh_callback(event, context):
     if user == None or user == [] or user == ():
         #making new user here
         mlh_user['data']['mlh'] = True
+        if 'school' in mlh_user['data'] and 'name' in mlh_user['data']['school']:
+            mlh_user['data']['school'] = mlh_user['data']['school']['name']
         a = create_user(mlh_user['data'], context, True)
     else:
         #authorize a pre-existing user
