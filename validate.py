@@ -139,6 +139,7 @@ def validate_updates(user, updates, auth_usr = None):
             'email': say_no,
             #can't change your own votes
             'votes': say_no_to_non_admin,
+            'votes_from': say_no_to_non_admin,
             #or MLH info
             'mlh': say_no,
             #no hacks on the role object
@@ -179,8 +180,10 @@ def validate_updates(user, updates, auth_usr = None):
 
         for item in validator:
             #for all matching regexes, ensure that the update is OK.
+            print('Handling', item, 'vs', key)
             if re.match(item, key) is not None:
-                return validator[item](usr_attr, updates[key])
+                if not validator[item](usr_attr, updates[key]):
+                    return False
         return True
 
     #remove any updates that fail in some regex they match.

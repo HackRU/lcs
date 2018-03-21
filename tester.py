@@ -121,6 +121,7 @@ def update_validation_test(random = True):
         "gender": "Undecidable",
         "registration_status": "unregistered",
         "level_of_study": "Low",
+        "votes_from": [],
         "mlh": False,
         "day_of":{
             "checkIn": False
@@ -177,7 +178,8 @@ def update_validation_test(random = True):
         "email key": try_to_alter_key("email", False, False),
         "mlh key": try_to_alter_key("mlh", False, False),
         "password key": try_to_alter_key("password", False, False),
-        "adding a new key": try_to_alter_key("shite", True, True)
+        "adding a new key": try_to_alter_key("shite", True, True),
+        "voting from": try_to_alter_key("votes_from", False, True)
     }
 
     if random:
