@@ -121,7 +121,6 @@ def update_validation_test(random = True):
         "gender": "Undecidable",
         "registration_status": "unregistered",
         "level_of_study": "Low",
-        "votes_from": [],
         "mlh": False,
         "day_of":{
             "checkIn": False

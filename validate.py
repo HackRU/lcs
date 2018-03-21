@@ -173,11 +173,6 @@ def validate_updates(user, updates, auth_usr = None):
         accepts the change. Returns a boolean.
         """
         usr_attr = find_dotted(key)
-        if usr_attr is None:
-            #we allow the addition of arbitrary keys,
-            #just to make life easier.
-            return True
-
         for item in validator:
             #for all matching regexes, ensure that the update is OK.
             print('Handling', item, 'vs', key)
