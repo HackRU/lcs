@@ -136,30 +136,31 @@ def update_validation_test(random = True):
         }
     }
 
-    def try_to_alter_key(key, usr_can, admin_can, value = "Dummy"):
+    def try_to_alter_key(key, usr_can, admin_can, value = "Dummy", op = '$set'):
         """
         Generate the update dictionary (passed to update),
         whether the user should be able to do the update,
         whether an admin should be able to do the update,
         and an optional value to update to.
+        Optionally, use a specific operation. Defaults to '$set'.
         """
 
         #the dictionary is trivial
-        upd_dict = {key: value}
+        upd_dict = {op: {key: value}}
 
         #if the update should work, the key should be present
         #in the validated update dictionary.
         if usr_can:
-            usr = lambda x: key in x
+            usr = lambda x: key in x[op]
         else:
             #otherwise not.
-            usr = lambda x: key not in x
+            usr = lambda x: key not in x[op]
 
         #ditto ^.
         if admin_can:
-            admin = lambda x: key in x
+            admin = lambda x: key in x[op]
         else:
-            admin = lambda x: key not in x
+            admin = lambda x: key not in x[op]
 
         return (upd_dict, usr, admin)
 
@@ -189,13 +190,22 @@ def update_validation_test(random = True):
 
         def merge_dicts(d1, d2):
             """
-            Returns d1.merge(d2),
+            Returns sorta d1.merge(d2),
             but without altering d1 or d2.
+            This is also specialized to merge for each operation.
             """
             #I'm too sexy for the standard library.
             d = dict()
-            d.update(d1)
-            d.update(d2)
+            for op in d1:
+                d[op] = dict()
+                d[op].update(d1[op])
+                if op in d2:
+                    d[op].update(d2[op])
+            for op in d2:
+                d[op] = dict()
+                d[op].update(d2[op])
+                if op in d1:
+                    d[op].update(d1[op])
             return d
 
         from random import sample, randint

@@ -52,24 +52,24 @@ def validate(event, context):
 def validate_updates(user, updates, auth_usr = None):
     """
     Ensures that the user is being updated in a legal
-    way. Invariants are explained at line 113 for most
-    fields and 59 for the registration_status in detail.
+    way. Invariants are explained at line 127 for most
+    fields and 67 for the registration_status in detail.
     """
     #if the user updating is not provided, we assume
     #the user's updating themselves.
     if auth_usr is None: auth_usr = user
 
     #quick utilities: to reject any update or any update by a non-admin.
-    say_no = lambda x, y: False
-    def say_no_to_non_admin(x, y):
+    say_no = lambda x, y, z: False
+    def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
-    def check_registration(old, new):
+    def check_registration(old, new, op):
         """
         Ensures that an edge exists in the user state graph
         and that the edge can be traversed by this mode of update.
         "True" edges are traversible by the user or through an admin
-        whereas "False" ones require admin intervention.
+        whereas "False" ones require admin intervention. We only '$set' this field.
         """
         state_graph = {
             "unregistered": { #unregistered = did not fill out all of application.
@@ -116,10 +116,11 @@ def validate_updates(user, updates, auth_usr = None):
         #the update is valid if it is an edge traversible in the current
         #mode of update.
         return old in state_graph and new in state_graph[old] \
-                and (state_graph[old][new] or say_no_to_non_admin(1, 2))
+                and (state_graph[old][new] or say_no_to_non_admin(1, 2)) \
+                and op == "$set"
                 #remember that say_no_to_non_admin ignores arguments.
 
-    #for all fields, we map a regex to a function of the old and new value.
+    #for all fields, we map a regex to a function of the old and new value and the operator being used.
     #the function determines the validity of the update
     #We "and" all the regexes, so an update is valid for all regexes it matches,
     #not just one.
@@ -165,24 +166,24 @@ def validate_updates(user, updates, auth_usr = None):
             curr = curr[i]
         return curr
 
-    def validate(key):
+    def validate(key, op):
         """
         Finds out if a key is present in the object.
         If it is, ensure that for each regex it matches
-        (from the validator - line 117), the validator
+        (from the validator - line 127), the validator
         accepts the change. Returns a boolean.
         """
         usr_attr = find_dotted(key)
         for item in validator:
             #for all matching regexes, ensure that the update is OK.
-            print('Handling', item, 'vs', key)
             if re.match(item, key) is not None:
-                if not validator[item](usr_attr, updates[key]):
+                if not validator[item](usr_attr, updates[op][key], op):
                     return False
         return True
 
+    #for each operation:
     #remove any updates that fail in some regex they match.
-    return {i: updates[i] for i in updates if validate(i)}
+    return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
 
 def update(event, context):
     """
@@ -233,5 +234,5 @@ def update(event, context):
     updates = validate_updates(results, event['updates'], a_res)
 
     #update the user and report success.
-    tests.update_one({'email': u_email}, {'$set': updates})
+    tests.update_one({'email': u_email}, updates)
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
