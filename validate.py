@@ -41,13 +41,13 @@ def validate(event, context):
     #try to find our user
     results = tests.find_one({"email":email})
     if results == None or results == [] or results == ():
-        return config.add_cors_headers({"statusCode":400,body:"Email not found."})
+        return config.add_cors_headers({"statusCode":400, "body":"Email not found.", "isBase64Encoded": False})
 
     #if none of the user's unexpired tokens match the one given, complain.
     if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
-        return config.add_cors_headers({"statusCode":400,body:"Authentication token is invalid."})
+        return config.add_cors_headers({"statusCode":400, "body":"Authentication token is invalid.", "isBase64Encoded": False})
 
-    return config.add_cors_headers({"statusCode":200,"body":event})
+    return config.add_cors_headers({"statusCode":200,"body":event, "isBase64Encoded": False})
 
 def validate_updates(user, updates, auth_usr = None):
     """
