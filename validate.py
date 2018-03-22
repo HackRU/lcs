@@ -22,7 +22,7 @@ def validate(event, context):
     if 'Cookie' in event:
         event = json.loads(event['Cookie'])
     else:
-        event = event['body']
+        event = json.loads(event['body'])
 
     #make sure we have all the info we need.
     if 'email' not in event or 'token' not in event:
