@@ -20,6 +20,7 @@ def genMagicLink(event,context):
         if user:
             random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
             obj_to_insert = {}
+            obj_to_insert[random] = {}
             obj_to_insert[random]['email'] = event['email']
             obj_to_insert[random]['forgot'] = True
             obj_to_insert[random][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
@@ -50,6 +51,7 @@ def genMagicLink(event,context):
             for j in range(numLinks):
                 random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
                 obj_to_insert = {}
+                obj_to_insert[random] = {}
                 obj_to_insert[random]['permissions'] = permissions
                 obj_to_insert[random]['email'] = event['emailsTo'][j]
                 obj_to_insert[random]['forgot'] = False
