@@ -16,7 +16,7 @@ def forgotUser(magiclink):
     magiclinks.insert_one(obj_to_insert)
     return magiclink
 
-def directorLink(event):
+def directorLink(numLinks,event):
         links_list = []
         for i in event['permissions']:
              permissions.append(i)
@@ -61,21 +61,19 @@ def genMagicLink(event,context):
     if(ret_['statusCode'] == 200):
         #defaul value of numlinks 1
         numLinks = 1
-        if 'numLinks' not in event:
+        if 'numLinks' in event:
             numLinks = event['numLinks']
         permissions = []
         links_list = []
         user = tests.find_one({"email":event['email']})
         if user and user['role']['director'] and 'permissions' in event:
             #build permissions
-            links_list = directorLink(event)
+            links_list = directorLink(numLinks,event)
             return config.add_cors_headers({"statusCode":200,"body":str(links_list)})
 
         else:
-
                 return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
     else:
-
         return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
 
 def updateUserFromMagicLink(userCollection,magiclinkobj,event):
