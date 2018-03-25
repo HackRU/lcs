@@ -22,11 +22,10 @@ def genMagicLink(event,context):
         if user:
             magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
             obj_to_insert = {}
-            obj_to_insert[magiclink] = {}
-            obj_to_insert[magiclink]['email'] = event['email']
-            obj_to_insert[magiclink]['link'] = magiclink
-            obj_to_insert[magiclink]['forgot'] = True
-            obj_to_insert[magiclink][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+            obj_to_insert['email'] = event['email']
+            obj_to_insert['link'] = magiclink
+            obj_to_insert['forgot'] = True
+            obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
             magiclinks.insert_one(obj_to_insert)
             return config.add_cors_headers({"statusCode":200,"body":magiclink})
         else:
@@ -54,12 +53,11 @@ def genMagicLink(event,context):
             for j in range(numLinks):
                 magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
                 obj_to_insert = {}
-                obj_to_insert[magiclink] = {}
-                obj_to_insert[magiclink]['permissions'] = permissions
-                obj_to_insert[magiclink]['email'] = event['emailsTo'][j]
-                obj_to_insert[magiclink]['forgot'] = False
-                obj_to_insert[magiclink]['link'] = magiclink
-                obj_to_insert[magiclink][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+                obj_to_insert['permissions'] = permissions
+                obj_to_insert['email'] = event['emailsTo'][j]
+                obj_to_insert['forgot'] = False
+                obj_to_insert['link'] = magiclink
+                obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
                 links_list.append(magiclink)
                 magiclinks.insert_one(obj_to_insert)
 
@@ -71,7 +69,6 @@ def genMagicLink(event,context):
     else:
 
         return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
-
 
 
 
