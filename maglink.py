@@ -102,11 +102,12 @@ def updateUserFromMagicLink(userCollection,magiclinkobj,event):
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.director':True}})
                 elif i == 'judge':
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.judge':True}})
-                
                 elif i == 'organizer':
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.organizer':True}})
                 elif i == 'volunteer':
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.volunteer':True}})
+                elif i == 'mentor':
+                    userCollection.update_one({'email':event['email'] }, {'$set':{'role.mentor':True}})
 
             return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your role"})
                     
