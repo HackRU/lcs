@@ -2,6 +2,7 @@ import pymongo
 import validate
 import config 
 import random
+import datetime
 
 def genMagicLink(event,context):
     """
@@ -19,9 +20,9 @@ def genMagicLink(event,context):
         if user:
             random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
             obj_to_insert = {}
-            obj_to_insert[random]['expiry'] ='' 
             obj_to_insert[random]['email'] = event['email']
             obj_to_insert[random]['forgot'] = True
+            obj_to_insert[random][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
             magiclinks.insert_one(magiclinks)
             return config.add_cors_headers({"statusCode":200,"body":random})
         else:
@@ -50,9 +51,9 @@ def genMagicLink(event,context):
                 random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
                 obj_to_insert = {}
                 obj_to_insert[random]['permissions'] = permissions
-                obj_to_insert[random]['expiry'] ='' 
                 obj_to_insert[random]['email'] = event['emailsTo'][j]
                 obj_to_insert[random]['forgot'] = False
+                obj_to_insert[random][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
                 links_list.append(random)
                 magiclinks.insert_one(magiclinks)
 
