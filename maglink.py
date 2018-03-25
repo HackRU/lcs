@@ -48,7 +48,7 @@ def genMagicLink(event,context):
         user = tests.find_one({"email":event['email']})
         if user:
             magiclink = forgotUser(magiclink)
-            return config.add_cors_headers({"statusCode":200,"body":magiclink})
+            return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
         else:
             return config.add_cors_headers({"statusCode":400,"body":"Invlaid email"})
         
