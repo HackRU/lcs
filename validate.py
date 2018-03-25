@@ -141,6 +141,7 @@ def validate_updates(user, updates, auth_usr = None):
             #can't change your own votes
             'votes': say_no_to_non_admin,
             'votes_from': say_no_to_non_admin,
+            'skipped_users': say_no_to_non_admin,
             #or MLH info
             'mlh': say_no,
             #no hacks on the role object
