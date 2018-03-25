@@ -116,7 +116,7 @@ def validate_updates(user, updates, auth_usr = None):
         #the update is valid if it is an edge traversible in the current
         #mode of update.
         return old in state_graph and new in state_graph[old] \
-                and (state_graph[old][new] or say_no_to_non_admin(1, 2)) \
+                and (state_graph[old][new] or say_no_to_non_admin(1, 2, 3)) \
                 and op == "$set"
                 #remember that say_no_to_non_admin ignores arguments.
 
