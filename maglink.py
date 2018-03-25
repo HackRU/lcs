@@ -1,8 +1,10 @@
-import pymongo
+from pymongo import MongoClient
 import validate
 import config 
 import random
 import datetime
+import string
+from datetime import datetime, timedelta
 
 def genMagicLink(event,context):
     """
@@ -18,14 +20,15 @@ def genMagicLink(event,context):
 
         user = tests.find_one({"email":event['email']})
         if user:
-            random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
+            magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
             obj_to_insert = {}
-            obj_to_insert[random] = {}
-            obj_to_insert[random]['email'] = event['email']
-            obj_to_insert[random]['forgot'] = True
-            obj_to_insert[random][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
-            magiclinks.insert_one(magiclinks)
-            return config.add_cors_headers({"statusCode":200,"body":random})
+            obj_to_insert[magiclink] = {}
+            obj_to_insert[magiclink]['email'] = event['email']
+            obj_to_insert[magiclink]['link'] = magiclink
+            obj_to_insert[magiclink]['forgot'] = True
+            obj_to_insert[magiclink][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+            magiclinks.insert_one(obj_to_insert)
+            return config.add_cors_headers({"statusCode":200,"body":magiclink})
         else:
             return config.add_cors_headers({"statusCode":400,"body":"Invlaid email"})
         
@@ -49,15 +52,16 @@ def genMagicLink(event,context):
             for i in event['permissions']:
                 permissions.append(i)
             for j in range(numLinks):
-                random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
+                magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
                 obj_to_insert = {}
-                obj_to_insert[random] = {}
-                obj_to_insert[random]['permissions'] = permissions
-                obj_to_insert[random]['email'] = event['emailsTo'][j]
-                obj_to_insert[random]['forgot'] = False
-                obj_to_insert[random][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
-                links_list.append(random)
-                magiclinks.insert_one(magiclinks)
+                obj_to_insert[magiclink] = {}
+                obj_to_insert[magiclink]['permissions'] = permissions
+                obj_to_insert[magiclink]['email'] = event['emailsTo'][j]
+                obj_to_insert[magiclink]['forgot'] = False
+                obj_to_insert[magiclink]['link'] = magiclink
+                obj_to_insert[magiclink][ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+                links_list.append(magiclink)
+                magiclinks.insert_one(obj_to_insert)
 
             return config.add_cors_headers({"statusCode":200,"body":str(links_list)})
 
