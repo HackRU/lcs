@@ -6,7 +6,7 @@ def genMagicLink(event,context):
     """
        The event object expects and email and  checks if it is a valid request to generate the magic link  
     """
-    if 'email' not in event or 'token':
+    if 'email' not in event or 'token' not in event:
 
         return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try a again"})
     #validate first
