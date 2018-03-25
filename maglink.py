@@ -6,6 +6,23 @@ def genMagicLink(event,context):
     """
        The event object expects and email and  checks if it is a valid request to generate the magic link  
     """
+
+    client = MongoClient(config.DB_URI)
+    db = client['lcs-db']
+    db.authenticate(config.DB_USER,config.DB_PASS)
+    tests = db['test']
+    magiclinks = db['magiclinks']
+    if 'forgot' in event and 'email' in event:
+
+        user = tests.find_one({"email":event['email']})
+        if user:
+            random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
+            obj_to_insert = {}
+            obj_to_insert[random]['expiry'] ='' 
+            obj_to_insert[random]['email'] = event['email']
+            obj_to_insert[random]['forgot'] = True
+            magiclinks.insert_one(magiclinks)
+            return config.add_cors_headers({"statusCode":200,"body":random})
     if 'email' not in event or 'token' not in event:
 
         return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try a again"})
@@ -18,11 +35,6 @@ def genMagicLink(event,context):
         if 'numLinks' not in event:
             numLinks = event['numLinks']
         permissions = []
-        client = MongoClient(config.DB_URI)
-        db = client['lcs-db']
-        db.authenticate(config.DB_USER,config.DB_PASS)
-        tests = db['test']
-        magiclinks = db['magiclinks']
         user = tests.find_one({"email":event['email']})
         if user and user['role']['director']:
             #build permissions
@@ -35,6 +47,7 @@ def genMagicLink(event,context):
                 obj_to_insert[random]['permissions'] = permissions
                 obj_to_insert[random]['expiry'] ='' 
                 obj_to_insert[random]['email'] = event['emailsTo'][j]
+                obj_to_insert[random]['forgot'] = False
                 magiclinks.insert_one(magiclinks)
 
             return config.add_cors_headers({"statusCode":200,"body":"Made Magic Links with Permissions Director"})
