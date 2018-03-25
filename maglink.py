@@ -85,7 +85,7 @@ def updateUserFromMagicLink(userCollection,magiclinkobj,event):
         pass_ = event['password']
         pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
         checkifmlh = userCollection.find_one({"email":event['email']})
-        if not checkifmlh['mlh']:
+        if checkifmlh['mlh']:
             return config.add_cors_headers({"statusCode":400,"body":"Something went wrong, you are probbally an MLH user change password using MLH"})
         userCollection.update_one({"email":event['email']},{'$set':{'password':pass_}})
         return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your password"})
