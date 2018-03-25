@@ -17,7 +17,7 @@ def genMagicLink(event,context):
         numLinks = 1
         if 'numLinks' not in event:
             numLinks = event['numLinks']
-        permissions = ['Forgot']
+        permissions = []
         client = MongoClient(config.DB_URI)
         db = client['lcs-db']
         db.authenticate(config.DB_USER,config.DB_PASS)
@@ -32,17 +32,15 @@ def genMagicLink(event,context):
             for j in range(numLinks):
                 random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
                 obj_to_insert = {}
-                obj_to_insert[random] = permissions
+                obj_to_insert[random]['permissions'] = permissions
+                obj_to_insert[random]['expiry'] ='' 
+                obj_to_insert[random]['email'] = event['emailsTo'][j]
                 magiclinks.insert_one(magiclinks)
 
             return config.add_cors_headers({"statusCode":200,"body":"Made Magic Links with Permissions Director"})
         else:
-                random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
-                obj_to_insert = {}
-                obj_to_insert[random] = permissions
-                magiclinks.insert_one(magiclinks)
 
-                return config.add_cors_headers({"statusCode":200,"body":"Forgot password url " + random})
+                return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
     else:
 
         return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
