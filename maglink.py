@@ -2,6 +2,7 @@ import pymongo
 import validate
 import config 
 import random
+
 def genMagicLink(event,context):
     """
        The event object expects and email and  checks if it is a valid request to generate the magic link  
@@ -23,6 +24,10 @@ def genMagicLink(event,context):
             obj_to_insert[random]['forgot'] = True
             magiclinks.insert_one(magiclinks)
             return config.add_cors_headers({"statusCode":200,"body":random})
+        else:
+            return config.add_cors_headers({"statusCode":400,"body":"Invlaid email"})
+        
+
     if 'email' not in event or 'token' not in event:
 
         return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try a again"})
@@ -35,12 +40,12 @@ def genMagicLink(event,context):
         if 'numLinks' not in event:
             numLinks = event['numLinks']
         permissions = []
+        links_list = []
         user = tests.find_one({"email":event['email']})
-        if user and user['role']['director']:
+        if user and user['role']['director'] and 'permissions' in event:
             #build permissions
-            if 'permissions' in event:
-                for i in event['permissions']:
-                    permissions.append(i)
+            for i in event['permissions']:
+                permissions.append(i)
             for j in range(numLinks):
                 random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
                 obj_to_insert = {}
@@ -48,9 +53,11 @@ def genMagicLink(event,context):
                 obj_to_insert[random]['expiry'] ='' 
                 obj_to_insert[random]['email'] = event['emailsTo'][j]
                 obj_to_insert[random]['forgot'] = False
+                links_list.append(random)
                 magiclinks.insert_one(magiclinks)
 
-            return config.add_cors_headers({"statusCode":200,"body":"Made Magic Links with Permissions Director"})
+            return config.add_cors_headers({"statusCode":200,"body":str(links_list)})
+
         else:
 
                 return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
