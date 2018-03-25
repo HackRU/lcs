@@ -179,7 +179,7 @@ def update_validation_test(random = True):
         "mlh key": try_to_alter_key("mlh", False, False),
         "password key": try_to_alter_key("password", False, False),
         "adding a new key": try_to_alter_key("shite", True, True),
-        "voting from": try_to_alter_key("votes_from", False, True)
+        "voting from": try_to_alter_key("votes_from", False, True),
         "skipping voting": try_to_alter_key("skipped_users", False, True)
     }
 
