@@ -9,7 +9,10 @@ else
     cp -r lib/python3.5/site-packages/ deploy/
 fi
 
-cp $1 deploy/
+for var in "$@"
+do
+	cp $var deploy/
+done
 cp config.py deploy/
 cd deploy/
 zip -r dep.zip *
