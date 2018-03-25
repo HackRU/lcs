@@ -18,6 +18,7 @@ def forgotUser(magiclink):
 
 def directorLink(numLinks,event):
         links_list = []
+        permissions = []
         for i in event['permissions']:
              permissions.append(i)
         for j in range(numLinks):
