@@ -78,7 +78,7 @@ def genMagicLink(event,context):
 
         return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
 
-def updateUserFromMagicLink(magiclink_db,magiclink,event):
+def updateUserFromMagicLink(userCollection,magiclinkobj,event):
     """
         Updates User Based on a magic link
     """
@@ -86,7 +86,35 @@ def updateUserFromMagicLink(magiclink_db,magiclink,event):
     if maglinkobj['forgot'] == True:
         pass_ = event['password']
         pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
-        magiclink_db.find_one({"email":event['email'],{'$set':{'password':pass_}}})
+        checkifmlh = userCollection.find_one({"email":event['email']})
+        if not checkifmlh['mlh']:
+            return config.add_cors_headers({"statusCode":400,"body":"Something went wrong, you are probbally an MLH user change password using MLH"})
+        userCollection.update_one({"email":event['email']},{'$set':{'password':pass_}})
+        return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your password"})
+    #else we want an auth token and an email
+    else:
+        ret_ = validate.validate(event,None)
+        if ret_['statusCode'] == 200:
+           #Grab the permissions object 
+            permissions = maglinkobj['permissions']
+            for i in permissions:
+                if i == 'director':
+                    userCollection.update_one({'email':event['email'] }, {'$set':{'role.director':True}})
+                elif i == 'judge':
+                    userCollection.update_one({'email':event['email'] }, {'$set':{'role.judge':True}})
+                
+                elif i == 'organizer':
+                    userCollection.update_one({'email':event['email'] }, {'$set':{'role.organizer':True}})
+                elif i == 'volunteer':
+                    userCollection.update_one({'email':event['email'] }, {'$set':{'role.volunteer':True}})
+
+            return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your role"})
+                    
+                    
+
+
+
+
 
 
 def consumeUrl(event,context):
@@ -99,11 +127,13 @@ def consumeUrl(event,context):
     client = MongoClient(config.DB_URI)
     db = client['lcs-db']
     db.authenticate(config.DB_USER,config.DB_PASS)
+    #user collection
     tests = db['test']
+    #maglink collection
     magiclinks = db['magiclinks']
     maglinkobj = magiclinks.find_one({"link":event['link']}) 
     if maglinkobj:
-        updateUserFromMagicLink(magiclinks,maglinkobj,event)
-
+        statusCode = updateUserFromMagicLink(tests,maglinkobj,event)
+        return statusCode
 
 
