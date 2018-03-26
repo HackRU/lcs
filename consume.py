@@ -66,3 +66,5 @@ def consumeUrl(event,context):
         #remove link after consuming
         magiclinks.remove({"link":maglinkobj['link']})
         return statusCode
+    
+    return config.add_cors_headers({"statusCode":400,"body":"Invalid magiclink, try again"})
