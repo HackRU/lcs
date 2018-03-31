@@ -78,22 +78,24 @@ def mlh_callback(event, context):
 
     params = config.MLH.copy()
     if 'code' not in event['queryStringParameters']:
-        #this is the primitive auth flow, we expect and access token.
+        #this is the primitive auth flow, we expect an access token.
         access_token = event['queryStringParameters'].get('access_token')
         if access_token is None:
-            return ({"statusCode":400,"body":"MLH Troubles! No access token."})
+            return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles! No access token."})
     else:
         #the new auth flow: we swap and auth code for the access token.
         params['code'] = event['queryStringParameters']['code']
         access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
-        access_token = access_tok_json['access_token']
-        scopes = access_tok_json['scope']
+        if 'access_token' in access_tok_json:
+            access_token = access_tok_json['access_token']
+        else:
+            return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles! No access token."})
 
     #with access token in hand, we may query MLH.
     mlh_user = requests.get(MLH_USER_BASE_URL, params={'access_token': access_token}).json()
 
     if mlh_user['status'] != 'OK':
-        return ({"statusCode":400,"body":"MLH Troubles!"})
+        return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles!"})
 
     #connect to our DB
     client = MongoClient(config.DB_URI)
@@ -121,6 +123,8 @@ def mlh_callback(event, context):
 
         a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
         a['headers']['Location'] = "https://hackru.org/?authdata="+a['body']
+        if 'redir' in event['queryStringParameters']:
+            a['headers']['Location'] = event['queryStringParameters']['redir'] + '/?authdata=' + a['body']
 
         a['headers']['Content-Type'] = "application/json"
         #yes, this works! This is how the frontend will get the token.
