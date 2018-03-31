@@ -31,6 +31,7 @@ def directorLink(numLinks,event):
             obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
             links_list.append(magiclink)
             magiclinks.insert_one(obj_to_insert)
+            #TODO email magic link
         return links_list
 
 def genMagicLink(event,context):
@@ -57,9 +58,9 @@ def genMagicLink(event,context):
 
         return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try a again"})
     #validate first
-    ret_ = validate.validate(event,context);
+    ret_ = validate.get_validated_user(event);
     #if sucesfully validated 
-    if(ret_['statusCode'] == 200):
+    if(ret_[0] == True):
         #defaul value of numlinks 1
         numLinks = 1
         if 'numLinks' in event:

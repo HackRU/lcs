@@ -21,8 +21,8 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
         return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your password"})
     #else we want an auth token and an email
     else:
-        ret_ = validate.validate(event,None)
-        if ret_['statusCode'] == 200:
+        ret_ = validate.get_validated_user(event)
+        if ret_[0] == True:
            #Grab the permissions object 
             permissions = maglinkobj['permissions']
             for i in permissions:
