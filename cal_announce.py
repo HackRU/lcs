@@ -19,10 +19,7 @@ import json
 #APPLICATION_NAME = 'Google Calendar Python API Quickstart'
 
 def google_cal(event, context):
-    if 'num_events' in event:
-        num_events = event.get('num_events')
-    else:
-        num_events = 10
+    num_events = event.get('num_events', 10)
     #home_dir = os.path.expanduser('~')
     #credential_dir = os.path.join(home_dir, '.google_credential_dir')
     #credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
@@ -51,10 +48,7 @@ def google_cal(event, context):
     return config.add_cors_headers({'statusCode': 200, 'body': events})
 
 def slack_announce(event, context):
-    if 'num_messages' in event:
-        num_messages = event.get('num_messages')
-    else:
-        num_messages = 30
+    num_messages = event.get('num_messages', 30)
     with open('token.txt') as f:
         s = f.read()
         token = s[:-1]
