@@ -15,14 +15,8 @@ def email2qr(event, context):
     """
 
     #We default to a black on white QR.
-    if 'color' not in event:
-        color = (0,0,192)
-    else:
-        color = event['color']
-    if 'background' not  in event:
-        background = (255,255,255)
-    else:
-        background = event['background']
+    color = event.get('color', [0x0,0x0,0x0])
+    background = event.get('background', [0xff,0xff,0xff])
 
     #email must be provided
     if 'email' not in event:
