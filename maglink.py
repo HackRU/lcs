@@ -4,6 +4,7 @@ import config
 import random
 import datetime
 import string
+import use_sparkpost
 from datetime import datetime, timedelta
 
 def forgotUser(event,magiclinks):
@@ -14,6 +15,7 @@ def forgotUser(event,magiclinks):
     obj_to_insert['forgot'] = True
     obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
     magiclinks.insert_one(obj_to_insert)
+    use_sparkpost.send_email(event['email'],magiclink,True)
     return magiclink
 
 def directorLink(numLinks,event):
@@ -32,6 +34,8 @@ def directorLink(numLinks,event):
             links_list.append(magiclink)
             magiclinks.insert_one(obj_to_insert)
             #TODO email magic link
+            use_sparkpost.send_email(obj_to_insert['email'],magiclink,False)
+         #   use_sparkpost.do_substitutions([obj_to_insert['email'],[magiclink],
         return links_list
 
 def genMagicLink(event,context):

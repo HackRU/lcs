@@ -15,10 +15,11 @@ def list_all_templates(event, context):
     The template list is some sort of dictionary
     from sparkpost.
     """
-    val, usr = get_validated_user(event, context)
+    val, usr = get_validated_user(event)
     if not val or not user['role']['director']:
         return config.add_cors_headers({'statusCode': 400, 'body': usr})
     else:
+        
         templs = emails.templates.list()
         return config.add_cors_headers({'statusCode': 400, 'body': templs})
 
@@ -44,7 +45,7 @@ def do_substitutions(recs, links, template, usr):
         templ = emails.templates.get(template)
         resp = emails.transmissions.send(
                 recipients_list=list_id,
-                template=template
+                template=templ
         )
         if resp[u'total_accepted_recipients'] != len(recs):
             rv = config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
@@ -105,3 +106,19 @@ def send_to_emails(event, context):
         except SparkPostAPIException:
             return config.add_cors_headers({'statusCode': 400, 'body': "Template not found or error in sending"})
 
+
+def send_email(recipient,link,forgot):
+            #replace witgh template
+            """
+                Sends an email to one person
+            """
+
+            client = MongoClient(config.DB_URI)
+            db = client['lcs-db']
+            db.authenticate(config.DB_USER,config.DB_PASS)
+            tests = db['test']
+            usr_object = tests.find_one({"email":recipient})
+            if forgot:
+                do_substitutions([recipient],[link],'forget-user',usr_object)
+            else:
+                do_substitutions([recipient],[link],'upgrade-user',usr_object)
