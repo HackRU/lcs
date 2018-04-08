@@ -122,7 +122,7 @@ def mlh_callback(event, context):
         a["statusCode"] = 301
 
         a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
-        a['headers']['Location'] = "https://hackru.org/?authdata="+a['body']
+        a['headers']['Location'] = "https://hackru.org/dashboard.html?authdata="+a['body']
         if 'redir' in event['queryStringParameters']:
             a['headers']['Location'] = event['queryStringParameters']['redir'] + '/?authdata=' + a['body']
 
