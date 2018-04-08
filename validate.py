@@ -8,6 +8,31 @@ import requests
 import dateutil.parser as dp
 from datetime import datetime
 
+def get_validated_user(event):
+    if 'email' not in event or 'token' not in event:
+        return (False, "Email or token not provided.")
+
+    email = event['email']
+    token = event['token']
+
+    #connect to DB
+    client = MongoClient(config.DB_URI)
+    db = client['lcs-db']
+    db.authenticate(config.DB_USER, config.DB_PASS)
+
+    tests = db['test']
+
+    #try to find our user
+    results = tests.find_one({"email":email})
+    if results == None or results == [] or results == ():
+        return (False, "User not found")
+
+    #if none of the user's unexpired tokens match the one given, complain.
+    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
+        return (False, "Token not found")
+
+    return (True, results)
+
 def validate(event, context):
     """
     Given an email and token,
