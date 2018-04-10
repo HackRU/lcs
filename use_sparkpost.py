@@ -121,6 +121,6 @@ def send_email(recipient,link,forgot):
     tests = db['test']
     usr_object = tests.find_one({"email":recipient})
     if forgot:
-        do_substitutions([recipient],[link],'forget-password',usr_object)
+        return do_substitutions([recipient],[link],'forget-password',usr_object)
     else:
-        do_substitutions([recipient],[link],'upgrade-user',usr_object)
+        return do_substitutions([recipient],[link],'upgrade-user',usr_object)

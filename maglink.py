@@ -16,7 +16,9 @@ def forgotUser(event,magiclinks):
     obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
     magiclinks.insert_one(obj_to_insert)
     link_base = event.get('link_base', 'https://hackru.org/dashboard.html?magiclink=')
-    use_sparkpost.send_email(event['email'], link_base + magiclink,True)
+    rv = use_sparkpost.send_email(event['email'], link_base + magiclink,True)
+    if rv['statusCode'] != 200:
+        return rv
     return magiclink
 
 def directorLink(numLinks,event):
