@@ -118,17 +118,15 @@ def mlh_callback(event, context):
     #we make "a" to be our inner response.
     #for the frontend, we must convert this to the relevant re-direct.
 
+    a["statusCode"] = 301
+    a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
+    a['headers']['Content-Type'] = "application/json"
+    a['headers']['Location'] = event['queryStringParameters'].get('redir', "https://hackru.org/dashboard.html?")
     if(a['statusCode'] == 200):
-        a["statusCode"] = 301
-
-        a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
-        a['headers']['Location'] = "https://hackru.org/dashboard.html?authdata="+a['body']
-        if 'redir' in event['queryStringParameters']:
-            a['headers']['Location'] = event['queryStringParameters']['redir'] + '/?authdata=' + a['body']
-
-        a['headers']['Content-Type'] = "application/json"
-        #yes, this works! This is how the frontend will get the token.
-        #TODO: domain=.hackru.org on prod.
+        a['headers']['Location'] += 'authdata=' + a['body']
+    else:
+        a['headers']['Location'] += 'error=' + 'Could not log you in. Be sure you signed up with MLH, not us.'
+    #yes, this works! This is how the frontend will get the token.
 
     return a
 
@@ -202,24 +200,3 @@ def create_user(event, context, mlh = False):
     tests.insert(doc)
 
     return authorize(event, context, mlh)
-
-# context param should have info of accessor account
-
-def change_password(event, context):
-    #TODO: fixme.
-    if event['password'].len() < 8:
-        return config.add_cors_headers({"statusCode":200, "body":"invalid password"})
-
-    client = MongoClient(config.DB_URI)
-
-    db = client['lcs-db']
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db['test']
-
-    if len(list(tests.find({"role":{"hacker":True}}))) >= 500:
-        return {"statusCode":403, "body":"Event capacity reached."}
-
-    tests.update({"email": context['email'], "$push":{"password": hashlib.md5(event['password'].encode('utf-8')).hexdigest()}})
-
-    return authorize(event, context)

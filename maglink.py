@@ -8,7 +8,7 @@ import use_sparkpost
 from datetime import datetime, timedelta
 
 def forgotUser(event,magiclinks):
-    magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
+    magiclink = 'forgot-' +  ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
     obj_to_insert = {}
     obj_to_insert['email'] = event['email']
     obj_to_insert['link'] = magiclink
