@@ -15,7 +15,8 @@ def forgotUser(event,magiclinks):
     obj_to_insert['forgot'] = True
     obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
     magiclinks.insert_one(obj_to_insert)
-    use_sparkpost.send_email(event['email'],magiclink,True)
+    link_base = event.get('link_base', 'https://hackru.org/dashboard.html?magiclink=')
+    use_sparkpost.send_email(event['email'], link_base + magiclink,True)
     return magiclink
 
 def directorLink(numLinks,event):
@@ -81,6 +82,4 @@ def genMagicLink(event,context):
                 return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
     else:
         return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
-
-
 

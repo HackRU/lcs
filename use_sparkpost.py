@@ -108,17 +108,18 @@ def send_to_emails(event, context):
 
 
 def send_email(recipient,link,forgot):
-            #replace witgh template
-            """
-                Sends an email to one person
-            """
+    """
+        Sends an email to one person - recipient
+        with the link.
+        If "forgot", use the forgotten password template.
+    """
 
-            client = MongoClient(config.DB_URI)
-            db = client['lcs-db']
-            db.authenticate(config.DB_USER,config.DB_PASS)
-            tests = db['test']
-            usr_object = tests.find_one({"email":recipient})
-            if forgot:
-                do_substitutions([recipient],[link],'forget-user',usr_object)
-            else:
-                do_substitutions([recipient],[link],'upgrade-user',usr_object)
+    client = MongoClient(config.DB_URI)
+    db = client['lcs-db']
+    db.authenticate(config.DB_USER,config.DB_PASS)
+    tests = db['test']
+    usr_object = tests.find_one({"email":recipient})
+    if forgot:
+        do_substitutions([recipient],[link],'forget-password',usr_object)
+    else:
+        do_substitutions([recipient],[link],'upgrade-user',usr_object)
