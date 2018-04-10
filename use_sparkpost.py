@@ -41,6 +41,7 @@ def do_substitutions(recs, links, template, usr):
                     'substitution_data': {'link': i[1]}
                 } for i in zip(recs, links)]
             )
+    rv = config.add_cors_headers({'statusCode': 500, 'body': "WHAT THE FUCK!"})
     try:
         templ = emails.templates.get(template)
         resp = emails.transmissions.send(
