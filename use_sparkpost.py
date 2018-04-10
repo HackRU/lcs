@@ -33,27 +33,27 @@ def do_substitutions(recs, links, template, usr):
     """
     #we use the uniqueness of emails to gaurentee the uniqueness of these list_id's
     list_id = usr['email'] + '-emailing-people'
-    emails.recipient_lists.create(
+    rl = [{
+        'address': i[0],
+        'substitution_data': {'link': i[1]}
+        } for i in zip(recs, links)]
+    try:
+        emails.recipient_lists.create(
             id= list_id,
             name= usr['first_name'] + ' sending emails',
-            recipients=[{
-                    'address': {'email': i[0]},
-                    'substitution_data': {'link': i[1]}
-                } for i in zip(recs, links)]
-            )
-    rv = config.add_cors_headers({'statusCode': 500, 'body': "WHAT THE FUCK!"})
-    try:
+            recipients=rl
+        )
         templ = emails.templates.get(template)
         resp = emails.transmissions.send(
-                recipients_list=list_id,
-                template=templ
+                recipient_list=list_id,
+                template=template
         )
         if resp[u'total_accepted_recipients'] != len(recs):
             rv = config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
         else:
             rv = config.add_cors_headers({'statusCode': 200, 'body': "Success!"})
-    except SparkPostAPIException:
-        rv = config.add_cors_headers({'statusCode': 400, 'body': "Template not found or error in sending"})
+    except Exception as e:
+        rv = config.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
     finally: #1st time I'm legit using a finally... kawaii OwO.
         emails.recipient_lists.delete(list_id)
         return rv
@@ -121,6 +121,6 @@ def send_email(recipient,link,forgot):
     tests = db['test']
     usr_object = tests.find_one({"email":recipient})
     if forgot:
-        return do_substitutions([recipient],[link],'forget-password',usr_object)
+        return do_substitutions([recipient],[link],'forgot-password',usr_object)
     else:
         return do_substitutions([recipient],[link],'upgrade-user',usr_object)
