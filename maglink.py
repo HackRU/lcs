@@ -54,12 +54,13 @@ def genMagicLink(event,context):
     if 'forgot' in event and 'email' in event:
 
         user = tests.find_one({"email":event['email']})
-        if user:
+        if user and not user['mlh']:
             magiclink = forgotUser(event,magiclinks)
             return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
+        elif user:
+            return config.add_cors_headers({"statusCode":400,"body":"Please use MLH to login."})
         else:
-            return config.add_cors_headers({"statusCode":400,"body":"Invlaid email"})
-        
+            return config.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
 
     if 'email' not in event or 'token' not in event:
 
