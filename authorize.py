@@ -118,6 +118,7 @@ def mlh_callback(event, context):
     #we make "a" to be our inner response.
     #for the frontend, we must convert this to the relevant re-direct.
 
+    a['headers']['Location'] = event['queryStringParameters'].get('redir', "https://hackru.org/dashboard.html?")
     if(a['statusCode'] == 200):
         a['headers']['Location'] += 'authdata=' + a['body']
     else:
@@ -125,7 +126,6 @@ def mlh_callback(event, context):
     a["statusCode"] = 301
     a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
     a['headers']['Content-Type'] = "application/json"
-    a['headers']['Location'] = event['queryStringParameters'].get('redir', "https://hackru.org/dashboard.html?")
     #yes, this works! This is how the frontend will get the token.
 
     return a
