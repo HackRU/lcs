@@ -4,3 +4,4 @@ validate_email
 beautifulsoup4
 python-dateutil
 sparkpost
+httplib2

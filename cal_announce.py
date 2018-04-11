@@ -4,13 +4,12 @@ import httplib2
 #import os
 #import oauth2client
 import datetime
-import argparse
 
 #from oauth2client import tools
 from oauth2client.file import Storage
 from googleapiclient import discovery
 
-import urllib.request
+import requests
 import json
 
 #flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -56,8 +55,8 @@ def slack_announce(event, context):
         s = f.read()
         channel = s[:-1]
     url = 'https://slack.com/api/channels.history?token={}&channel={}&count={}'.format( token, channel, num_messages)
-    result = urllib.request.urlopen(url)
-    reply = json.load(result)
+    result = requests.get(url)
+    reply = result.json()
     if not reply.get('ok'):
         return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
     allMessages = reply.get('messages')
