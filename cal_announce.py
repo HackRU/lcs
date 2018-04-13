@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import httplib2
-#import os
-#import oauth2client
+import os
+import oauth2client
 import datetime
 
 #from oauth2client import tools
@@ -12,19 +12,20 @@ from googleapiclient import discovery
 import requests
 import json
 
-#flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-#SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-#CLIENT_SECRET_FILE = 'client_secret.json'
-#APPLICATION_NAME = 'Google Calendar Python API Quickstart'
+flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Google Calendar Python API Quickstart'
 
 def google_cal(event, context):
     num_events = event.get('num_events', 10)
-    #home_dir = os.path.expanduser('~')
-    #credential_dir = os.path.join(home_dir, '.google_credential_dir')
-    #credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
+    home_dir = os.path.expanduser('~')
+    credential_dir = os.path.join(home_dir, '.google_credential_dir')
+    credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
     store = Storage(credential_path)
     credentials = store.get()
-    #if not credentials or credentials.invalid:
+    if not credentials or credentials.invalid:
+        return config.add_cors_headers({'statusCode': 400, 'body': 'Please interactively generate client secret file.'})
     #    flow = oauth2client.client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
     #    flow.user_agent = APPLICATION_NAME
     #    credentials = tools.run_flow(flow, store, flags)
