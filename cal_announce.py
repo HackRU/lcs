@@ -34,7 +34,7 @@ def google_cal(event, context):
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     print("getting the next 10 events")
     eventsResult = service.events().list(
-            calendarId = 'primary', timeMin = now, maxResults = num_events,
+            calendarId = 'primary', timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
     #if not events:
@@ -63,5 +63,5 @@ def slack_announce(event, context):
     if not allMessages:
         return config.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
     messages = list(filter(lambda x: x.get('subtype') != 'channel_join', allMessages))
-    tenMessages = messages[:10]
+    tenMessages = messages[:num_events]
     return config.add_cors_headers({'statusCode': 200, 'body': tenMessages})
