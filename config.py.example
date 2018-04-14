@@ -11,6 +11,11 @@ MLH = {
     'grant_type': 'authorization_code'
 }
 
+SLACK_KEYS = {
+    'token': '',
+    'channel': ''
+}
+
 def add_cors_headers(resp):
     """
     Adds headers to allow for cross-origin requests.

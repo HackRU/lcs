@@ -35,7 +35,7 @@ def google_cal(event, context):
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     print("getting the next 10 events")
     eventsResult = service.events().list(
-            calendarId = 'primary', timeMin = now, maxResults = num_events * 5,
+            calendarId = 'hl4bsn6030jr76nql68cen2jto', timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
     #if not events:
@@ -49,12 +49,8 @@ def google_cal(event, context):
 
 def slack_announce(event, context):
     num_messages = event.get('num_messages', 30)
-    with open('token.txt') as f:
-        s = f.read()
-        token = s[:-1]
-    with open('channel.txt') as f:
-        s = f.read()
-        channel = s[:-1]
+    token = config.SLACK_KEYS['token']
+    channel = config.SLACK_KEYS['channel']
     url = 'https://slack.com/api/channels.history?token={}&channel={}&count={}'.format( token, channel, num_messages)
     result = requests.get(url)
     reply = result.json()
