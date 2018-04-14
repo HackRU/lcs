@@ -60,3 +60,5 @@ dep.zip
 include/
 lib/
 pip-selfcheck.json
+*.pyc
+calendar-python-quickstart.json
