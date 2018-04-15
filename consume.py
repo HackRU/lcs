@@ -40,7 +40,10 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
                 elif i == 'mentor':
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.mentor':True}})
 
-            return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your role"})
+            return config.add_cors_headers({"statusCode":200,"body":"Successfully updated your role"})
+        else:
+            return config.add_cors_headers({"statusCode":400,"body":"Failed to update: please login again."})
+
 
 def consumeUrl(event,context):
     """
