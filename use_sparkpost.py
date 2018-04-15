@@ -79,7 +79,7 @@ def send_to_emails(event, context):
     if 'recipients' not in event and 'query' not in event:
         return config.add_cors_headers({'statusCode': 400, 'body': 'No recipients provided.'})
 
-    val, usr = get_validated_user(event, context)
+    val, usr = get_validated_user(event)
     if not val:
         return config.add_cors_headers({'statusCode': 400, 'body': usr})
     elif not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
