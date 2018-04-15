@@ -79,7 +79,7 @@ def genMagicLink(event,context):
         if user and user['role']['director'] and 'permissions' in event:
             #build permissions
             links_list = directorLink(magiclinks, numLinks,event)
-            return config.add_cors_headers({"statusCode":200,"body":str(links_list)})
+            return config.add_cors_headers({"statusCode":200,"body":(links_list)})
 
         else:
                 return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
