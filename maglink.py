@@ -21,7 +21,7 @@ def forgotUser(event,magiclinks):
         return rv
     return magiclink
 
-def directorLink(numLinks,event):
+def directorLink(magiclinks, numLinks, event):
         links_list = []
         permissions = []
         for i in event['permissions']:
@@ -78,7 +78,7 @@ def genMagicLink(event,context):
         user = tests.find_one({"email":event['email']})
         if user and user['role']['director'] and 'permissions' in event:
             #build permissions
-            links_list = directorLink(numLinks,event)
+            links_list = directorLink(magiclinks, numLinks,event)
             return config.add_cors_headers({"statusCode":200,"body":str(links_list)})
 
         else:
