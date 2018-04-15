@@ -41,13 +41,6 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
                     userCollection.update_one({'email':event['email'] }, {'$set':{'role.mentor':True}})
 
             return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your role"})
-                    
-                    
-
-
-
-
-
 
 def consumeUrl(event,context):
     """

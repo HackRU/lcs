@@ -2,6 +2,7 @@
 
 import httplib2
 import os
+from shutil import copy2
 import oauth2client
 import datetime
 
@@ -21,7 +22,8 @@ APPLICATION_NAME = 'Google Calendar Python API Quickstart'
 def google_cal(event, context, testing=False):
     num_events = event.get('num_events', 10)
     credential_path = 'calendar-python-quickstart.json'
-    store = Storage(credential_path)
+    copy2('calendar-python-quickstart.json', '/tmp/')
+    store = Storage('/tmp/' + credential_path)
     credentials = store.get()
     if not credentials or credentials.invalid:
         if not testing:
