@@ -63,7 +63,8 @@ def consumeUrl(event,context):
     if maglinkobj:
         statusCode = updateUserFromMagicLink(tests,maglinkobj,event)
         #remove link after consuming
-        magiclinks.remove({"link":maglinkobj['link']})
+        if statusCode['statusCode'] == 200:
+            magiclinks.remove({"link":maglinkobj['link']})
         return statusCode
     
     return config.add_cors_headers({"statusCode":400,"body":"Invalid magiclink, try again"})
