@@ -120,7 +120,8 @@ def validate_updates(user, updates, auth_usr = None):
                 #they may change their mind, but only we can finalize
                 #things.
                 "not-coming": True,
-                "confirmed": False
+                "confirmed": False,
+                "checked-in": False #TODO: remove when there are many waves
             },
             "not-coming": { #the user said they ain't comin'.
                 #They can always make a better decision.
