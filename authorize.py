@@ -132,7 +132,7 @@ def mlh_callback(event, context):
 
 def create_user(event, context, mlh = False):
     # check if valid email
-    if datetime.datetime.now() != 21:
+    if datetime.now().date != 21:
        return config.add_cors_headers({"statusCode":400, "body":"Registration is closed."})
 
     try:
