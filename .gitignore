@@ -62,3 +62,4 @@ lib/
 pip-selfcheck.json
 *.pyc
 calendar-python-quickstart.json
+__pycache__
