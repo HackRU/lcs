@@ -55,7 +55,7 @@ def authorize(event,context, is_mlh = False):
 
     update_val = {"auth": {
             "token":token,
-            "valid_until":(datetime.now() + timedelta(hours=3)).isoformat()
+            "valid_until":(datetime.now() + timedelta(days=3)).isoformat()
         }
     }
 
