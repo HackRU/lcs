@@ -132,7 +132,8 @@ def mlh_callback(event, context):
 
 def create_user(event, context, mlh = False):
     # check if valid email
-    if datetime.now().date != 21:
+    is_day_of = datetime.now().date != 21
+    if is_day_of:
        return config.add_cors_headers({"statusCode":400, "body":"Registration is closed."})
 
     try:
@@ -192,7 +193,7 @@ def create_user(event, context, mlh = False):
         "school": event.get("school", "Rutgers University"),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
-        "registration_status": event.get("registration_status", "unregistered"),
+        "registration_status": event.get("registration_status", "waitlist" if is_day_of else "unregistered"),
         "level_of_study": event.get("level_of_study", ""),
         "mlh": mlh, #we know this and the below too, depending on how the function is called.
         "day_of":{
