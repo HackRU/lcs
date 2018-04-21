@@ -64,14 +64,12 @@ def slack_announce(event, context):
     sentinal = slacks.find_one({'type': 'sentinal'})
     def do(): pass
 
-    if sentinal == None:
+    if sentinal == None or sentinal == [] or sentinal == ():
         do = lambda: slacks.insert({'type': 'sentinal', 'time': iso_time})
         update = True
     elif dp.parse(sentinal['time']) < datetime.timedelta(minutes=10) + datetime.datetime.now():
         do = lambda: slacks.update({'type': 'sentinal'}, {'time': iso_time})
         update = True
-
-    print(update, sentinal)
 
     if update:
         num_messages = event.get('num_messages', 30)
@@ -89,10 +87,11 @@ def slack_announce(event, context):
         tenMessages = messages[:num_messages]
         for msg in tenMessages:
             m = list(slacks.find(msg))
-            print(m)
-            if m == None or m == []:
-                print(msg)
+            if m == None or m == [] or m == ():
                 slacks.insert(msg)
         do()
 
-    return config.add_cors_headers({'statusCode': 200, 'body': list(slacks.find({'type': {'$ne': 'sentinal'}}))})
+    msgs =  list(slacks.find({'type': {'$ne': 'sentinal'}}))
+    for i in msgs:
+        del i['_id']
+    return config.add_cors_headers({'statusCode': 200, 'body': msgs})
