@@ -16,7 +16,7 @@ def list_all_templates(event, context):
     from sparkpost.
     """
     val, usr = get_validated_user(event)
-    if not val or not user['role']['director']:
+    if not val or not usr['role']['director']:
         return config.add_cors_headers({'statusCode': 400, 'body': usr})
     else:
         
@@ -104,7 +104,7 @@ def send_to_emails(event, context):
                 return config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
             else:
                 return config.add_cors_headers({'statusCode': 200, 'body': "Success!"})
-        except SparkPostAPIException:
+        except Exception:
             return config.add_cors_headers({'statusCode': 400, 'body': "Template not found or error in sending"})
 
 

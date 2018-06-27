@@ -1,12 +1,12 @@
 #! /bin/bash
-source bin/activate
+source venv/bin/activate
 pip install -r requirements.txt
 mkdir deploy/
 
-if [ -d "lib/python3.6" ]; then
-    cp -r lib/python3.6/site-packages/ deploy/
+if [ -d "venv/lib/python3.6" ]; then
+    cp -r venv/lib/python3.6/site-packages/ deploy/
 else
-    cp -r lib/python3.5/site-packages/ deploy/
+    cp -r venv/lib/python3.5/site-packages/ deploy/
 fi
 
 for var in "$@"

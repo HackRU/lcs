@@ -55,11 +55,11 @@ watchlist.json
 
 #lcs things
 config.py
-bin/
 dep.zip
-include/
-lib/
 pip-selfcheck.json
 *.pyc
 calendar-python-quickstart.json
 __pycache__
+venv/
+.pytest_cache/
+.coverage

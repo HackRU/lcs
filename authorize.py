@@ -133,13 +133,11 @@ def mlh_callback(event, context):
 def create_user(event, context, mlh = False):
     # check if valid email
     is_not_day_of = datetime.now().day != 21
-    if is_not_day_of:
-       return config.add_cors_headers({"statusCode":400, "body":"Registration is closed."})
+    # if is_not_day_of:
+    #    return config.add_cors_headers({"statusCode":400, "body":"Registration is closed."})
 
     try:
        email = validate_email(event['email'])
-    except EmailNotValidError as e:
-       return config.add_cors_headers({"statusCode":400, "body":e})
     except KeyError:
        return config.add_cors_headers({"statusCode":400, "body":"No email provided!"})
 
@@ -148,7 +146,7 @@ def create_user(event, context, mlh = False):
         event['password'] = "defacto"
 
     if 'password' not in event:
-       return ({"statusCode":400, "body":"No password provided"})
+       return config.add_cors_headers({"statusCode":400, "body":"No password provided"})
 
     u_email = event['email']
     password = event['password']
