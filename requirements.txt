@@ -7,3 +7,7 @@ sparkpost
 httplib2
 google-api-python-client
 oauth2client
+pytest
+pytest-ordering
+pytest-cov
+pylint

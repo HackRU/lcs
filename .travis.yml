@@ -1,0 +1,15 @@
+language: python
+python:
+    - "3.6"
+services:
+    - mongodb
+before_script:
+    - mongo mydb_test --eval 'db.createUser({user: "creep", pwd: "@radiohead.ed", roles: ["readWrite"]});'
+    - cp config.py.example config.py
+    - echo "DB_URI=\"\"" >> config.py
+    - echo "DB_USER=\"creep\"" >> config.py
+    - echo "DB_PASS=\"@radiohead.ed\"" >> config.py
+install:
+    - pip install -r requirements.txt
+script:
+    - python -m pylint --errors-only *.py && python -m --cov=. pytest
