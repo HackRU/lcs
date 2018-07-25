@@ -24,6 +24,7 @@ def test_bad_password():
     passwd = "arghf"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
+    print(auth)
     assert dict_includes(auth, http_dict(statusCode = 403, body = "invalid email,hash combo"))
 
 @pytest.mark.run(order=1)
@@ -32,6 +33,7 @@ def test_creation():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.create_user(usr_dict, None)
+    print(auth)
     assert dict_includes(auth, http_dict_for_token(user_email))
 
 def test_creation_fail_cases():
@@ -39,10 +41,12 @@ def test_creation_fail_cases():
     passwd = "love"
     usr_dict = {'password': passwd}
     auth = authorize.create_user(usr_dict, None)
+    print(auth)
     assert dict_includes(auth, http_dict(statusCode = 400, body = "No email provided!"))
 
     usr_dict = {'email': user_email}
     auth = authorize.create_user(usr_dict, None)
+    print(auth)
     assert dict_includes(auth, http_dict(statusCode = 400, body = "No password provided"))
 
 @pytest.mark.run(order=2)
@@ -51,6 +55,7 @@ def test_login_success():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
+    print(auth)
     assert dict_includes(auth, http_dict_for_token(user_email))
 
     db = connect_to_db()
