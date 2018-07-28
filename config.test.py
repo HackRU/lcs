@@ -1,7 +1,8 @@
+DB_URI="127.0.0.1:27017"
+DB_USER="creep"
+DB_PASS="@radiohead.ed"
 
-DB_URI = "ein URL"
-DB_USER = "un usuario"
-DB_PASS = "el llave secreto"
+SPARKPOST_KEY="not yet supported"
 
 MLH = {
     'client_id': 'an ID',
