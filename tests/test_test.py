@@ -51,7 +51,6 @@ def test_login_success():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
-    print(auth)
     assert dict_includes(auth, http_dict_for_token(user_email))
 
     db = connect_to_db()
