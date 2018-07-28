@@ -8,12 +8,7 @@ services:
 
 before_script:
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
-  - cp config.py.example config.py
-  - echo "DB_URI=\"127.0.0.1:27017\"" >> config.py
-  - echo "DB_USER=\"creep\"" >> config.py
-  - echo "DB_PASS=\"@radiohead.ed\"" >> config.py
-  - echo "SPARKPOST_KEY=\"idk what do here\"" >> config.py
-  - cat config.py
+  - cp config.test.py config.py
 
 install:
   - pip install -r requirements.txt
