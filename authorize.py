@@ -29,7 +29,7 @@ def authorize(event,context, is_mlh = False):
     pass_ = event['password']
     
     #encrypt password
-    pass_ = bcrypt.hashpw(pass_.encode('utf8'), bcrypt.gensalt())
+    pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt())
 
     #DB connection
     client = MongoClient(config.DB_URI)
@@ -41,11 +41,12 @@ def authorize(event,context, is_mlh = False):
     checkhash  = tests.find_one({"email":email})
 
     #If the user ever used MLH log in, they must always use MLH login.
-    if checkhash.get('mlh', False) and not is_mlh:
-        return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
-
-    if (not (bcrypt.checkpw(pass_, checkhash['password']))) and (not is_mlh):
-        return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
+    if checkhash is not None:
+        if checkhash.get('mlh', False) and not is_mlh:
+            return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
+    
+        if (not (bcrypt.checkpw(pass_, checkhash['password'].encode('utf-8')))) and (not is_mlh):
+            return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
 
     token = str(uuid.uuid4())
 
@@ -146,7 +147,7 @@ def create_user(event, context, mlh = False):
 
     u_email = event['email']
     password = event['password']
-    password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     #DB connection
     client = MongoClient(config.DB_URI)
