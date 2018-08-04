@@ -8,7 +8,7 @@ import pymongo
 import requests
 from pymongo import MongoClient
 from validate_email import validate_email
-import hashlib
+import bcrypt
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
@@ -27,8 +27,7 @@ def authorize(event,context, is_mlh = False):
 
     email = event['email']
     pass_ = event['password']
-    pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
-
+    
     #DB connection
     client = MongoClient(config.DB_URI)
     db = client['lcs-db']
@@ -36,20 +35,17 @@ def authorize(event,context, is_mlh = False):
 
     tests = db['test']
 
-    #find the email-password pair.
-    dat = tests.find_one({"email":email, "password":pass_})
-    if dat == None or dat == [] or dat == ():
-        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
-
-    # check if the hash is correct - this is double-checking
     checkhash  = tests.find_one({"email":email})
 
-    #If the user ever used MLH log in, they must always use MLH login.
-    if checkhash.get('mlh', False) and not is_mlh:
-        return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
-
-    if(checkhash['password'] != pass_) and not is_mlh:
-        return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
+    if checkhash is not None:
+         #If the user ever used MLH log in, they must always use MLH login.
+        if checkhash.get('mlh', False) and not is_mlh:
+            return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
+    
+        if (not (bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']))) and (not is_mlh):
+            return config.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
+    else:
+        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
 
     token = str(uuid.uuid4())
 
@@ -150,7 +146,7 @@ def create_user(event, context, mlh = False):
 
     u_email = event['email']
     password = event['password']
-    password = hashlib.md5(password.encode('utf-8') ).hexdigest()
+    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     #DB connection
     client = MongoClient(config.DB_URI)
@@ -191,7 +187,7 @@ def create_user(event, context, mlh = False):
         "school": event.get("school", "Rutgers University"),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
-        "registration_status": event.get("registration_status", "waitlist" if not is_not_day_of else "unregistered"),
+        "registration_status": event.get("registration_status", "unregistered"),
         "level_of_study": event.get("level_of_study", ""),
         "mlh": mlh, #we know this and the below too, depending on how the function is called.
         "day_of":{
