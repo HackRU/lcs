@@ -1,7 +1,7 @@
 from testing_utils import *
 
 import authorize
-import config
+import config.test
 
 import pytest
 import json

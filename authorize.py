@@ -8,7 +8,7 @@ import pymongo
 import requests
 from pymongo import MongoClient
 from validate_email import validate_email
-import hashlib
+import bcrypt
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
@@ -27,7 +27,9 @@ def authorize(event,context, is_mlh = False):
 
     email = event['email']
     pass_ = event['password']
-    pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
+    
+    #encrypt password
+    pass_ = bcrypt.hashpw(pass_, bcrypt.gensalt())
 
     #DB connection
     client = MongoClient(config.DB_URI)
@@ -42,13 +44,14 @@ def authorize(event,context, is_mlh = False):
         return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
 
     # check if the hash is correct - this is double-checking
+    
     checkhash  = tests.find_one({"email":email})
 
     #If the user ever used MLH log in, they must always use MLH login.
     if checkhash.get('mlh', False) and not is_mlh:
         return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
 
-    if(checkhash['password'] != pass_) and not is_mlh:
+    if (not (bcrypt.checkpw(pass_, checkhash['password']))) and (not is_mlh):
         return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
 
     token = str(uuid.uuid4())
@@ -150,7 +153,7 @@ def create_user(event, context, mlh = False):
 
     u_email = event['email']
     password = event['password']
-    password = hashlib.md5(password.encode('utf-8') ).hexdigest()
+    password = bcrypt.hashpw(password, bcrypt.gensalt())
 
     #DB connection
     client = MongoClient(config.DB_URI)
