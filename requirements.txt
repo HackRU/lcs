@@ -11,3 +11,4 @@ pytest
 pytest-ordering
 pytest-cov
 pylint
+bcrypt
