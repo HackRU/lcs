@@ -48,7 +48,7 @@ def authorize(event,context, is_mlh = False):
         if (not (bcrypt.checkpw(pass_, checkhash['password']))) and (not is_mlh):
             return config.add_cors_headers({"statusCode":403,"Body":"Wrong Password"})
     else:
-        return config.add_cors_headers({"statusCode":403,"Body":"Email not found"})
+        return config.add_cors_headers({"statusCode":403,"Body":"invalid email,hash combo"})
 
     token = str(uuid.uuid4())
 
