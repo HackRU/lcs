@@ -38,13 +38,6 @@ def authorize(event,context, is_mlh = False):
 
     tests = db['test']
 
-    #find the email-password pair.
-    dat = tests.find_one({"email":email, "password":pass_})
-    if dat == None or dat == [] or dat == ():
-        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
-
-    # check if the hash is correct - this is double-checking
-    
     checkhash  = tests.find_one({"email":email})
 
     #If the user ever used MLH log in, they must always use MLH login.
