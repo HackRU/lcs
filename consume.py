@@ -13,7 +13,7 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
     #if the user forgot, then read the password and change it
     if maglinkobj['forgot'] == True:
         pass_ = event['password']
-        pass_ = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt())
         checkifmlh = userCollection.find_one({"email":maglinkobj['email']})
         if checkifmlh and checkifmlh['mlh']:
             return config.add_cors_headers({
