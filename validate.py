@@ -16,14 +16,14 @@ def get_validated_user(event):
     token = event['token']
 
     #connect to DB
-    client = MongoClient(config.DB_URI) #initializes a mongodb object
-    db = client['lcs-db'] #initializes the database object to connect to lcs's database
-    db.authenticate(config.DB_USER, config.DB_PASS) #authenticates the lcs db with the user and pass networks in config.py
+    client = MongoClient(config.DB_URI)
+    db = client['lcs-db']
+    db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test'] #db['test'] returns a collection from the mongodb and assigns it to tests object
+    tests = db['test']
 
     #try to find our user
-    results = tests.find_one({"email":email}) #attempts to find an email within tests and assigns to results
+    results = tests.find_one({"email":email})
     if results == None or results == [] or results == ():
         return (False, "User not found")
 
@@ -65,7 +65,6 @@ def validate(event, context):
 
     tests = db['test']
 
-    #anything to do with add_cors_headers is web-stuff just ignore it.
 
     #try to find our user
     results = tests.find_one({"email":email}) #our collection is in a table organized as "metadata" : data (this is how json organizes data tables)
@@ -146,7 +145,6 @@ def validate_updates(user, updates, auth_usr = None):
 
         #the update is valid if it is an edge traversible in the current
         #mode of update.
-        #the return is basically a boolean
         return old in state_graph and new in state_graph[old] \
                 and (state_graph[old][new] or say_no_to_non_admin(1, 2, 3)) \
                 and op == "$set" #ensures operation is a set operation
@@ -210,11 +208,10 @@ def validate_updates(user, updates, auth_usr = None):
         """
         usr_attr = find_dotted(key)
         for item in validator:
-            #for all matching regexes, ensure that the update is OK. (re stands for regex library)
-            if re.match(item, key) is not None: #checks if key exists
+            if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
-
+                
         return True
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
@@ -244,7 +241,7 @@ def update(event, context):
 
     #try to authorise the user with email auth_email
     a_res = tests.find_one({"email": a_email})
-    if a_res == None or a_res == [] or a_res == {}: #guarantees that the a_email we extracted earlier exists
+    if a_res == None or a_res == [] or a_res == {}:
         return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
 
     if not any(i['token'] == auth_val and datetime.now() < dp.parse(i['valid_until']) for i in a_res['auth']):
