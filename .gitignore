@@ -63,4 +63,3 @@ __pycache__
 venv/
 .pytest_cache/
 .coverage
-*.xml
