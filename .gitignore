@@ -8,7 +8,7 @@ config.test.py
 config.py
 
 #deploying detritus
-dep.zip
+dep*.zip
 deploy/
 
 #python poop
@@ -26,3 +26,4 @@ client_secret.json
 #IDE ideal
 .idea/
 *.iml
+*.xml

@@ -9,25 +9,20 @@ import requests
 from pymongo import MongoClient
 from validate_email import validate_email
 import bcrypt
-MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
-MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
-def authorize(event,context, is_mlh = False):
+def authorize(event,context):
     """The authorize endpoint. Given an email
        and a password, validates the user. Upon
        validation, the user is granted a token which
        is returned with its expiry time.
-
-       The optional is_mlh parameter is for the convenience
-       of the mlh callback below so that it need not replicate
-       token generation."""
+       """
 
     if('email' not in event  or 'password' not in event):
         return ({"statusCode":400,"body":"Invalid Request"})
 
     email = event['email']
     pass_ = event['password']
-    
+
     #DB connection
     client = MongoClient(config.DB_URI)
     db = client[config.DB_NAME]
@@ -38,11 +33,7 @@ def authorize(event,context, is_mlh = False):
     checkhash  = tests.find_one({"email":email})
 
     if checkhash is not None:
-         #If the user ever used MLH log in, they must always use MLH login.
-        if checkhash.get('mlh', False) and not is_mlh:
-            return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
-    
-        if (not (bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']))) and (not is_mlh):
+        if not bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']):
             return config.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
         return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
@@ -56,75 +47,13 @@ def authorize(event,context, is_mlh = False):
     }
 
     #append to list of auth tokens
-    tests.update({"email":event['email']},{"$push":update_val})
+    tests.update_one({"email":event['email']},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
     #throw in the email for frontend.
     update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
-
-def mlh_callback(event, context):
-    if 'hackingCookie' in event['queryStringParameters']:
-        if 'Cookie' not in event:
-            return config.add_cors_headers({"statusCode":403,"body":"No cookie found."})
-
-        return config.add_cors_headers({"statusCode":200,"body":event['Cookie']})
-
-
-    params = config.MLH.copy()
-    if 'code' not in event['queryStringParameters']:
-        #this is the primitive auth flow, we expect an access token.
-        access_token = event['queryStringParameters'].get('access_token')
-        if access_token is None:
-            return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles! No access token."})
-    else:
-        #the new auth flow: we swap and auth code for the access token.
-        params['code'] = event['queryStringParameters']['code']
-        access_tok_json = requests.post(MLH_TOK_BASE_URL, params=params).json()
-        if 'access_token' in access_tok_json:
-            access_token = access_tok_json['access_token']
-        else:
-            return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles! No access token."})
-
-    #with access token in hand, we may query MLH.
-    mlh_user = requests.get(MLH_USER_BASE_URL, params={'access_token': access_token}).json()
-
-    if mlh_user['status'] != 'OK':
-        return config.add_cors_headers({"statusCode":400,"body":"MLH Troubles!"})
-
-    #connect to our DB
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    test = db[config.DB_COLLECTIONS['users']]
-
-    user = test.find_one({'email': mlh_user['data']['email']})
-    if user == None or user == [] or user == ():
-        #making new user here
-        mlh_user['data']['mlh'] = True
-        if 'school' in mlh_user['data'] and 'name' in mlh_user['data']['school']:
-            mlh_user['data']['school'] = mlh_user['data']['school']['name']
-        a = create_user(mlh_user['data'], context, True)
-    else:
-        #authorize a pre-existing user
-        event['email'] = user['email']
-        event['password'] = 'defacto'
-        a = authorize(event, context, is_mlh = True)
-    #we make "a" to be our inner response.
-    #for the frontend, we must convert this to the relevant re-direct.
-
-    a['headers']['Location'] = event['queryStringParameters'].get('redir', "https://hackru.org/dashboard.html?")
-    if(a['statusCode'] == 200):
-        a['headers']['Location'] += 'authdata=' + a['body']
-    else:
-        a['headers']['Location'] += 'error=' + 'Could not log you in. Be sure you signed up with MLH, not us.'
-    a["statusCode"] = 301
-    a['headers']['Set-Cookie'] = "authdata=" + a['body']+ ";Path=/"
-    a['headers']['Content-Type'] = "application/json"
-    #yes, this works! This is how the frontend will get the token.
-
-    return a
 
 def create_user(event, context, mlh = False):
     if not config.is_registration_open():
@@ -136,16 +65,12 @@ def create_user(event, context, mlh = False):
     except KeyError:
        return config.add_cors_headers({"statusCode":400, "body":"No email provided!"})
 
-    #MLH users don't have a password with us.
-    if mlh == True:
-        event['password'] = "defacto"
-
     if 'password' not in event:
        return config.add_cors_headers({"statusCode":400, "body":"No password provided"})
 
     u_email = event['email']
     password = event['password']
-    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=8))
 
     #DB connection
     client = MongoClient(config.DB_URI)
@@ -188,12 +113,11 @@ def create_user(event, context, mlh = False):
         "gender": event.get("gender", ''),
         "registration_status": event.get("registration_status", "unregistered"),
         "level_of_study": event.get("level_of_study", ""),
-        "mlh": mlh, #we know this and the below too, depending on how the function is called.
         "day_of":{
             "checkIn": False
         }
     }
 
-    tests.insert(doc)
+    tests.insert_one(doc)
 
-    return authorize(event, context, mlh)
+    return authorize(event, context)

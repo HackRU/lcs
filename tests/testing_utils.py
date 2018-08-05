@@ -13,16 +13,12 @@ def connect_to_db():
     return db['test']
 
 def dict_includes(dict1, dict2):
-    for k in dict2:
-        if k not in dict1 or not dict2[k](dict1[k]):
-            return False
-    return True
+    return all(k in dict1 and dict2[k](dict1[k]) for k in dict2)
 
 def expect_eq(value):
     if not hasattr(value, '__call__'):
         return lambda x: x == value
-    else:
-        return value
+    return value
 
 def expect_exist(v):
     return True
@@ -37,3 +33,7 @@ def http_dict(**kwargs):
     }
     rv.update({k: expect_eq(kwargs[k]) for k in kwargs})
     return rv
+
+def get_db_user(email):
+    db = connect_to_db()
+    return db.find_one({"email": email})
