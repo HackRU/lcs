@@ -179,9 +179,8 @@ def validate_updates(user, updates, auth_usr = None):
             'day_of': say_no_to_non_admin,
             'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
             'registration_status': check_registration,
-            #auth tokens are never given access. auth is most important token, but 'token' is added as a bonus safety measure
+            #auth tokens are never given access
             'auth': say_no,
-            'token': say_no
     }
 
     def find_dotted(key):
