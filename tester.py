@@ -176,11 +176,8 @@ def update_validation_test(random = True):
     #all the test cases. Test name maps to the update and whether the user and admin
     #should be able to perform the update.
     try_to_fuck_with = {
-        "auth_user": try_to_alter_key("auth",True,False),
-        "auth_admin": try_to_alter_key("auth",False,True),
-        "auth_general1": try_to_alter_key("auth",True,True),
-        "auth_general2": try_to_alter_key("auth",False,False)
-        "the number of votes": try_to_alter_key("votes", False, True),
+        "auth_general": try_to_alter_key("auth",False,False),
+        "the number of votes": try_to_alter_key("votes", False, True)
         "the _id field": try_to_alter_key("_id", False, False),
         "the role object": try_to_alter_key("role", False, False),
         "the innards of role": try_to_alter_key("role.director", False, True),
