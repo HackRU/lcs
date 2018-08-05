@@ -177,7 +177,7 @@ def update_validation_test(random = True):
     #should be able to perform the update.
     try_to_fuck_with = {
         "auth_general": try_to_alter_key("auth",False,False),
-        "the number of votes": try_to_alter_key("votes", False, True)
+        "the number of votes": try_to_alter_key("votes", False, True),
         "the _id field": try_to_alter_key("_id", False, False),
         "the role object": try_to_alter_key("role", False, False),
         "the innards of role": try_to_alter_key("role.director", False, True),

@@ -67,7 +67,7 @@ def validate(event, context):
 
 
     #try to find our user
-    results = tests.find_one({"email":email}) #our collection is in a table organized as "metadata" : data (this is how json organizes data tables)
+    results = tests.find_one({"email":email})
     if results == None or results == [] or results == ():
         return config.add_cors_headers({"statusCode":400, "body":"Email not found.", "isBase64Encoded": False})
 
@@ -91,7 +91,7 @@ def validate_updates(user, updates, auth_usr = None):
     #quick utilities: to reject any update or any update by a non-admin.
     say_no = lambda x, y, z: False
     def say_no_to_non_admin(x, y, z):
-        return auth_usr['role']['organizer'] or auth_usr['role']['director'] #this will return either true or false. it is only true if organizer or director can be found
+        return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
     def check_registration(old, new, op):
         """
@@ -147,7 +147,7 @@ def validate_updates(user, updates, auth_usr = None):
         #mode of update.
         return old in state_graph and new in state_graph[old] \
                 and (state_graph[old][new] or say_no_to_non_admin(1, 2, 3)) \
-                and op == "$set" #ensures operation is a set operation
+                and op == "$set"
 
     #for all fields, we map a regex to a function of the old and new value and the operator being used.
     #the function determines the validity of the update
@@ -262,9 +262,8 @@ def update(event, context):
         return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
 
     #validate the updates, passing only the allowable ones through.
-    updates = validate_updates(results, event['updates'], a_res) #the core of possible security holes. make validate_updates stronger.
-
+    updates = validate_updates(results, event['updates'], a_res)
 
     #update the user and report success.
-    tests.update_one({'email': u_email}, updates) #updates the 'email':u_email collection with the set of operations called updates.
+    tests.update_one({'email': u_email}, updates)
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
