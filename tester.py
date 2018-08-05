@@ -1,6 +1,8 @@
 import requests
 import json
 import config
+import uuid
+from datetime import datetime, timedelta
 from pymongo import MongoClient
 
 def e2e_test(url):
@@ -92,11 +94,19 @@ def update_validation_test(random = True):
     Only assumes that update exists - no web/DB assumptions
     made.
     """
+    token = str(uuid.uuid4())
+
+    update_val = {
+    }
     from validate import validate_updates
     #a different fake user (I waste so much time).
     fake_usr = {
         "_id": "The Mongo Longo",
         "email": "doesnt@matter.horn",
+        "auth": {
+            "token": token,
+            "valid_until": (datetime.now() + timedelta(days=3)).isoformat()
+        },
         "role": {
             "hacker": True,
             "volunteer": False,
@@ -127,7 +137,6 @@ def update_validation_test(random = True):
         },
         "votes": -1
     }
-
     #A fake director
     fake_auth = {
         "role": {
@@ -136,7 +145,7 @@ def update_validation_test(random = True):
         }
     }
 
-    def try_to_alter_key(key, usr_can, admin_can, value = "Dummy", op = '$set'):
+    def try_to_alter_key(key, usr_can, admin_can, value = None, op = '$set'):
         """
         Generate the update dictionary (passed to update),
         whether the user should be able to do the update,
@@ -146,7 +155,7 @@ def update_validation_test(random = True):
         """
 
         #the dictionary is trivial
-        upd_dict = {op: {key: value}}
+        upd_dict = {op: {key: value}} # {$set: {key: "Dummy"} }
 
         #if the update should work, the key should be present
         #in the validated update dictionary.
@@ -167,6 +176,7 @@ def update_validation_test(random = True):
     #all the test cases. Test name maps to the update and whether the user and admin
     #should be able to perform the update.
     try_to_fuck_with = {
+        "auth_general": try_to_alter_key("auth",False,False),
         "the number of votes": try_to_alter_key("votes", False, True),
         "the _id field": try_to_alter_key("_id", False, False),
         "the role object": try_to_alter_key("role", False, False),
@@ -181,6 +191,7 @@ def update_validation_test(random = True):
         "adding a new key": try_to_alter_key("shite", True, True),
         "voting from": try_to_alter_key("votes_from", False, True),
         "skipping voting": try_to_alter_key("skipped_users", False, True)
+
     }
 
     if random:
@@ -217,7 +228,7 @@ def update_validation_test(random = True):
             #update dictionaries. This is equivalent to
             #"anding" the above conditions at random.
             new_test = sample(list(try_to_fuck_with),\
-                    randint(2, len(try_to_fuck_with)))
+                    randint(2, len(try_to_fuck_with)) )
             new_dict = reduce(merge_dicts, (try_to_fuck_with[i][0] for i in new_test))
             new_usr_valid = reduce(intersect, (try_to_fuck_with[i][1] for i in new_test))
             new_admin_valid = reduce(intersect, (try_to_fuck_with[i][2] for i in new_test))

@@ -33,6 +33,8 @@ def get_validated_user(event):
 
     return (True, results)
 
+
+
 def validate(event, context):
     """
     Given an email and token,
@@ -63,10 +65,12 @@ def validate(event, context):
 
     tests = db['test']
 
+
     #try to find our user
     results = tests.find_one({"email":email})
     if results == None or results == [] or results == ():
         return config.add_cors_headers({"statusCode":400, "body":"Email not found.", "isBase64Encoded": False})
+
 
     #if none of the user's unexpired tokens match the one given, complain.
     if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
@@ -144,7 +148,6 @@ def validate_updates(user, updates, auth_usr = None):
         return old in state_graph and new in state_graph[old] \
                 and (state_graph[old][new] or say_no_to_non_admin(1, 2, 3)) \
                 and op == "$set"
-                #remember that say_no_to_non_admin ignores arguments.
 
     #for all fields, we map a regex to a function of the old and new value and the operator being used.
     #the function determines the validity of the update
@@ -175,7 +178,9 @@ def validate_updates(user, updates, auth_usr = None):
             #no destroying the day-of object
             'day_of': say_no_to_non_admin,
             'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
-            'registration_status': check_registration
+            'registration_status': check_registration,
+            #auth tokens are never given access
+            'auth': say_no,
     }
 
     def find_dotted(key):
@@ -202,14 +207,12 @@ def validate_updates(user, updates, auth_usr = None):
         """
         usr_attr = find_dotted(key)
         for item in validator:
-            #for all matching regexes, ensure that the update is OK.
             if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
+                
         return True
 
-    #for each operation:
-    #remove any updates that fail in some regex they match.
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
 
 def update(event, context):
