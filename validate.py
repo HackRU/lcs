@@ -16,14 +16,14 @@ def get_validated_user(event):
     token = event['token']
 
     #connect to DB
-    client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
-    db.authenticate(config.DB_USER, config.DB_PASS)
+    client = MongoClient(config.DB_URI) #initializes a mongodb object
+    db = client['lcs-db'] #initializes the database object to connect to lcs's database
+    db.authenticate(config.DB_USER, config.DB_PASS) #authenticates the lcs db with the user and pass networks in config.py
 
-    tests = db['test']
+    tests = db['test'] #db['test'] returns a collection from the mongodb and assigns it to tests object
 
     #try to find our user
-    results = tests.find_one({"email":email})
+    results = tests.find_one({"email":email}) #attempts to find an email within tests and assigns to results
     if results == None or results == [] or results == ():
         return (False, "User not found")
 
@@ -32,6 +32,8 @@ def get_validated_user(event):
         return (False, "Token not found")
 
     return (True, results)
+
+
 
 def validate(event, context):
     """
@@ -63,10 +65,13 @@ def validate(event, context):
 
     tests = db['test']
 
+    #anything to do with add_cors_headers is web-stuff just ignore it.
+
     #try to find our user
-    results = tests.find_one({"email":email})
+    results = tests.find_one({"email":email}) #our collection is in a table organized as "metadata" : data (this is how json organizes data tables)
     if results == None or results == [] or results == ():
         return config.add_cors_headers({"statusCode":400, "body":"Email not found.", "isBase64Encoded": False})
+
 
     #if none of the user's unexpired tokens match the one given, complain.
     if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
@@ -87,7 +92,7 @@ def validate_updates(user, updates, auth_usr = None):
     #quick utilities: to reject any update or any update by a non-admin.
     say_no = lambda x, y, z: False
     def say_no_to_non_admin(x, y, z):
-        return auth_usr['role']['organizer'] or auth_usr['role']['director']
+        return auth_usr['role']['organizer'] or auth_usr['role']['director'] #this will return either true or false. it is only true if organizer or director can be found
 
     def check_registration(old, new, op):
         """
@@ -141,10 +146,10 @@ def validate_updates(user, updates, auth_usr = None):
 
         #the update is valid if it is an edge traversible in the current
         #mode of update.
+        #the return is basically a boolean
         return old in state_graph and new in state_graph[old] \
                 and (state_graph[old][new] or say_no_to_non_admin(1, 2, 3)) \
-                and op == "$set"
-                #remember that say_no_to_non_admin ignores arguments.
+                and op == "$set" #ensures operation is a set operation
 
     #for all fields, we map a regex to a function of the old and new value and the operator being used.
     #the function determines the validity of the update
@@ -175,7 +180,10 @@ def validate_updates(user, updates, auth_usr = None):
             #no destroying the day-of object
             'day_of': say_no_to_non_admin,
             'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
-            'registration_status': check_registration
+            'registration_status': check_registration,
+            #auth tokens are never given access. auth is most important token, but 'token' is added as a bonus safety measure
+            'auth': say_no,
+            'token': say_no
     }
 
     def find_dotted(key):
@@ -202,14 +210,13 @@ def validate_updates(user, updates, auth_usr = None):
         """
         usr_attr = find_dotted(key)
         for item in validator:
-            #for all matching regexes, ensure that the update is OK.
-            if re.match(item, key) is not None:
+            #for all matching regexes, ensure that the update is OK. (re stands for regex library)
+            if re.match(item, key) is not None: #checks if key exists
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
+
         return True
 
-    #for each operation:
-    #remove any updates that fail in some regex they match.
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
 
 def update(event, context):
@@ -237,7 +244,7 @@ def update(event, context):
 
     #try to authorise the user with email auth_email
     a_res = tests.find_one({"email": a_email})
-    if a_res == None or a_res == [] or a_res == {}:
+    if a_res == None or a_res == [] or a_res == {}: #guarantees that the a_email we extracted earlier exists
         return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
 
     if not any(i['token'] == auth_val and datetime.now() < dp.parse(i['valid_until']) for i in a_res['auth']):
@@ -258,8 +265,9 @@ def update(event, context):
         return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
 
     #validate the updates, passing only the allowable ones through.
-    updates = validate_updates(results, event['updates'], a_res)
+    updates = validate_updates(results, event['updates'], a_res) #the core of possible security holes. make validate_updates stronger.
+
 
     #update the user and report success.
-    tests.update_one({'email': u_email}, updates)
+    tests.update_one({'email': u_email}, updates) #updates the 'email':u_email collection with the set of operations called updates.
     return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
