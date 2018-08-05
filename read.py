@@ -62,5 +62,6 @@ def read_info(event, context):
     if not event['aggregate']:
         for i in res_:
             del i['_id']
+            del i['password']
 
     return config.add_cors_headers({"statusCode": 200, "body": res_})
