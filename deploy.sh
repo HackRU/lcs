@@ -40,6 +40,7 @@ done
 
 #add the relevant config
 cp "config.$STAGE.py" deploy/
+mv "deploy/config.$STAGE.py" deploy/config.py
 
 #zip the package
 cd deploy/
