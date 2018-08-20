@@ -8,7 +8,7 @@ services:
 
 before_script:
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
-  - cp config.test.py config.py
+  - cp config.travis.py config.py
 
 install:
   - pip install -r requirements.txt
