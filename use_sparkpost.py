@@ -118,7 +118,7 @@ def send_email(recipient,link,forgot):
     client = MongoClient(config.DB_URI)
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]]
+    tests = db[config.DB_COLLECTIONS['users']]
     usr_object = tests.find_one({"email":recipient})
     if forgot:
         return do_substitutions([recipient],[link],'forgot-password',usr_object)

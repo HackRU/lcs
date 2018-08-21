@@ -20,7 +20,7 @@ def get_validated_user(event):
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db[config.DB_COLLECTIONS['users']]]
+    tests = db[config.DB_COLLECTIONS['users']]
 
     #try to find our user
     results = tests.find_one({"email":email})
@@ -63,7 +63,7 @@ def validate(event, context):
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db[config.DB_COLLECTIONS['users']]]
+    tests = db[config.DB_COLLECTIONS['users']]
 
 
     #try to find our user
@@ -236,7 +236,7 @@ def update(event, context):
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db[config.DB_COLLECTIONS['users']]]
+    tests = db[config.DB_COLLECTIONS['users']]
 
     #try to authorise the user with email auth_email
     a_res = tests.find_one({"email": a_email})
