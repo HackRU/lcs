@@ -1,6 +1,12 @@
 DB_URI="127.0.0.1:27017"
 DB_USER="creep"
 DB_PASS="@radiohead.ed"
+DB_NAME = "lcs-db"
+DB_COLLECTIONS = {
+    "users": "test",
+    "magic links": "maglinks",
+    "slack messages": "slack-msgs"
+}
 
 SPARKPOST_KEY="not yet supported"
 
