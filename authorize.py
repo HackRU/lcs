@@ -30,10 +30,10 @@ def authorize(event,context, is_mlh = False):
     
     #DB connection
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
 
     checkhash  = tests.find_one({"email":email})
 
@@ -95,9 +95,9 @@ def mlh_callback(event, context):
 
     #connect to our DB
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
-    test = db['test']
+    test = db[config.DB_COLLECTIONS['users']]]
 
     user = test.find_one({'email': mlh_user['data']['email']})
     if user == None or user == [] or user == ():
@@ -150,10 +150,10 @@ def create_user(event, context, mlh = False):
 
     #DB connection
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]]
 
     #if a user of the same email exists, we complain.
     usr = tests.find_one({'email': u_email})

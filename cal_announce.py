@@ -56,9 +56,9 @@ def google_cal(event, context, testing=False):
 def slack_announce(event, context):
     #DB connection
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
-    slacks = db['slack-msgs']
+    slacks = db[config.DB_COLLECTIONS['slack messages']]
 
     update = False
     iso_time = datetime.datetime.utcnow().isoformat()

@@ -53,12 +53,12 @@ def consumeUrl(event,context):
         return config.add_cors_headers({"statusCode":400,"body":"No magic link provided"})
 
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     #user collection
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
     #maglink collection
-    magiclinks = db['magiclinks']
+    magiclinks = db[config.DB_COLLECTIONS['magic links']]
     maglinkobj = magiclinks.find_one({"link":event['link']}) 
     if maglinkobj:
         statusCode = updateUserFromMagicLink(tests,maglinkobj,event)
