@@ -13,7 +13,7 @@ def e2e_test(url):
 
     #failed log in: no email or password
     user_email = "team@nonruhackathon.notemail.com"
-    passhash = 42
+    passhash = '42'
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=(usr_dict))
     print("Non-existant: ", auth.text)
