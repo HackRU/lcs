@@ -34,10 +34,10 @@ def read_info(event, context):
 
     client = MongoClient(config.DB_URI)
 
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
     #get the user if they're logged in and making the request.
     user = validate_user(tests,
             event['token'] if 'token' in event else False,

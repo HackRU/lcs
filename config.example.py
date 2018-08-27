@@ -2,6 +2,12 @@
 DB_URI = "ein URL"
 DB_USER = "un usuario"
 DB_PASS = "el llave secreto"
+DB_NAME = "lcs-db"
+DB_COLLECTIONS = {
+    "users": "test",
+    "magic links": "maglinks",
+    "slack messages": "slack-msgs"
+}
 
 MLH = {
     'client_id': 'an ID',
