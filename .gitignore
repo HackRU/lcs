@@ -5,6 +5,7 @@ logs
 # config cache
 config.prod.py
 config.test.py
+config.py
 
 #deploying detritus
 dep.zip
@@ -20,6 +21,7 @@ venv/
 
 #google gook
 calendar-python-quickstart.json
+client_secret.json
 
 #IDE ideal
 .idea/
