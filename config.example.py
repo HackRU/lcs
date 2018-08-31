@@ -9,6 +9,8 @@ DB_COLLECTIONS = {
     "slack messages": "slack-msgs"
 }
 
+GOOGLE_CAL_ID = ""
+
 MLH = {
     'client_id': 'an ID',
     'client_secret': 'ssh. It\'s a secret',
