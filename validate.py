@@ -90,6 +90,7 @@ def validate_updates(user, updates, auth_usr = None):
 
     #quick utilities: to reject any update or any update by a non-admin.
     say_no = lambda x, y, z: False
+    nonessentials= lambda x, y, z:
     def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
@@ -181,9 +182,8 @@ def validate_updates(user, updates, auth_usr = None):
             'registration_status': check_registration,
             #auth tokens are never given access
             'auth': say_no,
-    }
-    FIXED_FIELDS = {
-        'traveling_from\\.mode': ('bus', 'train', 'car', 'plane')
+            #nonessentials
+            'traveling_from\\.mode': lambda x,y,z: x in ('bus', 'train', 'car', 'plane'),
     }
 
     def find_dotted(key):
@@ -213,11 +213,6 @@ def validate_updates(user, updates, auth_usr = None):
             if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
-        for fields in FIXED_FIELDS:
-            if re.match(fields, key) is not None:
-                if usr_attr in fields:
-                    return True
-
         return True
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
