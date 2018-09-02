@@ -90,7 +90,6 @@ def validate_updates(user, updates, auth_usr = None):
 
     #quick utilities: to reject any update or any update by a non-admin.
     say_no = lambda x, y, z: False
-    nonessentials= lambda x, y, z:
     def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
@@ -183,7 +182,7 @@ def validate_updates(user, updates, auth_usr = None):
             #auth tokens are never given access
             'auth': say_no,
             #nonessentials
-            'traveling_from\\.mode': lambda x,y,z: x in ('bus', 'train', 'car', 'plane'),
+            'traveling_from\\.mode': lambda x,y,z: y in ('bus', 'train', 'car', 'plane'),
     }
 
     def find_dotted(key):
