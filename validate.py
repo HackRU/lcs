@@ -182,6 +182,9 @@ def validate_updates(user, updates, auth_usr = None):
             #auth tokens are never given access
             'auth': say_no,
     }
+    FIXED_FIELDS = {
+        'traveling_from\\.mode': ('bus', 'train', 'car', 'plane')
+    }
 
     def find_dotted(key):
         """
@@ -210,7 +213,11 @@ def validate_updates(user, updates, auth_usr = None):
             if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
-                
+        for fields in FIXED_FIELDS:
+            if re.match(fields, key) is not None:
+                if usr_attr in fields:
+                    return True
+
         return True
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
