@@ -13,7 +13,7 @@ def e2e_test(url):
 
     #failed log in: no email or password
     user_email = "team@nonruhackathon.notemail.com"
-    passhash = 42
+    passhash = '42'
     usr_dict = {'email': user_email, 'password': passhash}
     auth = requests.post(url + '/authorize', json=(usr_dict))
     print("Non-existant: ", auth.text)
@@ -83,7 +83,7 @@ def e2e_test(url):
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
     db.authenticate(config.DB_USER, config.DB_PASS)
-    test = db['test']
+    test = db[config.DB_COLLECTIONS['users']]
     u = test.find_one({'email': 'testing@hackru.org'})
     print(u['github'])
     test.delete_one({'email': 'testing@hackru.org'})

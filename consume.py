@@ -4,7 +4,7 @@ import validate
 import config 
 import string
 from datetime import datetime, timedelta
-import hashlib
+import bcrypt
 
 def updateUserFromMagicLink(userCollection,maglinkobj,event):
     """
@@ -13,7 +13,7 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
     #if the user forgot, then read the password and change it
     if maglinkobj['forgot'] == True:
         pass_ = event['password']
-        pass_ = hashlib.md5(pass_.encode('utf-8') ).hexdigest() 
+        pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt())
         checkifmlh = userCollection.find_one({"email":maglinkobj['email']})
         if checkifmlh and checkifmlh['mlh']:
             return config.add_cors_headers({
@@ -53,12 +53,12 @@ def consumeUrl(event,context):
         return config.add_cors_headers({"statusCode":400,"body":"No magic link provided"})
 
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     #user collection
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
     #maglink collection
-    magiclinks = db['magiclinks']
+    magiclinks = db[config.DB_COLLECTIONS['magic links']]
     maglinkobj = magiclinks.find_one({"link":event['link']}) 
     if maglinkobj:
         statusCode = updateUserFromMagicLink(tests,maglinkobj,event)

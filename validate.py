@@ -17,10 +17,10 @@ def get_validated_user(event):
 
     #connect to DB
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
 
     #try to find our user
     results = tests.find_one({"email":email})
@@ -60,10 +60,11 @@ def validate(event, context):
 
     #connect to DB
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
+
 
 
     #try to find our user
@@ -212,6 +213,7 @@ def validate_updates(user, updates, auth_usr = None):
             if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
+                
         return True
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
@@ -234,10 +236,10 @@ def update(event, context):
 
     #connect to the DB.
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER, config.DB_PASS)
 
-    tests = db['test']
+    tests = db[config.DB_COLLECTIONS['users']]
 
     #try to authorise the user with email auth_email
     a_res = tests.find_one({"email": a_email})

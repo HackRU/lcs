@@ -2,12 +2,18 @@
 DB_URI = "ein URL"
 DB_USER = "un usuario"
 DB_PASS = "el llave secreto"
+DB_NAME = "lcs-db"
+DB_COLLECTIONS = {
+    "users": "test",
+    "magic links": "maglinks",
+    "slack messages": "slack-msgs"
+}
 
 MLH = {
     'client_id': 'an ID',
-    'client_secret': 'ssh. It's a secret',
+    'client_secret': 'ssh. It\'s a secret',
     'redirect_uri': 'where do we go now?',
-    #As a matter of fact, the below eedn't change.
+    #As a matter of fact, the below needn't change.
     'grant_type': 'authorization_code'
 }
 

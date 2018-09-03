@@ -47,10 +47,10 @@ def genMagicLink(event,context):
     """
 
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db['test']
-    magiclinks = db['magiclinks']
+    tests = db[config.DB_COLLECTIONS['users']]
+    magiclinks = db[config.DB_COLLECTIONS['magic links']]
     if 'forgot' in event and 'email' in event:
 
         user = tests.find_one({"email":event['email']})

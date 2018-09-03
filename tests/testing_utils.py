@@ -30,9 +30,9 @@ def expect_exist(v):
 def http_dict(**kwargs):
     rv = {
         'headers': lambda h: dict_includes(h, {
-            'Access-Control-Allow-Origin': expect_eq('*'),
-            'Access-Control-Allow-Headers': expect_eq('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'),
-            'Access-Control-Allow-Credentials': expect_eq(True)
+            'Access-Control-Allow-Origin': expect_eq(('*',)),
+            'Access-Control-Allow-Headers': expect_eq(('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',)),
+            'Access-Control-Allow-Credentials': expect_eq((True,))
         })
     }
     rv.update({k: expect_eq(kwargs[k]) for k in kwargs})
