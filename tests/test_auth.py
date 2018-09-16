@@ -32,7 +32,7 @@ def test_creation():
     idx_of_time = list(
             i for i in enumerate(config.REGISTRATION_DATES + [d.datetime.now(d.timezone.utc)]) \
             if i[1] >= d.datetime.now(d.timezone.utc))[0][0]
-    assert config.is_registration_open() == idx_of_time % 2
+    assert (not config.is_registration_open()) == idx_of_time % 2
 
     #open registration
     if not config.is_registration_open():
