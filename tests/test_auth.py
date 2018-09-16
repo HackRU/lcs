@@ -59,7 +59,7 @@ def test_creation_fail_cases():
 
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.create_user(usr_dict, None)
-    assert dict_includes(auth, http_dict(statusCode = 400, body = "Duplicate User!"))
+    assert dict_includes(auth, http_dict(statusCode = 400, body = "Duplicate user!"))
 
 @pytest.mark.run(order=3)
 def test_login_success():
