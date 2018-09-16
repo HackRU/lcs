@@ -32,7 +32,7 @@ REGISTRATION_DATES = [
         d.datetime(2018, 10, 7, 12, tzinfo=TIMEZONE)]
 def is_registration_open():
     i = 0
-    time = d.datetime.now()
+    time = d.datetime.now(d.timezone.utc)
     while i < len(REGISTRATION_DATES) and time >= REGISTRATION_DATES[i]:
         i += 1
     return i % 2 == 0
