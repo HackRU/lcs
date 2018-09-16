@@ -1,3 +1,4 @@
+import datetime as d
 
 DB_URI = "ein URL"
 DB_USER = "un usuario"
@@ -21,6 +22,20 @@ SLACK_KEYS = {
     'token': '',
     'channel': ''
 }
+
+# I'm too lazy with the EDT off-by-1 here...it won't impact day-of.
+TIMEZONE = d.timezone(d.timedelta(hours=-5))
+# See is_registration_open for how to use this: every time marks a toggle in the state.
+REGISTRATION_DATES = [
+        d.datetime(2018, 9, 18, tzinfo=TIMEZONE),
+        d.datetime(2018, 10, 6, 10, tzinfo=TIMEZONE),
+        d.datetime(2018, 10, 7, 12, tzinfo=TIMEZONE)]
+def is_registration_open():
+    i = 0
+    time = d.datetime.now()
+    while i < len(REGISTRATION_DATES) and time >= REGISTRATION_DATES[i]:
+        i += 1
+    return i % 2 == 0
 
 def add_cors_headers(resp):
     """
