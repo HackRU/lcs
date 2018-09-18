@@ -127,11 +127,10 @@ def mlh_callback(event, context):
     return a
 
 def create_user(event, context, mlh = False):
-    # check if valid email
-    is_not_day_of = datetime.now().day != 21
-    # if is_not_day_of:
-    #    return config.add_cors_headers({"statusCode":400, "body":"Registration is closed."})
+    if not config.is_registration_open():
+        return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
+    # check if valid email
     try:
        email = validate_email(event['email'])
     except KeyError:

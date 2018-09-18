@@ -5,6 +5,7 @@ import config
 
 import pytest
 import json
+import datetime as d
 
 def http_dict_for_token(email):
     ret_val = {
@@ -28,12 +29,23 @@ def test_bad_password():
 
 @pytest.mark.run(order=1)
 def test_creation():
+    idx_of_time = list(
+            i for i in enumerate(config.REGISTRATION_DATES + [d.datetime.now(d.timezone.utc)]) \
+            if i[1] >= d.datetime.now(d.timezone.utc))[0][0]
+    assert (not config.is_registration_open()) == idx_of_time % 2
+
+    #open registration
+    if not config.is_registration_open():
+        config.REGISTRATION_DATES = []
+    assert config.is_registration_open()
+
     user_email = "creep@radiohead.ed"
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.create_user(usr_dict, None)
     assert dict_includes(auth, http_dict_for_token(user_email))
 
+@pytest.mark.run(order=2)
 def test_creation_fail_cases():
     user_email = "creep@radiohead.ed"
     passwd = "love"
@@ -45,7 +57,11 @@ def test_creation_fail_cases():
     auth = authorize.create_user(usr_dict, None)
     assert dict_includes(auth, http_dict(statusCode = 400, body = "No password provided"))
 
-@pytest.mark.run(order=2)
+    usr_dict = {'email': user_email, 'password': passwd}
+    auth = authorize.create_user(usr_dict, None)
+    assert dict_includes(auth, http_dict(statusCode = 400, body = "Duplicate user!"))
+
+@pytest.mark.run(order=3)
 def test_login_success():
     user_email = "creep@radiohead.ed"
     passwd = "love"
