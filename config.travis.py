@@ -26,7 +26,7 @@ SLACK_KEYS = {
 }
 
 # I'm too lazy with the EDT off-by-1 here...it won't impact day-of.
-TIMEZONE = d.timezone(d.timedelta(hours=-5))
+TIMEZONE = d.timezone(d.timedelta(hours=-4))
 # See is_registration_open for how to use this: every time marks a toggle in the state.
 REGISTRATION_DATES = [
         d.datetime(2018, 9, 19, tzinfo=TIMEZONE),
