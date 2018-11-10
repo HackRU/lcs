@@ -5,6 +5,7 @@ import os
 from shutil import copy2
 import oauth2client
 import datetime
+import time
 import dateutil.parser as dp
 
 #from oauth2client import tools
@@ -52,11 +53,6 @@ def google_cal(event, context, testing=False):
             calendarId = config.GOOGLE_CAL_ID, timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
-    #if not events:
-    #    print("no events found")
-    #for event in events:
-    #    start = event['start'].get('dateTime', event['start'].get('date'))
-    #    print(start, event['summary'])
     if not events:
         return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to get events.'})
     return config.add_cors_headers({'statusCode': 200, 'body': events})
@@ -69,30 +65,41 @@ def slack_announce(event, context):
     slacks = db[config.DB_COLLECTIONS['slack messages']]
     num_messages = event.get('num_messages', 30)
 
+    #check cache
     latest_msg = list(slacks.find().sort([('ts', DESCENDING)]).limit(1))[0]
     time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
     if time + datetime.timedelta(minutes=10) < datetime.datetime.now():
+        #cache hit
         messages = list(slacks.find().sort([('ts', DESCENDING)]).limit(num_messages))
         for msg in messages:
             del msg['_id']
     else:
+
+        #refresh cache
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
-        url = 'https://slack.com/api/channels.history?token={}&channel={}&count={}'.format( token, channel, num_messages)
-        result = requests.get(url)
+        url = 'https://slack.com/api/channels.history'
+        params = {'token': token, 'channel': channel, 'count': num_messages}
+        result = requests.get(url, params)
         reply = result.json()
         if not reply.get('ok'):
             return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
 
+        #clean up the slack response
         allMessages = reply.get('messages')
         if not allMessages:
             return config.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
         messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in message, allMessages))
+        now_for_slack = str(time.time())
         for msg in messages:
+            #update the cache
             m = list(slacks.find({'text': msg['text']}))
             if m == None or m == [] or m == ():
                 slacks.insert(msg)
             else:
+                msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
+                if msg_time <= datetime.datetime.now():
+                    msg['ts'] = now_for_slack
                 slacks.update_one({'text': msg['text'], '$set': {'ts': msg['ts']}})
 
     return config.add_cors_headers({'statusCode': 200, 'body': messages})
