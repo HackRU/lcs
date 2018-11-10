@@ -45,12 +45,11 @@ See [#20](#20) : I don't know yet.
 ## What's Next for LCS?
 
 In order of decreasing priority:
-1. [ ] Fix the password checking bugs. ([#12](#12), [#13](#13), [#14](#14), [#11](#11))
 1. [ ] Check the read endpoint for security issues. ([#22](#22))
+1. [ ] Ensure that magiclink comsumption is sensible.
 1. [x] Add continuous integration, testing, and jazz. ([#20](#20))
-1. [ ] Fix the slack endpoint. ([#23](#23))
 
-Issues not referenced here are not thought of as essential and not a priority (so get to them if you have time).
+Issues not referenced here are not thought of as a priority (so get to them if you have time).
 
 ## More on LCS?
 
