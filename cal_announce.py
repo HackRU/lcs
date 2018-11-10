@@ -13,7 +13,7 @@ from oauth2client import tools, client
 from googleapiclient import discovery
 
 import requests
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 import json
 import config
 
@@ -67,21 +67,15 @@ def slack_announce(event, context):
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     slacks = db[config.DB_COLLECTIONS['slack messages']]
+    num_messages = event.get('num_messages', 30)
 
-    update = False
-    iso_time = datetime.datetime.utcnow().isoformat()
-    sentinal = slacks.find_one({'type': 'sentinal'})
-    def do(): pass
-
-    if sentinal == None or sentinal == [] or sentinal == ():
-        do = lambda: slacks.insert({'type': 'sentinal', 'time': iso_time})
-        update = True
-    elif dp.parse(sentinal['time']) < datetime.timedelta(minutes=10) + datetime.datetime.now():
-        do = lambda: slacks.update({'type': 'sentinal'}, {'time': iso_time})
-        update = True
-
-    if update:
-        num_messages = event.get('num_messages', 30)
+    latest_msg = list(slacks.find().sort([('ts', DESCENDING)]).limit(1))[0]
+    time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
+    if time + datetime.timedelta(minutes=10) < datetime.datetime.now():
+        messages = list(slacks.find().sort([('ts', DESCENDING)]).limit(num_messages))
+        for msg in messages:
+            del msg['_id']
+    else:
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
         url = 'https://slack.com/api/channels.history?token={}&channel={}&count={}'.format( token, channel, num_messages)
@@ -89,18 +83,16 @@ def slack_announce(event, context):
         reply = result.json()
         if not reply.get('ok'):
             return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
+
         allMessages = reply.get('messages')
         if not allMessages:
             return config.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
-        messages = list(filter(lambda x: x.get('subtype') != 'channel_join', allMessages))
-        tenMessages = messages[:num_messages]
-        for msg in tenMessages:
-            m = list(slacks.find(msg))
+        messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in message, allMessages))
+        for msg in messages:
+            m = list(slacks.find({'text': msg['text']}))
             if m == None or m == [] or m == ():
                 slacks.insert(msg)
-        do()
+            else:
+                slacks.update_one({'text': msg['text'], '$set': {'ts': msg['ts']}})
 
-    msgs =  list(slacks.find({'type': {'$ne': 'sentinal'}}))
-    for i in msgs:
-        del i['_id']
-    return config.add_cors_headers({'statusCode': 200, 'body': msgs})
+    return config.add_cors_headers({'statusCode': 200, 'body': messages})
