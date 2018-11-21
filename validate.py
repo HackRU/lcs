@@ -66,6 +66,7 @@ def validate(event, context):
     tests = db[config.DB_COLLECTIONS['users']]
 
 
+
     #try to find our user
     results = tests.find_one({"email":email})
     if results == None or results == [] or results == ():
@@ -181,6 +182,8 @@ def validate_updates(user, updates, auth_usr = None):
             'registration_status': check_registration,
             #auth tokens are never given access
             'auth': say_no,
+            #nonessentials
+            'traveling_from\\.mode': lambda x,y,z: y in ('bus', 'train', 'car', 'plane'),
     }
 
     def find_dotted(key):

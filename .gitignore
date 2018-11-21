@@ -26,5 +26,3 @@ client_secret.json
 #IDE ideal
 .idea/
 *.iml
-
-.python-version
