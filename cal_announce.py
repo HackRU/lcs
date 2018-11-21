@@ -93,13 +93,11 @@ def slack_announce(event, context):
         now_for_slack = str(time.time())
         for msg in messages:
             #update the cache
+            msg['c_ts'] = now_for_slack
             m = list(slacks.find({'text': msg['text']}))
             if m == None or m == [] or m == ():
                 slacks.insert(msg)
             else:
-                msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
-                if msg_time <= datetime.datetime.now():
-                    msg['ts'] = now_for_slack
-                slacks.update_one({'text': msg['text']}, {'$set': {'ts': msg['ts']}})
+                slacks.update_one({'text': msg['text']}, {'$set': {'c_ts': msg['c_ts']}})
 
     return config.add_cors_headers({'statusCode': 200, 'body': messages})
