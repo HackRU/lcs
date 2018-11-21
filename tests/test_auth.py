@@ -29,9 +29,10 @@ def test_bad_password():
 
 @pytest.mark.run(order=1)
 def test_creation():
+    now = d.datetime.now(d.timezone.utc)
     idx_of_time = list(
             i for i in enumerate(config.REGISTRATION_DATES + [d.datetime.now(d.timezone.utc)]) \
-            if i[1] >= d.datetime.now(d.timezone.utc))[0][0]
+            if i[1] >= now)[0][0]
     assert (not config.is_registration_open()) == idx_of_time % 2
 
     #open registration
