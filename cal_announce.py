@@ -61,7 +61,7 @@ def slack_announce(event, context):
     #DB connection
     client = MongoClient(config.DB_URI)
     db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
+    db.authenticate(config.DB_USER, config.DB_PASS)
     slacks = db[config.DB_COLLECTIONS['slack messages']]
     num_messages = event.get('num_messages', 30)
 
@@ -89,7 +89,7 @@ def slack_announce(event, context):
         allMessages = reply.get('messages')
         if not allMessages:
             return config.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
-        messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in message, allMessages))
+        messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in x, allMessages))
         now_for_slack = str(time.time())
         for msg in messages:
             #update the cache
@@ -100,6 +100,6 @@ def slack_announce(event, context):
                 msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
                 if msg_time <= datetime.datetime.now():
                     msg['ts'] = now_for_slack
-                slacks.update_one({'text': msg['text'], '$set': {'ts': msg['ts']}})
+                slacks.update_one({'text': msg['text']}, {'$set': {'ts': msg['ts']}})
 
     return config.add_cors_headers({'statusCode': 200, 'body': messages})
