@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 import validate
-import config 
+import config
 import random
 import datetime
 import string
@@ -26,7 +26,7 @@ def directorLink(magiclinks, numLinks, event):
         permissions = []
         for i in event['permissions']:
              permissions.append(i)
-        for j in range(numLinks):
+        for j in range(min(numLinks, len(event['emailsTo']))):
             magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
             obj_to_insert = {}
             obj_to_insert['permissions'] = permissions
@@ -34,11 +34,9 @@ def directorLink(magiclinks, numLinks, event):
             obj_to_insert['forgot'] = False
             obj_to_insert['link'] = magiclink
             obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
-            links_list.append(magiclink)
             magiclinks.insert_one(obj_to_insert)
-            #TODO email magic link
-            use_sparkpost.send_email(obj_to_insert['email'],magiclink,False)
-         #   use_sparkpost.do_substitutions([obj_to_insert['email'],[magiclink],
+            sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink,False)['body']
+            links_list.append((magiclink, sent))
         return links_list
 
 def genMagicLink(event,context):
@@ -52,37 +50,32 @@ def genMagicLink(event,context):
     tests = db[config.DB_COLLECTIONS['users']]
     magiclinks = db[config.DB_COLLECTIONS['magic links']]
     if 'forgot' in event and 'email' in event:
-
         user = tests.find_one({"email":event['email']})
-        if user and not user['mlh']:
+        if user:
             magiclink = forgotUser(event,magiclinks)
             return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
-        elif user:
-            return config.add_cors_headers({"statusCode":400,"body":"Please use MLH to login."})
         else:
             return config.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
 
-    if 'email' not in event or 'token' not in event:
-
-        return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try a again"})
+    if 'email' not in event or 'token' not in event or 'permissions' not in event or 'emailsTo' not in event:
+        return config.add_cors_headers({"statusCode":400,"body":"You forgot some params try again"})
     #validate first
-    ret_ = validate.get_validated_user(event);
-    #if sucesfully validated 
-    if(ret_[0] == True):
-        #defaul value of numlinks 1
+    ret, user = validate.get_validated_user(event);
+    #if sucesfully validated
+    if ret:
+        #default value of numlinks 1
         numLinks = 1
         if 'numLinks' in event:
             numLinks = event['numLinks']
         permissions = []
         links_list = []
         user = tests.find_one({"email":event['email']})
-        if user and user['role']['director'] and 'permissions' in event:
+        if user and user['role']['director']:
             #build permissions
             links_list = directorLink(magiclinks, numLinks,event)
-            return config.add_cors_headers({"statusCode":200,"body":(links_list)})
-
+            return config.add_cors_headers({"statusCode":200,"body":links_list})
         else:
-                return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
+            return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
     else:
-        return config.add_cors_headers({"statusCode":400,"body":"Please input a proper auth token"})
+        return config.add_cors_headers({"statusCode":400,"body":user})
 

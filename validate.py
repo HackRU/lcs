@@ -159,8 +159,10 @@ def validate_updates(user, updates, auth_usr = None):
             '_id': say_no,
             #TODO: we have to figure out "forgot password"
             'password': say_no,
+            #no hacks on the role object
+            '^role$': say_no,
             #can't me self-made judge?
-            'role\\.judge': say_no, #TODO: do magic links need these?
+            'role\\.judge': say_no_to_non_admin, #TODO: do magic links need these?
             #can't unmake hacker
             'role\\.hacker': say_no_to_non_admin,
             #can't self-make organizer or director
@@ -174,8 +176,6 @@ def validate_updates(user, updates, auth_usr = None):
             'skipped_users': say_no_to_non_admin,
             #or MLH info
             'mlh': say_no,
-            #no hacks on the role object
-            '^role$': say_no,
             #no destroying the day-of object
             'day_of': say_no_to_non_admin,
             'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
@@ -213,7 +213,7 @@ def validate_updates(user, updates, auth_usr = None):
             if re.match(item, key) is not None:
                 if not validator[item](usr_attr, updates[op][key], op):
                     return False
-                
+
         return True
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
