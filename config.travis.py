@@ -30,7 +30,7 @@ SLACK_KEYS = {
 TIMEZONE = d.timezone(d.timedelta(hours=-5))
 # See is_registration_open for how to use this: every time marks a toggle in the state.
 REGISTRATION_DATES = [
-        d.datetime(2018, 9, 19, tzinfo=TIMEZONE),
+        # d.datetime(2018, 9, 19, tzinfo=TIMEZONE),
         d.datetime(2018, 10, 6, 10, tzinfo=TIMEZONE),
         d.datetime(2018, 10, 7, 12, tzinfo=TIMEZONE)]
 def is_registration_open():
