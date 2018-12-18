@@ -206,7 +206,7 @@ def create_user(event, context, mlh = False):
             'link': event['link'],
             'token': json.loads(rv['body'])['auth']['token']
         }
-        consume_val = consumeUrl(consumption_event, None)
+        consume_val = consume.consumeUrl(consumption_event, None)
         if consume_val['statusCode'] != 200:
             rv['statusCode'] = 206
 
