@@ -15,8 +15,8 @@ def forgotUser(event,magiclinks):
     obj_to_insert['forgot'] = True
     obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
     magiclinks.insert_one(obj_to_insert)
-    link_base = event.get('link_base', 'https://hackru.org/magic/')
-    rv = use_sparkpost.send_email(event['email'], link_base + magiclink,True)
+    link_base = event.get('link_base', 'https://hackru.org/magic/{}')
+    rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink),True)
     if rv['statusCode'] != 200:
         return rv
     return magiclink
