@@ -10,6 +10,7 @@ from validate_email import validate_email
 import bcrypt
 
 import config
+import consume
 
 def authorize(event,context):
     """The authorize endpoint. Given an email
