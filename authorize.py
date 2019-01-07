@@ -3,12 +3,15 @@ import random
 import string
 import uuid
 from datetime import datetime, timedelta
-import config
-import pymongo
+
 import requests
 from pymongo import MongoClient
 from validate_email import validate_email
 import bcrypt
+
+import config
+import consume
+
 MLH_TOK_BASE_URL = 'https://my.mlh.io/oauth/token'
 MLH_USER_BASE_URL = 'https://my.mlh.io/api/v2/user.json'
 
@@ -27,7 +30,7 @@ def authorize(event,context, is_mlh = False):
 
     email = event['email']
     pass_ = event['password']
-    
+
     #DB connection
     client = MongoClient(config.DB_URI)
     db = client[config.DB_NAME]
@@ -41,7 +44,7 @@ def authorize(event,context, is_mlh = False):
          #If the user ever used MLH log in, they must always use MLH login.
         if checkhash.get('mlh', False) and not is_mlh:
             return config.add_cors_headers({"statusCode":403,"body":"Please use MLH to log in."})
-    
+
         if (not (bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']))) and (not is_mlh):
             return config.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
@@ -196,4 +199,15 @@ def create_user(event, context, mlh = False):
 
     tests.insert(doc)
 
-    return authorize(event, context, mlh)
+    rv = authorize(event, context, mlh)
+
+    if 'link' in event:
+        consumption_event = {
+            'link': event['link'],
+            'token': json.loads(rv['body'])['auth']['token']
+        }
+        consume_val = consume.consumeUrl(consumption_event, None)
+        if consume_val['statusCode'] != 200:
+            rv['statusCode'] = 206
+
+    return rv
