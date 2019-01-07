@@ -13,20 +13,20 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
     #if the user forgot, then read the password and change it
     if maglinkobj['forgot'] == True:
         pass_ = event['password']
-        pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt())
+        pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt(rounds=8))
         checkifmlh = userCollection.find_one({"email":maglinkobj['email']})
-        if checkifmlh and checkifmlh['mlh']:
+        if not checkifmlh:
             return config.add_cors_headers({
-                "statusCode":400,
-                "body": "Please change your password through MLH" if checkifmlh else "We could not find that email."
+                "statusCode": 400,
+                "body": "We could not find that email."
             })
         userCollection.update_one({"email":maglinkobj['email']},{'$set':{'password':pass_}})
         return config.add_cors_headers({"statusCode":200,"body":"Sucessfully updated your password"})
     #else we want an auth token and an email
     else:
         ret_ = validate.get_validated_user(event)
-        if ret_[0] == True:
-           #Grab the permissions object 
+        if ret_[0]:
+           #Grab the permissions object
             permissions = maglinkobj['permissions']
             for i in permissions:
                 if i == 'director':
@@ -44,7 +44,6 @@ def updateUserFromMagicLink(userCollection,maglinkobj,event):
         else:
             return config.add_cors_headers({"statusCode":400,"body":"Failed to update: please login again."})
 
-
 def consumeUrl(event,context):
     """
         Lambda function to consume a url. Queries the database and checks permissions and updates accordingly
@@ -59,12 +58,12 @@ def consumeUrl(event,context):
     tests = db[config.DB_COLLECTIONS['users']]
     #maglink collection
     magiclinks = db[config.DB_COLLECTIONS['magic links']]
-    maglinkobj = magiclinks.find_one({"link":event['link']}) 
+    maglinkobj = magiclinks.find_one({"link":event['link']})
     if maglinkobj:
         statusCode = updateUserFromMagicLink(tests,maglinkobj,event)
         #remove link after consuming
         if statusCode['statusCode'] == 200:
             magiclinks.remove({"link":maglinkobj['link']})
         return statusCode
-    
+
     return config.add_cors_headers({"statusCode":400,"body":"Invalid magiclink, try again"})

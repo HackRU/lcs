@@ -3,8 +3,7 @@ import random
 import string
 import uuid
 from datetime import datetime, timedelta
-import config
-import pymongo
+
 import requests
 from pymongo import MongoClient
 from validate_email import validate_email
@@ -120,4 +119,15 @@ def create_user(event, context, mlh = False):
 
     tests.insert_one(doc)
 
-    return authorize(event, context)
+    rv = authorize(event, context)
+
+    if 'link' in event:
+        consumption_event = {
+            'link': event['link'],
+            'token': json.loads(rv['body'])['auth']['token']
+        }
+        consume_val = consume.consumeUrl(consumption_event, None)
+        if consume_val['statusCode'] != 200:
+            rv['statusCode'] = 206
+
+    return rv
