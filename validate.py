@@ -159,7 +159,7 @@ def validate_updates(user, updates, auth_usr = None):
             'registration_status': check_registration,
             #auth tokens are never given access
             'auth': say_no,
-            #nonessentials
+            #travel info
             'travelling_from\\.mode': lambda x,y,z: y in ('bus', 'train', 'car', 'plane'),
             'travelling_from\\.formatted_addr': lambda x,y,z: check_addr(y),
     }

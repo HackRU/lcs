@@ -9,6 +9,8 @@ from pymongo import MongoClient
 from validate_email import validate_email
 import bcrypt
 
+import config
+
 def authorize(event,context):
     """The authorize endpoint. Given an email
        and a password, validates the user. Upon

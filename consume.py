@@ -1,7 +1,7 @@
 import random
 from pymongo import MongoClient
 import validate
-import config 
+import config
 import string
 from datetime import datetime, timedelta
 import bcrypt
