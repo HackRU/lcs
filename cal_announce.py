@@ -96,7 +96,7 @@ def slack_announce(event, context):
             msg['c_ts'] = now_for_slack
             m = list(slacks.find({'text': msg['text']}))
             if m == None or m == [] or m == ():
-                slacks.insert(msg)
+                slacks.insert_one(msg)
             else:
                 slacks.update_one({'text': msg['text']}, {'$set': {'c_ts': msg['c_ts']}})
 

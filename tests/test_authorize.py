@@ -62,7 +62,7 @@ def test_creation_fail_cases():
     auth = authorize.create_user(usr_dict, None)
     assert dict_includes(auth, http_dict(statusCode = 400, body = "Duplicate user!"))
 
-@pytest.mark.run(order=3)
+@pytest.mark.run(order=2)
 def test_login_success():
     user_email = "creep@radiohead.ed"
     passwd = "love"
@@ -70,5 +70,8 @@ def test_login_success():
     auth = authorize.authorize(usr_dict, None)
     assert dict_includes(auth, http_dict_for_token(user_email))
 
+@pytest.mark.run(order=4)
+def delete_user():
+    user_email = "creep@radiohead.ed"
     db = connect_to_db()
     db.delete_one({'email':user_email})

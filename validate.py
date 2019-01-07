@@ -7,6 +7,7 @@ import config
 import requests
 import dateutil.parser as dp
 from datetime import datetime
+import googlemaps as gm
 
 def get_validated_user(event):
     if 'email' not in event or 'token' not in event:
@@ -33,8 +34,6 @@ def get_validated_user(event):
 
     return (True, results)
 
-
-
 def validate(event, context):
     """
     Given an email and token,
@@ -42,42 +41,12 @@ def validate(event, context):
     unexpired token of the user with
     the provided email.
     """
+    ok, message = get_validated_user(event)
 
-    #we either expect the info in the cookie
-    #or in the body.
-    #Cookie takes precedence.
-    if 'Cookie' in event:
-        event = json.loads(event['Cookie'])
-    else:
-        event = json.loads(event['body'])
+    if ok:
+        return config.add_cors_headers({"statusCode": 200,"body": message, "isBase64Encoded": False})
+    return config.add_cors_headers({"statusCode": 400, "body": message, "isBase64Encoded": False})
 
-    #make sure we have all the info we need.
-    if 'email' not in event or 'token' not in event:
-        return config.add_cors_headers({"statusCode":400, "body":"Data not submitted."})
-
-    email = event['email']
-    token = event['token']
-
-    #connect to DB
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
-
-
-
-    #try to find our user
-    results = tests.find_one({"email":email})
-    if results == None or results == [] or results == ():
-        return config.add_cors_headers({"statusCode":400, "body":"Email not found.", "isBase64Encoded": False})
-
-
-    #if none of the user's unexpired tokens match the one given, complain.
-    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
-        return config.add_cors_headers({"statusCode":400, "body":"Authentication token is invalid.", "isBase64Encoded": False})
-
-    return config.add_cors_headers({"statusCode":200,"body":event, "isBase64Encoded": False})
 
 def validate_updates(user, updates, auth_usr = None):
     """
@@ -93,6 +62,14 @@ def validate_updates(user, updates, auth_usr = None):
     say_no = lambda x, y, z: False
     def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
+
+    gmaps = gm.Client(config.REACT_APP_MAP_API_KEY)
+    def check_addr(y):
+        try:
+            location = gmaps.geocode(y)
+            return True
+        except gm.exceptions.ApiError:
+            return False
 
     def check_registration(old, new, op):
         """
@@ -182,8 +159,9 @@ def validate_updates(user, updates, auth_usr = None):
             'registration_status': check_registration,
             #auth tokens are never given access
             'auth': say_no,
-            #nonessentials
-            'traveling_from\\.mode': lambda x,y,z: y in ('bus', 'train', 'car', 'plane'),
+            #travel info
+            'travelling_from\\.mode': lambda x,y,z: y in ('bus', 'train', 'car', 'plane'),
+            'travelling_from\\.formatted_addr': lambda x,y,z: check_addr(y),
     }
 
     def find_dotted(key):
