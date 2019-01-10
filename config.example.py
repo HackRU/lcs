@@ -11,6 +11,7 @@ DB_COLLECTIONS = {
 }
 
 GOOGLE_CAL_ID = ""
+MAPS_API_KEY=""
 
 MLH = {
     'client_id': 'an ID',

@@ -63,7 +63,7 @@ def validate_updates(user, updates, auth_usr = None):
     def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
 
-    gmaps = gm.Client(config.REACT_APP_MAP_API_KEY)
+    gmaps = gm.Client(config.MAPS_API_KEY)
     def check_addr(y):
         try:
             location = gmaps.geocode(y)
