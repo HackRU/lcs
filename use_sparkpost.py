@@ -108,11 +108,13 @@ def send_to_emails(event, context):
             return config.add_cors_headers({'statusCode': 400, 'body': "Template not found or error in sending"})
 
 
-def send_email(recipient,link,forgot):
+def send_email(recipient, link, forgot, sender):
     """
         Sends an email to one person - recipient
         with the link.
         If "forgot", use the forgotten password template.
+
+        If not "forgot" sender needs to be non None.
     """
 
     client = MongoClient(config.DB_URI)
@@ -123,4 +125,4 @@ def send_email(recipient,link,forgot):
     if forgot:
         return do_substitutions([recipient],[link],'forgot-password',usr_object)
     else:
-        return do_substitutions([recipient],[link],'upgrade-user',usr_object)
+        return do_substitutions([recipient],[link],'upgrade-user',sender)

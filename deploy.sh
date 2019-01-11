@@ -48,5 +48,5 @@ zip -r dep.zip .
 
 #move the zip up and clear the mess.
 cd ..
-cp deploy/dep.zip deploy-$STAGE-$@.zip
+cp deploy/dep.zip "deploy-$STAGE.zip"
 rm -rf deploy/

@@ -16,12 +16,12 @@ def forgotUser(event,magiclinks):
     obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
     magiclinks.insert_one(obj_to_insert)
     link_base = event.get('link_base', 'https://hackru.org/magic/{}')
-    rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink),True)
+    rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink),True, None)
     if rv['statusCode'] != 200:
         return rv
     return magiclink
 
-def directorLink(magiclinks, numLinks, event):
+def directorLink(magiclinks, numLinks, event, user):
         links_list = []
         permissions = []
         for i in event['permissions']:
@@ -35,7 +35,7 @@ def directorLink(magiclinks, numLinks, event):
             obj_to_insert['link'] = magiclink
             obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
             magiclinks.insert_one(obj_to_insert)
-            sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink,False)['body']
+            sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink,False, user)['body']
             links_list.append((magiclink, sent))
         return links_list
 
@@ -72,7 +72,7 @@ def genMagicLink(event,context):
         user = tests.find_one({"email":event['email']})
         if user and user['role']['director']:
             #build permissions
-            links_list = directorLink(magiclinks, numLinks,event)
+            links_list = directorLink(magiclinks, numLinks,event, user)
             return config.add_cors_headers({"statusCode":200,"body":links_list})
         else:
             return config.add_cors_headers({"statusCode":400,"body":"Invalid permissions"})
