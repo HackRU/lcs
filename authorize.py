@@ -70,12 +70,9 @@ def authorize_then_consume(event, context):
             rv['statusCode'] = 400
     return rv
 
-
 def create_user(event, context, mlh = False):
-    if not config.is_registration_open():
-        if 'link' not in event:
+    if not config.is_registration_open() and 'link' not in event:
             return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
-        return authorize_then_consume(event, context)
 
     # check if valid email
     try:
