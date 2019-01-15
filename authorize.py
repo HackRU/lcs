@@ -57,9 +57,25 @@ def authorize(event,context):
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
     return config.add_cors_headers(ret_val)
 
+#NOT A LAMBDA
+def authorize_then_consume(event, context):
+    rv = authorize(event, context)
+    if 'link' in event:
+        consumption_event = {
+            'link': event['link'],
+            'token': json.loads(rv['body'])['auth']['token']
+        }
+        consume_val = consume.consumeUrl(consumption_event, None)
+        if consume_val['statusCode'] != 200:
+            rv['statusCode'] = 206
+    return rv
+
+
 def create_user(event, context, mlh = False):
     if not config.is_registration_open():
-        return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+        if 'link' not in event:
+            return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+        return authorize_then_consume(event, context)
 
     # check if valid email
     try:
@@ -84,7 +100,9 @@ def create_user(event, context, mlh = False):
     #if a user of the same email exists, we complain.
     usr = tests.find_one({'email': u_email})
     if usr != None and usr != [] and usr != {}:
-        return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
+        if 'link' not in event:
+            return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
+        return authorize_then_consume(event, context)
 
     #The goal here is to have a complete user.
     #Where ever a value is not provided, we put the empty string.
@@ -122,15 +140,4 @@ def create_user(event, context, mlh = False):
 
     tests.insert_one(doc)
 
-    rv = authorize(event, context)
-
-    if 'link' in event:
-        consumption_event = {
-            'link': event['link'],
-            'token': json.loads(rv['body'])['auth']['token']
-        }
-        consume_val = consume.consumeUrl(consumption_event, None)
-        if consume_val['statusCode'] != 200:
-            rv['statusCode'] = 206
-
-    return rv
+    return authorize_then_consume(event, context)
