@@ -67,7 +67,7 @@ def authorize_then_consume(event, context):
         }
         consume_val = consume.consumeUrl(consumption_event, None)
         if consume_val['statusCode'] != 200:
-            rv['statusCode'] = 206
+            rv['statusCode'] = 400
     return rv
 
 
