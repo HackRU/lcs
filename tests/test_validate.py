@@ -21,14 +21,14 @@ def validate_token():
 
     #success
     val = validate.validate({'email': user_email, 'token': token}, None)
-    assert dict_includes(val, http_dict(statusCode=expect_eq(200), body=expect_eq(user_dict)))
+    assert check_by_schema(schema_for_http(200, {"type": "object", "const": user_dict}), val)
 
     #failures
     val = validate.validate({'email': user_email + 'fl', 'token': token}, None)
-    assert dict_includes(val, http_dict(statusCode=expect_eq(400), body=expect_eq("User not found")))
+    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "User not found"}), val)
     val = validate.validate({'email': user_email, 'token': token + 'fl'}, None)
-    assert dict_includes(val, http_dict(statusCode=expect_eq(400), body=expect_eq("Token not found")))
+    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Token not found"}), val)
     val = validate.validate({'emil': user_email, 'token': token + 'fl'}, None)
-    assert dict_includes(val, http_dict(statusCode=expect_eq(400), body=expect_eq("Email or token not provided.")))
+    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)
     val = validate.validate({'email': user_email, 'oken': token + 'fl'}, None)
-    assert dict_includes(val, http_dict(statusCode=expect_eq(400), body=expect_eq("Email or token not provided.")))
+    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)

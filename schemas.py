@@ -8,12 +8,12 @@ from functools import wraps
 from datetime import datetime
 
 def ensure_schema(schema):
-    val = js.Draft3Validator(schema)
+    js.Draft4Validator.check_schema(schema)
     def wrap(fn):
         @wraps(fn)
         def wrapt(event, context, *extras):
             try:
-                val.validate(event)
+                js.validate(event, schema)
                 return config.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
                 return config.add_cors_headers({"statusCode": 400, "body": "Error in JSON: {}".format(e)})
