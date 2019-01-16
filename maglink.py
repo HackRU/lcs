@@ -47,7 +47,7 @@ def directorLink(magiclinks, numLinks, event, user):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "permissions": {"type": "array"},
         "emailsTo": {"type": "array"},
@@ -65,7 +65,7 @@ def do_director_link(event, magiclinks, user):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "email", "format": "email"},
     },
     "required": ["email"]
 })

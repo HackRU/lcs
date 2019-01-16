@@ -14,7 +14,7 @@ from schemas import *
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"}
     },
     "required": ["email", "token"]
@@ -181,8 +181,8 @@ def validate_updates(user, updates, auth_usr = None):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "user_email": {"type": "email"},
-        "auth_email": {"type": "email"},
+        "user_email": {"type": "string", "format": "email"},
+        "auth_email": {"type": "email", "format": "email"},
         "auth": {"type": "string"},
         "updates": {
             "type": "object",
@@ -198,8 +198,8 @@ def validate_updates(user, updates, auth_usr = None):
                 "$push": {
                     "type": "object",
                     "properties": {
-                        "votes_from": {"type": "email"},
-                        "skipped_users": {"type": "email"}
+                        "votes_from": {"type": "string", "format": "email"},
+                        "skipped_users": {"type": "email", "format": "email"}
                     },
                     "additionalProperties": False
                 }

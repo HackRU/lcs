@@ -15,7 +15,7 @@ from schemas import *
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "password": {"type": "string"}
     },
     "required": ["email", "password"]
@@ -26,9 +26,6 @@ def authorize(event,context):
        validation, the user is granted a token which
        is returned with its expiry time.
        """
-
-    if('email' not in event  or 'password' not in event):
-        return ({"statusCode":400,"body":"Invalid Request"})
 
     email = event['email']
     pass_ = event['password']
@@ -81,7 +78,7 @@ def authorize_then_consume(event, context):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "password": {"type": "string"},
         "link": {"type": "string"},
         "github": {"type": "string"},

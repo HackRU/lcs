@@ -10,7 +10,7 @@ emails = SparkPost(config.SPARKPOST_KEY)
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
     },
     "required": ["email", "token"]
@@ -67,7 +67,7 @@ def do_substitutions(recs, links, template, usr):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email"},
+        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "template": {"type": "string"},
         "recipients": {"type": "array"}
