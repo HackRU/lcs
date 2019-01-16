@@ -8,24 +8,24 @@ from functools import wraps
 from datetime import datetime
 
 def ensure_schema(schema):
-    val = js.Draft7Validator(schema)
+    val = js.Draft3Validator(schema)
     def wrap(fn):
         @wraps(fn)
-        def wrapt(event, context):
+        def wrapt(event, context, *extras):
             try:
                 val.validate(event)
-                return config.add_cors_headers(fn(event, context))
+                return config.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
                 return config.add_cors_headers({"statusCode": 400, "body": "Error in JSON: {}".format(e)})
         return wrapt
     return wrap
 
-def ensure_logged_in_user(email_key = 'email', token_key = 'token'):
+def ensure_logged_in_user(email_key='email', token_key='token'):
     def rapper(fn):
         @wraps(fn)
-        def wrapt(event, context):
-            email = event['email']
-            token = event['token']
+        def wrapt(event, context, *args):
+            email = event[email_key]
+            token = event[token_key]
 
             #connect to DB
             client = MongoClient(config.DB_URI)
@@ -43,16 +43,16 @@ def ensure_logged_in_user(email_key = 'email', token_key = 'token'):
             if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
                 return {"statusCode": 400, "body": "Token not found"}
 
-            return fn(event, contex, results)
+            return fn(event, context, results, *args)
         return wrapt
     return rapper
 
 def ensure_role(roles):
     def ensure_auth_user(fn):
         @wraps(fn)
-        def wrapt(event, context, user):
+        def wrapt(event, context, user, *args):
             if all(any(user['role'].get(role, False) for role in options) for options in roles):
-                return fn(event, context, user)
+                return fn(event, context, user, *args)
             return {"statusCode": 403, "body": "User does not have priviledges."}
         return wrapt
     return ensure_auth_user

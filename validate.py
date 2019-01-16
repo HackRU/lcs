@@ -27,7 +27,7 @@ def validate(event, context, user):
     unexpired token of the user with
     the provided email.
     """
-    return {"statusCode": 200,"body": message, "isBase64Encoded": False}
+    return {"statusCode": 200,"body": user, "isBase64Encoded": False}
 
 def validate_updates(user, updates, auth_usr = None):
     """
@@ -226,12 +226,12 @@ def update(event, context, a_res):
     tests = db[config.DB_COLLECTIONS['users']]
 
     #assuming the auth_email user is authorised, find the user being modified.
-    if u_email == a_email:
+    if event['user_email'] == event['auth_email']:
         #save a query in the nice case.
         results = a_res
     #if the user is an admin, they may modify any user.
     elif a_res['role']['organizer'] or a_res['role']['director']:
-        results = tests.find_one({"email":u_email})
+        results = tests.find_one({"email": event['user_email']})
     else:
         return {"statusCode": 403, "body": "Permission denied"}
 
@@ -243,5 +243,5 @@ def update(event, context, a_res):
     updates = validate_updates(results, event['updates'], a_res)
 
     #update the user and report success.
-    tests.update_one({'email': u_email}, updates)
+    tests.update_one({'email': event['user_email']}, updates)
     return {"statusCode":200, "body":"Successful request."}
