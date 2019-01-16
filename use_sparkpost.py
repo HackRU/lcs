@@ -6,6 +6,16 @@ from pymongo import MongoClient
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "email"},
+        "token": {"type": "string"},
+    },
+    "required": ["email", "token"]
+})
+@ensure_logged_in_user()
+@ensure_role([['director']])
 def list_all_templates(event, context):
     """
     Gets a list of all the templates iff the
@@ -15,13 +25,8 @@ def list_all_templates(event, context):
     The template list is some sort of dictionary
     from sparkpost.
     """
-    val, usr = get_validated_user(event)
-    if not val or not usr['role']['director']:
-        return config.add_cors_headers({'statusCode': 400, 'body': usr})
-    else:
-        
-        templs = emails.templates.list()
-        return config.add_cors_headers({'statusCode': 400, 'body': templs})
+    templs = emails.templates.list()
+    {'statusCode': 400, 'body': templs}
 
 def do_substitutions(recs, links, template, usr):
     """
