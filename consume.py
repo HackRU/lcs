@@ -9,7 +9,7 @@ import bcrypt
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email", "format": "email"},
+        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"}
     },
     "required": ["email", "token"]

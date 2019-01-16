@@ -65,7 +65,7 @@ def do_director_link(event, magiclinks, user):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "email", "format": "email"},
+        "email": {"type": "string", "format": "email"},
     },
     "required": ["email"]
 })

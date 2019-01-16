@@ -182,7 +182,7 @@ def validate_updates(user, updates, auth_usr = None):
     "type": "object",
     "properties": {
         "user_email": {"type": "string", "format": "email"},
-        "auth_email": {"type": "email", "format": "email"},
+        "auth_email": {"type": "string", "format": "email"},
         "auth": {"type": "string"},
         "updates": {
             "type": "object",
@@ -199,7 +199,7 @@ def validate_updates(user, updates, auth_usr = None):
                     "type": "object",
                     "properties": {
                         "votes_from": {"type": "string", "format": "email"},
-                        "skipped_users": {"type": "email", "format": "email"}
+                        "skipped_users": {"type": "string", "format": "email"}
                     },
                     "additionalProperties": False
                 }
