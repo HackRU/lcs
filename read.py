@@ -33,6 +33,7 @@ def tidy_results(res):
     "required": ["query"]
 })
 def public_read(event, context):
+    fields = event['fields']
     match = {"$match": {"registration_status": ("checked-in" if event.get('just_here', False) else {"$ne": "unregistered"})}}
     group = {"$group": {"_id": {field: "$" + field for field in fields}, "total": {"$sum": 1}}}
 
