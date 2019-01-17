@@ -11,7 +11,7 @@ emails = SparkPost(config.SPARKPOST_KEY)
     "type": "object",
     "properties": {
         "email": {"type": "string", "format": "email"},
-        "token": {"type": "string"},
+        "token": {"type": "string"}
     },
     "required": ["email", "token"]
 })

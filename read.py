@@ -1,67 +1,92 @@
-import string
-import json
 import pymongo
 from pymongo import MongoClient
+
 import config
-from datetime import datetime
-import dateutil.parser as dp
+from schemas import *
 
-def validate_user(db, token, email):
-    """
-    Returns the user if the authtoken provided as token is valid.
-    """
-    if not token or not email:
-        return False
+def tidy_results(res):
+    for i in res:
+        del i['_id']
+        del i['password']
+    return res
 
-    user = db.find_one({'email': email})
-    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in user['auth']):
-        return False
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "query": {
+            "type": "object",
+            "properties":{
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": ["major", "shirt_size", "dietary_restrictions", "school", "grad_year", "gender", "level_of_study", "ethnicity"]
+                    },
+                    "uniqueItems": True
+                },
+                "just_here": {"type": "boolean"}
+            },
+            "required": ['fields']
+        },
+        "aggregate": {"type": "boolean", "const": True}
+    },
+    "required": ["query"]
+})
+def public_read(event, context):
+    match = {"$match": {"registration_status": ("checked-in" if event.get('just_here', False) else {"$ne": "unregistered"})}}
+    group = {"$group": {"_id": {field: "$" + field for field in fields}, "total": {"$sum": 1}}}
 
-    return user
+    client = MongoClient(config.DB_URI)
+    db = client[config.DB_NAME]
+    db.authenticate(config.DB_USER,config.DB_PASS)
+    tests = db[config.DB_COLLECTIONS['users']]
 
+    return {"statusCode": 200, "body": list(tests.aggregate([match, group]))}
+
+def user_read(event, context, user):
+    if event.get('aggregate', False):
+        return public_read(event, context)
+    return {"statusCode": 200, "body": [user]}
+
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "token": {"type": "string"},
+        "query": {"type": "string"},
+        "aggregate": {"type": "boolean"}
+    },
+    "required": ["query", "email", "token"]
+})
+@ensure_logged_in_user(on_failure = lambda e, c, u, *a: public_read(e, c))
+@ensure_role([['director', 'organizer']], lambda e, c, u, *a: user_read(e, c, u))
+def do_director(event, context, user):
+    client = MongoClient(config.DB_URI)
+    db = client[config.DB_NAME]
+    db.authenticate(config.DB_USER,config.DB_PASS)
+    tests = db[config.DB_COLLECTIONS['users']]
+
+    if event.get('aggregate', False):
+        return {"statusCode": 200, "body": list(tests.aggregate(event['query']))}
+    return {"statusCode": 200, "body": tidy_results(list(tests.find(event['query'])))}
+
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "token": {"type": "string"},
+        "query": {"type": "string"},
+        "aggregate": {"type": "boolean"}
+    },
+    "required": ["query"]
+})
 def read_info(event, context):
     """
-    We allow for an arbitrary mongoose query to be passed in.
+    We allow for an arbitrary mongo query to be passed in.
     If the aggregate field is present and true, we aggregate
     and otherwise "find_one."
     """
 
-    if 'query' not in event or not event['query']:
-        return config.add_cors_headers({"statusCode": 400, "body": "We query for your query."})
-    #if aggregate is not present, it is false.
-    if 'aggregate' not in event:
-        event['aggregate'] = False
-
-    client = MongoClient(config.DB_URI)
-
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
-    #get the user if they're logged in and making the request.
-    user = validate_user(tests,
-            event['token'] if 'token' in event else False,
-            event['email'] if 'email' in event else False)
-
-    #directors and organizers see all and know all
-    if user and (user['role']['director'] or user['role']['organizer']):
-        res_ = list(tests.aggregate(event['query'])) if event['aggregate'] else list(tests.find(event['query']))
-    #users can see anything about themselves - in a find.
-    elif user and not event['aggregate']:
-        res_ = [res for res in tests.find(event['query']) if res['email'] == event['email']]
-    #redact! Don't give public/non-organizers access to sensitive aggregations.
-    else:
-        restricted_fields = ['auth', 'mlhid', 'email', 'first_name', 'last_name', 'date_of_birth', 'email', 'password', 'id', 'github', 'resume', 'short_answer', 'data_sharing', 'rules_and_conditions']
-
-        res_ = tests.aggregate(event['query']) if event['aggregate'] else list(tests.find(event['query']))
-        for abstracted_data in restricted_fields:
-            for doc in res_:
-                if abstracted_data in doc:
-                    del doc[abstracted_data]
-
-    if not event['aggregate']:
-        for i in res_:
-            del i['_id']
-            del i['password']
-
-    return config.add_cors_headers({"statusCode": 200, "body": res_})
+    if 'email' in event and 'token' in event:
+        return do_director(event, context)
+    return public_read(event, context)
