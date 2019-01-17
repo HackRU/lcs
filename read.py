@@ -54,7 +54,7 @@ def user_read(event, context, user):
     "properties": {
         "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
-        "query": {"type": "string"},
+        "query": {"type": "object"},
         "aggregate": {"type": "boolean"}
     },
     "required": ["query", "email", "token"]
@@ -76,7 +76,7 @@ def do_director(event, context, user):
     "properties": {
         "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
-        "query": {"type": "string"},
+        "query": {"type": "object"},
         "aggregate": {"type": "boolean"}
     },
     "required": ["query"]
