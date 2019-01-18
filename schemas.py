@@ -43,6 +43,8 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
             if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
                 return on_failure(event, context, "Token not found", *args)
 
+            del results['_id']
+            del results['password']
             return fn(event, context, results, *args)
         return wrapt
     return rapper
