@@ -9,44 +9,25 @@ import dateutil.parser as dp
 from datetime import datetime
 import googlemaps as gm
 
-def get_validated_user(event):
-    if 'email' not in event or 'token' not in event:
-        return (False, "Email or token not provided.")
+from schemas import *
 
-    email = event['email']
-    token = event['token']
-
-    #connect to DB
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
-
-    #try to find our user
-    results = tests.find_one({"email":email})
-    if results == None or results == [] or results == ():
-        return (False, "User not found")
-
-    #if none of the user's unexpired tokens match the one given, complain.
-    if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
-        return (False, "Token not found")
-
-    return (True, results)
-
-def validate(event, context):
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "token": {"type": "string"}
+    },
+    "required": ["email", "token"]
+})
+@ensure_logged_in_user()
+def validate(event, context, user):
     """
     Given an email and token,
     ensure that the token is an
     unexpired token of the user with
     the provided email.
     """
-    ok, message = get_validated_user(event)
-
-    if ok:
-        return config.add_cors_headers({"statusCode": 200,"body": message, "isBase64Encoded": False})
-    return config.add_cors_headers({"statusCode": 400, "body": message, "isBase64Encoded": False})
-
+    return {"statusCode": 200,"body": user, "isBase64Encoded": False}
 
 def validate_updates(user, updates, auth_usr = None):
     """
@@ -196,21 +177,46 @@ def validate_updates(user, updates, auth_usr = None):
 
     return {i: {j: updates[i][j] for j in updates[i] if validate(j, i)} for i in updates}
 
-def update(event, context):
+#TODO: get this to replace the above fn
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "user_email": {"type": "string", "format": "email"},
+        "auth_email": {"type": "string", "format": "email"},
+        "auth": {"type": "string"},
+        "updates": {
+            "type": "object",
+            "properties": {
+                "$set": {"type": "object"},
+                "$inc": {
+                    "type": "object",
+                    "properties": {
+                        "votes": {"type": "number"}
+                    },
+                    "additionalProperties": False
+                },
+                "$push": {
+                    "type": "object",
+                    "properties": {
+                        "votes_from": {"type": "string", "format": "email"},
+                        "skipped_users": {"type": "string", "format": "email"}
+                    },
+                    "additionalProperties": False
+                }
+            },
+            "additionalProperties": False
+        }
+    },
+    "required": ["user_email", "auth_email", "auth", "updates"]
+})
+@ensure_logged_in_user(email_key="auth_email", token_key="auth")
+def update(event, context, a_res):
     """
     Given a user email, an auth email, an auth token,
     and the dictionary of updates,
     performs all updates the authorised user (with email
     auth_email) can from "updates" on the user with email "user_email".
     """
-
-    #ensure that all the info is there.
-    if 'user_email' not in event or 'auth' not in event or 'auth_email' not in event:
-        return config.add_cors_headers({"statusCode":400, "body":"Data not submitted."})
-
-    u_email = event['user_email']
-    a_email = event['auth_email']
-    auth_val =  event['auth']
 
     #connect to the DB.
     client = MongoClient(config.DB_URI)
@@ -219,31 +225,23 @@ def update(event, context):
 
     tests = db[config.DB_COLLECTIONS['users']]
 
-    #try to authorise the user with email auth_email
-    a_res = tests.find_one({"email": a_email})
-    if a_res == None or a_res == [] or a_res == {}:
-        return config.add_cors_headers({"statusCode":400,"body":"Auth email not found."})
-
-    if not any(i['token'] == auth_val and datetime.now() < dp.parse(i['valid_until']) for i in a_res['auth']):
-        return config.add_cors_headers({"statusCode":400, "body":"Authentication token not found."})
-
     #assuming the auth_email user is authorised, find the user being modified.
-    if u_email == a_email:
+    if event['user_email'] == event['auth_email']:
         #save a query in the nice case.
         results = a_res
     #if the user is an admin, they may modify any user.
     elif a_res['role']['organizer'] or a_res['role']['director']:
-        results = tests.find_one({"email":u_email})
+        results = tests.find_one({"email": event['user_email']})
     else:
-        return config.add_cors_headers({"statusCode": 403, "body": "Permission denied"})
+        return {"statusCode": 403, "body": "Permission denied"}
 
     #ensure that the user was indeed found.
     if results == None or results == [] or results == {}:
-        return config.add_cors_headers({"statusCode":400,"body":"User email not found."})
+        return {"statusCode":400,"body":"User email not found."}
 
     #validate the updates, passing only the allowable ones through.
     updates = validate_updates(results, event['updates'], a_res)
 
     #update the user and report success.
-    tests.update_one({'email': u_email}, updates)
-    return config.add_cors_headers({"statusCode":200, "body":"Successful request."})
+    tests.update_one({'email': event['user_email']}, updates)
+    return {"statusCode":200, "body":"Successful request."}

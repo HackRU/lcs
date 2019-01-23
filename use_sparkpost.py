@@ -1,12 +1,23 @@
 from sparkpost import SparkPost
-from validate import get_validated_user
+
+from schemas import *
 import config
 from read import read_info
 from pymongo import MongoClient
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
-def list_all_templates(event, context):
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "token": {"type": "string"}
+    },
+    "required": ["email", "token"]
+})
+@ensure_logged_in_user()
+@ensure_role([['director']])
+def list_all_templates(event, context, user):
     """
     Gets a list of all the templates iff the
     user (email, token keys in event) is an
@@ -15,13 +26,8 @@ def list_all_templates(event, context):
     The template list is some sort of dictionary
     from sparkpost.
     """
-    val, usr = get_validated_user(event)
-    if not val or not usr['role']['director']:
-        return config.add_cors_headers({'statusCode': 400, 'body': usr})
-    else:
-        
-        templs = emails.templates.list()
-        return config.add_cors_headers({'statusCode': 400, 'body': templs})
+    templs = emails.templates.list()
+    return {'statusCode': 400, 'body': templs}
 
 def do_substitutions(recs, links, template, usr):
     """
@@ -58,7 +64,18 @@ def do_substitutions(recs, links, template, usr):
         emails.recipient_lists.delete(list_id)
         return rv
 
-def send_to_emails(event, context):
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "token": {"type": "string"},
+        "template": {"type": "string"},
+        "recipients": {"type": "array"}
+    },
+    "required": ["email", "token", "template"]
+})
+@ensure_logged_in_user()
+def send_to_emails(event, context, usr):
     """
     If the user (validated via the email and token keys)
     is a non-director, the only keys allowed are the 'recipients' one
@@ -74,16 +91,8 @@ def send_to_emails(event, context):
     recipient. This substitution is performed using "do_substitutions" specified
     above.
     """
-    if 'template' not in event:
-        return config.add_cors_headers({'statusCode': 400, 'body': 'Missing template'})
-    if 'recipients' not in event and 'query' not in event:
-        return config.add_cors_headers({'statusCode': 400, 'body': 'No recipients provided.'})
-
-    val, usr = get_validated_user(event)
-    if not val:
-        return config.add_cors_headers({'statusCode': 400, 'body': usr})
-    elif not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
-        return config.add_cors_headers({'statusCode': 400, 'body': "Not authorized to send emails!"})
+    if not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
+        return {'statusCode': 400, 'body': "Not authorized to send emails!"}
     else: #note, below this point, we can assume usr is a director or that the recipients list has length 1.
         if 'query' in event and 'recipients' not in event: #recall that a non-director cannot have this: they must have "recipients"
             queried = read_info(event, context)
@@ -91,7 +100,7 @@ def send_to_emails(event, context):
                 return queried
             event['recipients'] = [i['email'] for i in queried['body'] if 'email' in i]
             if len(event['recipients']) == 0:
-                return config.add_cors_headers({'statusCode': 204, 'body': "No recipients found!"})
+                return {'statusCode': 204, 'body': "No recipients found!"}
         elif 'links' in event:
             return do_substitutions(event['recipients'], event['links'], event['template'], usr)
         try:
@@ -101,11 +110,11 @@ def send_to_emails(event, context):
                     template=event['template']
             )
             if resp[u'total_accepted_recipients'] != len(event['recipients']):
-                return config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
+                return {'statusCode': 500, 'body': "Sparkpost troubles!"}
             else:
-                return config.add_cors_headers({'statusCode': 200, 'body': "Success!"})
+                return {'statusCode': 200, 'body': "Success!"}
         except Exception:
-            return config.add_cors_headers({'statusCode': 400, 'body': "Template not found or error in sending"})
+            return {'statusCode': 400, 'body': "Template not found or error in sending"}
 
 
 def send_email(recipient, link, forgot, sender):

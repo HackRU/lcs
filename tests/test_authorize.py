@@ -7,25 +7,32 @@ import pytest
 import json
 import datetime as d
 
-def http_dict_for_token(email):
-    ret_val = {
-        "statusCode": expect_eq(200),
-        "body" : lambda v: dict_includes(json.loads(v), {
-            "auth": lambda a: dict_includes(a, {
-                "token": expect_exist,
-                "valid_until": expect_exist,
-                "email": expect_eq(email)
-            })
-        })
-    }
-    return http_dict(**ret_val)
+def has_token_for(email, thing):
+    if 'body' not in thing:
+        return False
+    thing['body'] = json.loads(thing['body'])
+    return check_by_schema(schema_for_http(200, {
+        "type": "object",
+        "properties": {
+            "auth": {
+                "type": "object",
+                "properties": {
+                    "token": {"type": "string"},
+                    "valid_until": {"type": "string"},
+                    "email": {"type": "string", "const": email}
+                },
+                "required": ["token", "email", "valid_until"]
+            }
+        },
+        "required": ["auth"]
+    }), thing)
 
 def test_bad_password():
     user_email = "team@nonruhackathon.notemail.com"
     passwd = "arghf"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
-    assert dict_includes(auth, http_dict(statusCode = 403, body = "invalid email,hash combo"))
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "invalid email,hash combo"}), auth)
 
 @pytest.mark.run(order=1)
 def test_creation():
@@ -44,7 +51,7 @@ def test_creation():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.create_user(usr_dict, None)
-    assert dict_includes(auth, http_dict_for_token(user_email))
+    assert has_token_for(user_email, auth)
 
 @pytest.mark.run(order=2)
 def test_creation_fail_cases():
@@ -52,15 +59,16 @@ def test_creation_fail_cases():
     passwd = "love"
     usr_dict = {'password': passwd}
     auth = authorize.create_user(usr_dict, None)
-    assert dict_includes(auth, http_dict(statusCode = 400, body = "No email provided!"))
+    assert check_by_schema(schema_for_http(400, {"type": "string"}), auth)
 
     usr_dict = {'email': user_email}
     auth = authorize.create_user(usr_dict, None)
-    assert dict_includes(auth, http_dict(statusCode = 400, body = "No password provided"))
+    assert check_by_schema(schema_for_http(400, {"type": "string"}), auth)
 
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.create_user(usr_dict, None)
-    assert dict_includes(auth, http_dict(statusCode = 400, body = "Duplicate user!"))
+    #we guarantee the string value here since we produce the error message
+    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Duplicate user!"}), auth)
 
 @pytest.mark.run(order=2)
 def test_login_success():
@@ -68,7 +76,7 @@ def test_login_success():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
-    assert dict_includes(auth, http_dict_for_token(user_email))
+    assert has_token_for(user_email, auth)
 
 @pytest.mark.run(order=4)
 def delete_user():

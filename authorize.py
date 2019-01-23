@@ -6,21 +6,26 @@ from datetime import datetime, timedelta
 
 import requests
 from pymongo import MongoClient
-from validate_email import validate_email
 import bcrypt
 
 import config
 import consume
+from schemas import *
 
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "password": {"type": "string"}
+    },
+    "required": ["email", "password"]
+})
 def authorize(event,context):
     """The authorize endpoint. Given an email
        and a password, validates the user. Upon
        validation, the user is granted a token which
        is returned with its expiry time.
        """
-
-    if('email' not in event  or 'password' not in event):
-        return ({"statusCode":400,"body":"Invalid Request"})
 
     email = event['email']
     pass_ = event['password']
@@ -70,18 +75,34 @@ def authorize_then_consume(event, context):
             rv['statusCode'] = 400
     return rv
 
-def create_user(event, context, mlh = False):
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+        "password": {"type": "string"},
+        "link": {"type": "string"},
+        "github": {"type": "string"},
+        "major": {"type": "string"},
+        "short_answer": {"type": "string"},
+        "shirt_size": {"type": "string"},
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"},
+        "dietary_restrictions": {"type": "string"},
+        "special_needs": {"type": "string"},
+        "date_of_birth": {"type": "string"},
+        "school": {"type": "string"},
+        "grad_year": {"type": "string"},
+        "gender": {"type": "string"},
+        "level_of_study": {"type": "string"},
+        "ethnicity": {"type": "string"},
+        "phone_number": {"type": "string"}
+    },
+    "required": ["email", "password"],
+    "additionalFields": False
+})
+def create_user(event, context):
     if not config.is_registration_open() and 'link' not in event:
             return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
-
-    # check if valid email
-    try:
-       email = validate_email(event['email'])
-    except KeyError:
-       return config.add_cors_headers({"statusCode":400, "body":"No email provided!"})
-
-    if 'password' not in event:
-       return config.add_cors_headers({"statusCode":400, "body":"No password provided"})
 
     u_email = event['email']
     password = event['password']

@@ -15,18 +15,14 @@ if [[ ! -f "config.$1.py" ]]; then
 fi
 
 #make the python libraries ready
-source venv/bin/activate
+source ~/.pyenv/versions/$(cat .python-version)/bin/activate
 pip install -r requirements.txt
 
 #make the deploy folder
 mkdir deploy/
 
 #copy the py libraries
-if [ -d "venv/lib/python3.6" ]; then
-    cp -r venv/lib/python3.6/site-packages/. deploy/
-else
-    cp -r venv/lib/python3.5/site-packages/* deploy/
-fi
+cp -r ~/.pyenv/versions/$(cat .python-version)/lib/python3.6/site-packages/. deploy/
 
 #record the stage
 STAGE=$1
