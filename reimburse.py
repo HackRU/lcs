@@ -1,8 +1,8 @@
-import config
-import json
 import googlemaps
-from datetime import datetime
 from pymongo import MongoClient
+
+import config
+from schemas import *
 
 def do_one_user(user, gmaps, db_conn):
     start_loc = user['travelling_from']['formatted_address']
