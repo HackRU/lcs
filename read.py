@@ -47,6 +47,10 @@ def public_read(event, context):
 def user_read(event, context, user):
     if event.get('aggregate', False):
         return public_read(event, context)
+
+    if user['registration_status'] in ['unregistered', 'registered', 'rejected']:
+        if 'travelling_from' in user and 'reimbursement' in user['travelling_from']:
+            del user['travelling_from']['reimbursement']
     return {"statusCode": 200, "body": [user]}
 
 @ensure_schema({
