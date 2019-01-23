@@ -30,9 +30,9 @@ class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA",
     MAX_REIMBURSE = 60
     MULTIPLIERS = {
-        "car": 0.22
-        "train": 0.5 #TODO: find good number
-        "bus": 0.5 #TODO: find good number
+        "car": 0.22,
+        "train": 0.5, #TODO: find good number
+        "bus": 0.5, #TODO: find good number
         "plane": 1 #doesn't matter - makes the code handy.
     }
 
