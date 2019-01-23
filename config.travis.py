@@ -26,6 +26,16 @@ SLACK_KEYS = {
     'channel': ''
 }
 
+class TRAVEL:
+    HACKRU_LOCATION = "New Brunswick, NJ, USA",
+    MAX_REIMBURSE = 60
+    MULTIPLIERS = {
+        "car": 0.22
+        "train": 0.5 #TODO: find good number
+        "bus": 0.5 #TODO: find good number
+        "plane": 1 #doesn't matter - makes the code handy.
+    }
+
 # I'm too lazy with the EDT off-by-1 here...it won't impact day-of.
 TIMEZONE = d.timezone(d.timedelta(hours=-5))
 # See is_registration_open for how to use this: every time marks a toggle in the state.
