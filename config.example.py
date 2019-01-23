@@ -10,9 +10,6 @@ DB_COLLECTIONS = {
     "slack messages": "slack-msgs"
 }
 
-GOOGLE_CAL_ID = ""
-MAPS_API_KEY=""
-
 MLH = {
     'client_id': 'an ID',
     'client_secret': 'ssh. It\'s a secret',
@@ -25,6 +22,9 @@ SLACK_KEYS = {
     'token': '',
     'channel': ''
 }
+
+GOOGLE_CAL_ID = ""
+MAPS_API_KEY=""
 
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA",

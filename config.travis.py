@@ -26,6 +26,9 @@ SLACK_KEYS = {
     'channel': ''
 }
 
+GOOGLE_CAL_ID = ""
+MAPS_API_KEY=""
+
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA",
     MAX_REIMBURSE = 60

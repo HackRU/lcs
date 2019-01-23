@@ -49,7 +49,7 @@ def compute_all_reimburse(event, context, user):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    gmaps = googlemaps.Client(key=config.maps_key)
+    gmaps = googlemaps.Client(key=config.MAPS_API_KEY)
 
     for user in tests.find({"travelling_from": {"$exists": True}}):
         do_one_user(user, gmaps)
