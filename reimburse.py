@@ -76,7 +76,7 @@ def compute_all_reimburse(event, context, user):
 
     for user in users:
         if user['travelling_from']['mode'] != 'plane':
-            dist = lookup[user['travelling_from']['mode']][user['travelling_from']['formatted_addr']]
+            dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
             reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
         else:
             reimburse = config.TRAVEL.MAX_REIMBURSE
