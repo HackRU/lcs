@@ -27,7 +27,7 @@ GOOGLE_CAL_ID = ""
 MAPS_API_KEY=""
 
 class TRAVEL:
-    HACKRU_LOCATION = "New Brunswick, NJ, USA",
+    HACKRU_LOCATION = {'lat': 40.4862157, 'lng': -74.4518188}
     MAX_REIMBURSE = 60
     MULTIPLIERS = {
         "car": 0.22,

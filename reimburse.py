@@ -5,7 +5,8 @@ import config
 from schemas import *
 
 def do_one_user(user, gmaps, db_conn):
-    start_loc = user['travelling_from']['formatted_address']
+    # start_loc = gmaps.geocode(user['travelling_from']['formatted_addr'])[0]['geometry']['location']
+    start_loc = user['travelling_from']['formatted_addr']
     rac_address = config.TRAVEL.HACKRU_LOCATION
     mode = user['travelling_from']['mode']
 
@@ -43,16 +44,15 @@ def do_one_user(user, gmaps, db_conn):
 @ensure_logged_in_user()
 @ensure_role([['director']])
 def compute_all_reimburse(event, context, user):
-
     client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
+    db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
     gmaps = googlemaps.Client(key=config.MAPS_API_KEY)
 
-    for user in tests.find({"travelling_from": {"$exists": True}}):
-        do_one_user(user, gmaps)
+    for user in tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True}):
+        do_one_user(user, gmaps, tests)
 
     return {'statusCode': 200, 'body': 'yote'}
 
