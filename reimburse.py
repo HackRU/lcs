@@ -68,7 +68,7 @@ def compute_all_reimburse(event, context, user):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    users = tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True})
+    users = list(tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True}))
     try:
         lookup = req_distance_matrices(users)
     except Exception as e:
