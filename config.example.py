@@ -27,12 +27,12 @@ GOOGLE_CAL_ID = ""
 MAPS_API_KEY=""
 
 class TRAVEL:
-    HACKRU_LOCATION = {'lat': 40.4862157, 'lng': -74.4518188}
+    HACKRU_LOCATION = "New Brunswick, NJ, USA"
     MAX_REIMBURSE = 60
     MULTIPLIERS = {
-        "car": 0.22,
-        "train": 0.5, #TODO: find good number
-        "bus": 0.5, #TODO: find good number
+        "car": 0.22 / 1609,
+        "train": 0.66 / 1609,
+        "bus": 0.3775 / 1609,
         "plane": 1 #doesn't matter - makes the code handy.
     }
 
