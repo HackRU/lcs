@@ -1,5 +1,6 @@
 import requests as req
-from pymongo import MongoClient, UpdateOne, BulkWriteError.
+from pymongo import MongoClient, UpdateOne
+from pymongo.errors import BulkWriteError
 
 import config
 from schemas import *
