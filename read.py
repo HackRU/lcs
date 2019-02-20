@@ -53,26 +53,16 @@ def user_read(event, context, user):
             del user['travelling_from']['reimbursement']
     return {"statusCode": 200, "body": [user]}
 
-@ensure_schema({
-    "type": "object",
-    "properties": {
-        "email": {"type": "string", "format": "email"},
-        "token": {"type": "string"},
-        "query": {"type": "object"},
-        "aggregate": {"type": "boolean"}
-    },
-    "required": ["query", "email", "token"]
-})
-@ensure_logged_in_user(on_failure = lambda e, c, u, *a: public_read(e, c))
 @ensure_role([['director', 'organizer']], lambda e, c, u, *a: user_read(e, c, u))
-def do_director(event, context, user):
+def organizer_read(event, context, user):
+    if event.get('aggregate', False):
+        return public_read(event, context)
+
     client = MongoClient(config.DB_URI)
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    if event.get('aggregate', False):
-        return {"statusCode": 200, "body": list(tests.aggregate(event['query']))}
     return {"statusCode": 200, "body": tidy_results(list(tests.find(event['query'])))}
 
 @ensure_schema({
@@ -85,13 +75,19 @@ def do_director(event, context, user):
     },
     "required": ["query"]
 })
+@ensure_logged_in_user(on_failure = lambda e, c, u, *a: public_read(e, c))
+@ensure_role([['director']], lambda e, c, u, *a: organizer_read(e, c, u))
 def read_info(event, context):
     """
     We allow for an arbitrary mongo query to be passed in.
     If the aggregate field is present and true, we aggregate
     and otherwise "find_one."
     """
+    client = MongoClient(config.DB_URI)
+    db = client[config.DB_NAME]
+    db.authenticate(config.DB_USER,config.DB_PASS)
+    tests = db[config.DB_COLLECTIONS['users']]
 
-    if 'email' in event and 'token' in event:
-        return do_director(event, context)
-    return public_read(event, context)
+    if event.get('aggregate', False):
+        return {"statusCode": 200, "body": list(tests.aggregate(event['query']))}
+    return {"statusCode": 200, "body": tidy_results(list(tests.find(event['query'])))}

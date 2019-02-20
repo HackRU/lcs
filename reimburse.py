@@ -1,5 +1,5 @@
 import requests as req
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne, BulkWriteError.
 
 import config
 from schemas import *
@@ -19,7 +19,6 @@ def req_matrix_and_clean(params):
         raise ValueError(mat)
 
     return {val: elem_to_dist(mat['rows'][idx]['elements'][0]) for idx, val in enumerate(mat['origin_addresses'])}
-
 
 def req_distance_matrices(users):
     origins = "|".join(u['travelling_from']['formatted_addr'] for u in users)
@@ -52,6 +51,23 @@ def req_distance_matrices(users):
         "train": req_matrix_and_clean(train_params)
     }
 
+def users_to_reimburse(lookup, users):
+    total = 0
+    table = dict()
+    for user in users:
+        if user['travelling_from']['mode'] != 'plane':
+            dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
+            reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
+        else:
+            reimburse = config.TRAVEL.MAX_REIMBURSE
+        total += reimburse
+        table[user['email']] = reimburse
+
+    if total > config.TRAVEL.BUDGET:
+        table = {i: table[i] * config.TRAVEL.BUDGET / total for i in table}
+
+    return table, min(total, config.TRAVEL.BUDGET)
+
 @ensure_schema({
     "type": "object",
     "properties": {
@@ -74,13 +90,12 @@ def compute_all_reimburse(event, context, user):
     except Exception as e:
         return {'statusCode': 512, 'body': repr(e)}
 
-    for user in users:
-        if user['travelling_from']['mode'] != 'plane':
-            dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
-            reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
-        else:
-            reimburse = config.TRAVEL.MAX_REIMBURSE
-        tests.update_one({"email": user['email']}, {"$set": {"travelling_from.reimbursement": reimburse}})
+    table, total = users_to_reimburse(lookup, users)
+    bulk_op = [UpdateOne({'email':i}, {'$set': {'travelling_from.reimbursement': table[i]}}) for i in table]
+    try:
+        data = tests.bulk_write(bulk_op, ordered=False)
+        return {'statusCode': 200, 'mongo_result': data.bulk_api_result, 'total': total}
+    except BulkWriteError as bwe:
+        return {'statusCode': 512, 'body': bwe.details}
 
-    return {'statusCode': 200, 'body': 'yote'}
 

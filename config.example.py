@@ -29,6 +29,7 @@ MAPS_API_KEY=""
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
     MAX_REIMBURSE = 60
+    BUDGET = 3000
     MULTIPLIERS = {
         "car": 0.22 / 1609,
         "train": 0.66 / 1609,
