@@ -77,7 +77,7 @@ def organizer_read(event, context, user):
 })
 @ensure_logged_in_user(on_failure = lambda e, c, u, *a: public_read(e, c))
 @ensure_role([['director']], lambda e, c, u, *a: organizer_read(e, c, u))
-def read_info(event, context):
+def read_info(event, context, user):
     """
     We allow for an arbitrary mongo query to be passed in.
     If the aggregate field is present and true, we aggregate
