@@ -1,8 +1,13 @@
 import requests as req
-from pymongo import MongoClient, UpdateOne, BulkWriteError.
+from pymongo import MongoClient, UpdateOne
+from pymongo.errors import BulkWriteError
 
 import config
 from schemas import *
+
+#credit to https://stackoverflow.com/a/434328/5292630
+def chunker(seq, size):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
 def req_matrix_and_clean(params):
     def elem_to_dist(elem):
@@ -21,35 +26,39 @@ def req_matrix_and_clean(params):
     return {val: elem_to_dist(mat['rows'][idx]['elements'][0]) for idx, val in enumerate(mat['origin_addresses'])}
 
 def req_distance_matrices(users):
-    origins = "|".join(u['travelling_from']['formatted_addr'] for u in users)
-    destinations = config.TRAVEL.HACKRU_LOCATION
+    acc = {"car": dict(), "bus": dict(), "train": dict()}
 
-    car_params = {
-        "origins": origins,
-        "destinations": destinations,
-        "mode": "driving",
-        "key": config.MAPS_API_KEY,
-    }
-    train_params = {
-        "origins": origins,
-        "destinations": destinations,
-        "mode": "transit",
-        "transit_mode": "train",
-        "key": config.MAPS_API_KEY,
-    }
-    bus_params = {
-        "origins": origins,
-        "destinations": destinations,
-        "mode": "transit",
-        "transit_mode": "bus",
-        "key": config.MAPS_API_KEY,
-    }
+    for sub_users in chunker(users, 25):
+        origins = "|".join(u['travelling_from']['formatted_addr'] for u in sub_users \
+                if u['travelling_from']['formatted_addr'] not in acc['car'])
+        destinations = config.TRAVEL.HACKRU_LOCATION
 
-    return {
-        "car": req_matrix_and_clean(car_params),
-        "bus": req_matrix_and_clean(bus_params),
-        "train": req_matrix_and_clean(train_params)
-    }
+        car_params = {
+            "origins": origins,
+            "destinations": destinations,
+            "mode": "driving",
+            "key": config.MAPS_API_KEY,
+        }
+        train_params = {
+            "origins": origins,
+            "destinations": destinations,
+            "mode": "transit",
+            "transit_mode": "train",
+            "key": config.MAPS_API_KEY,
+        }
+        bus_params = {
+            "origins": origins,
+            "destinations": destinations,
+            "mode": "transit",
+            "transit_mode": "bus",
+            "key": config.MAPS_API_KEY,
+        }
+
+        acc['car'].update(req_matrix_and_clean(car_params))
+        acc['train'].update(req_matrix_and_clean(train_params))
+        acc['bus'].update(req_matrix_and_clean(bus_params))
+
+    return acc
 
 def users_to_reimburse(lookup, users):
     total = 0
