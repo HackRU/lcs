@@ -94,7 +94,7 @@ def compute_all_reimburse(event, context, user):
     tests = db[config.DB_COLLECTIONS['users']]
 
     reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "moneyregistration_status", "amount": {"$sum": "moneytravelling_from.reimbursement"}}}])}
-    given = reg_stat_to_money['coming'] + reg_stat_to_money['confirmed']
+    given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
     config.TRAVEL.BUDGET -= given
     if config.TRAVEL.BUDGET <= 0:
         return {'statusCode': 512, 'body': "budget allocated fully!"}
