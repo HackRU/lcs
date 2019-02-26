@@ -93,13 +93,13 @@ def compute_all_reimburse(event, context, user):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"moneygroup":{"_id": "moneyregistration_status", "amount": {"moneysum": "moneytravelling_from.reimbursement"}}}])}
+    reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "moneyregistration_status", "amount": {"$sum": "moneytravelling_from.reimbursement"}}}])}
     given = reg_stat_to_money['coming'] + reg_stat_to_money['confirmed']
     config.TRAVEL.BUDGET -= given
     if config.TRAVEL.BUDGET <= 0:
         return {'statusCode': 512, 'body': "budget allocated fully!"}
 
-    users = list(tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "travelling_from.reimbursement": {"$exists": False}}))
+    users = list(tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}))
     try:
         lookup = req_distance_matrices(users)
     except Exception as e:
