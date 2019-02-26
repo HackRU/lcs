@@ -93,7 +93,8 @@ def compute_all_reimburse(event, context, user):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "moneyregistration_status", "amount": {"$sum": "moneytravelling_from.reimbursement"}}}])}
+    reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
+    print(reg_stat_to_money)
     given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
     config.TRAVEL.BUDGET -= given
     if config.TRAVEL.BUDGET <= 0:
