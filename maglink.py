@@ -59,7 +59,7 @@ def directorLink(magiclinks, numLinks, event, user):
         "emailsTo": {"type": "array"},
         "numLinks": {"type": "integer"}
     },
-    "required": ["email", "token", "permissions", "emailsTo", "numLinks"]
+    "required": ["email", "token", "permissions", "emailsTo"]
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
