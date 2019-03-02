@@ -116,8 +116,7 @@ def send_to_emails(event, context, usr):
         except Exception:
             return {'statusCode': 400, 'body': "Template not found or error in sending"}
 
-
-def send_email(recipient, link, forgot, sender):
+def send_email(recipient, link, template, sender):
     """
         Sends an email to one person - recipient
         with the link.
@@ -131,7 +130,4 @@ def send_email(recipient, link, forgot, sender):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
     usr_object = tests.find_one({"email":recipient})
-    if forgot:
-        return do_substitutions([recipient],[link],'forgot-password',usr_object)
-    else:
-        return do_substitutions([recipient],[link],'upgrade-user',sender)
+    return do_substitutions([recipient],[link], template, usr_object)

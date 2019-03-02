@@ -8,6 +8,8 @@ import use_sparkpost
 import config
 from schemas import *
 
+DEFAULT_LINK_BASE =  'https://hackru.org/magic/{}'
+
 def forgotUser(event, magiclinks, tests):
     user = tests.find_one({"email":event['email']})
     if user:
@@ -18,8 +20,8 @@ def forgotUser(event, magiclinks, tests):
         obj_to_insert['forgot'] = True
         obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
         magiclinks.insert_one(obj_to_insert)
-        link_base = event.get('link_base', 'https://hackru.org/magic/{}')
-        rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink),True, None)
+        link_base = event.get('link_base', DEFAULT_LINK_BASE)
+        rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink), 'forgot-password', None)
         if rv['statusCode'] != 200:
             return rv
         return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
@@ -40,7 +42,9 @@ def directorLink(magiclinks, numLinks, event, user):
         obj_to_insert['link'] = magiclink
         obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
         magiclinks.insert_one(obj_to_insert)
-        sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink,False, user)['body']
+        link_base = event.get('link_base', DEFAULT_LINK_BASE)
+        link = link_base.formate(magiclink)
+        sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink, event.get('template', 'upgrade-user'), user)['body']
         links_list.append((magiclink, sent))
     return links_list
 
@@ -49,6 +53,8 @@ def directorLink(magiclinks, numLinks, event, user):
     "properties": {
         "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
+        "template": {"type": "string"},
+        "link_base": {"type": "string"},
         "permissions": {"type": "array"},
         "emailsTo": {"type": "array"},
         "numLinks": {"type": "integer"}
@@ -66,6 +72,7 @@ def do_director_link(event, magiclinks, user):
     "type": "object",
     "properties": {
         "email": {"type": "string", "format": "email"},
+        "link_base": {"type": "string"},
     },
     "required": ["email"]
 })
@@ -78,7 +85,6 @@ def genMagicLink(event, context):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
     magiclinks = db[config.DB_COLLECTIONS['magic links']]
-
 
     if 'forgot' in event:
         return forgotUser(event, magiclinks, tests)
