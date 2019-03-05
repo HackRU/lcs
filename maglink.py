@@ -43,7 +43,7 @@ def directorLink(magiclinks, numLinks, event, user):
         obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
         magiclinks.insert_one(obj_to_insert)
         link_base = event.get('link_base', DEFAULT_LINK_BASE)
-        link = link_base.formate(magiclink)
+        link = link_base.format(magiclink)
         sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink, event.get('template', 'upgrade-user'), user)['body']
         links_list.append((magiclink, sent))
     return links_list
