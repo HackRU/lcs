@@ -125,9 +125,10 @@ def send_email(recipient, link, template, sender):
         If not "forgot" sender needs to be non None.
     """
 
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
-    usr_object = tests.find_one({"email":recipient})
-    return do_substitutions([recipient],[link], template, usr_object)
+    if sender is None:
+        client = MongoClient(config.DB_URI)
+        db = client[config.DB_NAME]
+        db.authenticate(config.DB_USER,config.DB_PASS)
+        tests = db[config.DB_COLLECTIONS['users']]
+        sender = tests.find_one({"email":recipient})
+    return do_substitutions([recipient],[link], template, sender)

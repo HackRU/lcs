@@ -36,7 +36,7 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
 
             #try to find our user
             results = tests.find_one({"email":email})
-            if results == None or results == [] or results == ():
+            if results is None or results == None or results == [] or results == ():
                 return on_failure(event, context, "User not found", *args)
 
             #if none of the user's unexpired tokens match the one given, complain.
