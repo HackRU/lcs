@@ -66,7 +66,7 @@ def slack_announce(event, context):
     num_messages = event.get('num_messages', 30)
 
     #check cache
-    latest_msg = list(slacks.find().sort([('ts', DESCENDING)]).limit(1))[0]
+    latest_msg = list(slacks.find().sort([('c_ts', DESCENDING)]).limit(1))[0]
     time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
     if time + datetime.timedelta(minutes=10) < datetime.datetime.now():
         #cache hit
