@@ -82,6 +82,7 @@ def users_to_reimburse(lookup, users):
     "properties": {
         "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
+        "day-of": {"type": "boolean"}
     },
     "required": ["email", "token"]
 })
@@ -93,14 +94,18 @@ def compute_all_reimburse(event, context, user):
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
 
-    reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
-    print(reg_stat_to_money)
-    given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
-    config.TRAVEL.BUDGET -= given
-    if config.TRAVEL.BUDGET <= 0:
-        return {'statusCode': 512, 'body': "budget allocated fully!"}
+    if 'day-of' not in event or not event['day-of']:
+        reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
+        print(reg_stat_to_money)
+        given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
+        config.TRAVEL.BUDGET -= given
+        if config.TRAVEL.BUDGET <= 0:
+            return {'statusCode': 512, 'body': "budget allocated fully!"}
+        user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
+    else:
+        user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "day_of.checkIn": True}
 
-    users = list(tests.find({"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}))
+    users = list(tests.find(user_query))
     try:
         lookup = req_distance_matrices(users)
     except Exception as e:
