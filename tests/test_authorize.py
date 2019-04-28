@@ -10,7 +10,6 @@ import datetime as d
 def has_token_for(email, thing):
     if 'body' not in thing:
         return False
-    thing['body'] = json.loads(thing['body'])
     return check_by_schema(schema_for_http(200, {
         "type": "object",
         "properties": {
