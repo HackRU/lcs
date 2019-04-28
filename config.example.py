@@ -10,14 +10,6 @@ DB_COLLECTIONS = {
     "slack messages": "slack-msgs"
 }
 
-MLH = {
-    'client_id': 'an ID',
-    'client_secret': 'ssh. It\'s a secret',
-    'redirect_uri': 'where do we go now?',
-    #As a matter of fact, the below needn't change.
-    'grant_type': 'authorization_code'
-}
-
 SLACK_KEYS = {
     'token': '',
     'channel': ''
@@ -31,6 +23,7 @@ class TRAVEL:
     MAX_REIMBURSE = 60
     BUDGET = 3000
     MULTIPLIERS = {
+        # 1609 = meters per mile because google returns meters
         "car": 0.22 / 1609,
         "train": 0.66 / 1609,
         "bus": 0.3775 / 1609,

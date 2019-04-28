@@ -100,7 +100,9 @@ def validate_updates(user, updates, auth_usr = None):
             },
             "confirmed": { #They confirmed attendance and are guarenteed a spot!
                 #But only we can check them in.
-                "checked-in": False
+                "checked-in": False,
+                #bailing at the last minute
+                "waitlist": True
             }
         }
 
