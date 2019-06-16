@@ -60,7 +60,7 @@ def req_distance_matrices(users):
 
     return acc
 
-def users_to_reimburse(lookup, users):
+def users_to_reimburse(lookup, users, budget):
     total = 0
     table = dict()
     for user in users:
@@ -72,10 +72,10 @@ def users_to_reimburse(lookup, users):
         total += reimburse
         table[user['email']] = reimburse
 
-    if total > config.TRAVEL.BUDGET:
-        table = {i: table[i] * config.TRAVEL.BUDGET / total for i in table}
+    if total > budget:
+        table = {i: table[i] * budget / total for i in table}
 
-    return table, min(total, config.TRAVEL.BUDGET)
+    return table, min(total, budget)
 
 @ensure_schema({
     "type": "object",
@@ -93,13 +93,14 @@ def compute_all_reimburse(event, context, user):
     db = client[config.DB_NAME]
     db.authenticate(config.DB_USER,config.DB_PASS)
     tests = db[config.DB_COLLECTIONS['users']]
+    budget = config.TRAVEL.BUDGET
 
     if 'day-of' not in event or not event['day-of']:
         reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
         print(reg_stat_to_money)
         given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
-        config.TRAVEL.BUDGET -= given
-        if config.TRAVEL.BUDGET <= 0:
+        budget = config.TRAVEL.BUDGET - given
+        if budget <= 0:
             return {'statusCode': 512, 'body': "budget allocated fully!"}
         user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
     else:
@@ -111,7 +112,7 @@ def compute_all_reimburse(event, context, user):
     except Exception as e:
         return {'statusCode': 512, 'body': repr(e)}
 
-    table, total = users_to_reimburse(lookup, users)
+    table, total = users_to_reimburse(lookup, users, budget)
     bulk_op = [UpdateOne({'email':i}, {'$set': {'travelling_from.reimbursement': table[i]}}) for i in table]
     try:
         data = tests.bulk_write(bulk_op, ordered=False)
