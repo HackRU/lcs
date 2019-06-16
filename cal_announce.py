@@ -65,16 +65,7 @@ def slack_announce(event, context):
     slacks = db[config.DB_COLLECTIONS['slack messages']]
     num_messages = event.get('num_messages', 30)
 
-    #check cache
-    latest_msg = list(slacks.find().sort([('ts', DESCENDING)]).limit(1))[0]
-    time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
-    if time + datetime.timedelta(minutes=10) < datetime.datetime.now():
-        #cache hit
-        messages = list(slacks.find().sort([('ts', DESCENDING)]).limit(num_messages))
-        for msg in messages:
-            del msg['_id']
-    else:
-
+    def refresh_cache():
         #refresh cache
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
@@ -99,5 +90,21 @@ def slack_announce(event, context):
                 slacks.insert_one(msg)
             else:
                 slacks.update_one({'text': msg['text']}, {'$set': {'c_ts': msg['c_ts']}})
+        return messages
+
+    #check cache
+    cache = list(slacks.find().sort([('c_ts', DESCENDING)]).limit(1))
+    if len(cache) == 1:
+        latest_msg = cache[0]
+        msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
+        if msg_time + datetime.timedelta(minutes=10) > datetime.datetime.now():
+            #cache hit
+            messages = list(slacks.find().sort([('ts', DESCENDING)]).limit(num_messages))
+            for msg in messages:
+                del msg['_id']
+        else:
+            messages = refresh_cache()
+    else:
+        messages = refresh_cache()
 
     return config.add_cors_headers({'statusCode': 200, 'body': messages})

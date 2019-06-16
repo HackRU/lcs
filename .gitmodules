@@ -1,0 +1,3 @@
+[submodule "lcs.wiki"]
+	path = lcs.wiki
+	url = https://github.com/HackRU/lcs.wiki.git

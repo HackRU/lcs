@@ -22,16 +22,9 @@ def promotion_link(event, maglinkobj, user, userCollection):
     #Grab the permissions object
     permissions = maglinkobj['permissions']
     for i in permissions:
-        if i == 'director':
-            userCollection.update_one({'email':user['email']}, {'$set':{'role.director':True}})
-        elif i == 'judge':
-            userCollection.update_one({'email':user['email']}, {'$set':{'role.judge':True}})
-        elif i == 'organizer':
-            userCollection.update_one({'email':user['email']}, {'$set':{'role.organizer':True}})
-        elif i == 'volunteer':
-            userCollection.update_one({'email':user['email']}, {'$set':{'role.volunteer':True}})
-        elif i == 'mentor':
-            userCollection.update_one({'email':user['email']}, {'$set':{'role.mentor':True}})
+        if i in ['director', 'judge', 'volunteer', 'mentor', 'sponsor']:
+            role_bit = 'role.' + i
+            userCollection.update_one({'email': user['email']}, {'$set': {role_bit: True}})
 
     return {"statusCode":200, "body":"Successfully updated your role"}
 

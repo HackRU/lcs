@@ -43,6 +43,8 @@ def validate_updates(user, updates, auth_usr = None):
     say_no = lambda x, y, z: False
     def say_no_to_non_admin(x, y, z):
         return auth_usr['role']['organizer'] or auth_usr['role']['director']
+    def say_no_to_just_hacker(x, y, z):
+        return auth_usr['role']['organizer'] or auth_usr['role']['director'] or auth_usr['role']['volunteer']
 
     gmaps = gm.Client(config.MAPS_API_KEY)
     def check_addr(y):
@@ -98,7 +100,9 @@ def validate_updates(user, updates, auth_usr = None):
             },
             "confirmed": { #They confirmed attendance and are guarenteed a spot!
                 #But only we can check them in.
-                "checked-in": False
+                "checked-in": False,
+                #bailing at the last minute
+                "waitlist": True
             }
         }
 
@@ -135,8 +139,8 @@ def validate_updates(user, updates, auth_usr = None):
             #or MLH info
             'mlh': say_no,
             #no destroying the day-of object
-            'day_of': say_no_to_non_admin,
-            'day_of\\.[A-Za-z1-2_]+': say_no_to_non_admin,
+            'day_of': say_no_to_just_hacker,
+            'day_of\\.[A-Za-z1-2_]+': say_no_to_just_hacker,
             'registration_status': check_registration,
             #auth tokens are never given access
             'auth': say_no,

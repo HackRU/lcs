@@ -59,7 +59,7 @@ def authorize(event,context):
     #return the value pushed, that is, auth token with expiry time.
     #throw in the email for frontend.
     update_val['auth']['email'] = email
-    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : json.dumps(update_val)}
+    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : update_val}
     return config.add_cors_headers(ret_val)
 
 #NOT A LAMBDA
@@ -102,7 +102,7 @@ def authorize_then_consume(event, context):
 })
 def create_user(event, context):
     if not config.is_registration_open() and 'link' not in event:
-            return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+        return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
     u_email = event['email']
     password = event['password']
