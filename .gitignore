@@ -16,6 +16,7 @@ pip-selfcheck.json
 *.pyc
 __pycache__
 venv/
+env/
 .pytest_cache/
 .coverage
 
@@ -27,3 +28,6 @@ client_secret.json
 .idea/
 *.iml
 *.xml
+
+#emacs
+*~
