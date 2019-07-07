@@ -21,7 +21,7 @@ from schemas import *
     "required": ["email", "token"]
 })
 @ensure_logged_in_user()
-def validate(event, context, user):
+def validate(event, context, user=None):
     """
     Given an email and token,
     ensure that the token is an

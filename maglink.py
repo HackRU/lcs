@@ -63,7 +63,7 @@ def directorLink(magiclinks, numLinks, event, user):
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def do_director_link(event, magiclinks, user):
+def do_director_link(event, magiclinks, user=None):
     numLinks = event.get('numLinks', 1)
     links_list = directorLink(magiclinks, numLinks, event, user)
     return util.add_cors_headers({"statusCode":200,"body":links_list})

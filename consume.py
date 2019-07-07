@@ -15,10 +15,11 @@ import bcrypt
     "required": ["email", "token"]
 })
 @ensure_logged_in_user()
-def promotion_link(event, maglinkobj, user, userCollection):
+def promotion_link(event, maglinkobj, user=None):
     """
         Updates User Based on a magic link
     """
+    userCollection = util.coll('users')
     #Grab the permissions object
     permissions = maglinkobj['permissions']
     for i in permissions:
@@ -67,7 +68,7 @@ def consumeUrl(event,context):
         if maglinkobj['forgot']:
             statusCode = forgot_password_link(event, tests, maglinkobj)
         else:
-            statusCode = promotion_link(event, maglinkobj, tests)
+            statusCode = promotion_link(event, maglinkobj)
         #remove link after consuming
         if statusCode['statusCode'] == 200:
             magiclinks.remove({"link":maglinkobj['link']})
