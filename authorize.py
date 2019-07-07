@@ -37,9 +37,9 @@ def authorize(event,context):
 
     if checkhash is not None:
         if not bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']):
-            return config.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
+            return util.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
-        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
+        return util.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
 
     token = str(uuid.uuid4())
 
@@ -56,7 +56,7 @@ def authorize(event,context):
     #throw in the email for frontend.
     update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : update_val}
-    return config.add_cors_headers(ret_val)
+    return util.add_cors_headers(ret_val)
 
 #NOT A LAMBDA
 def authorize_then_consume(event, context):
@@ -97,8 +97,8 @@ def authorize_then_consume(event, context):
     "additionalFields": False
 })
 def create_user(event, context):
-    if not config.is_registration_open() and 'link' not in event:
-        return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+    if not is_registration_open() and 'link' not in event:
+        return util.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
     u_email = event['email']
     password = event['password']
@@ -110,7 +110,7 @@ def create_user(event, context):
     usr = tests.find_one({'email': u_email})
     if usr != None and usr != [] and usr != {}:
         if 'link' not in event:
-            return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
+            return util.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
         return authorize_then_consume(event, context)
 
     #The goal here is to have a complete user.

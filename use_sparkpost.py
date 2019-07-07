@@ -55,11 +55,11 @@ def do_substitutions(recs, links, template, usr):
                 template=template
         )
         if resp[u'total_accepted_recipients'] != len(recs):
-            rv = config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
+            rv = util.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
         else:
-            rv = config.add_cors_headers({'statusCode': 200, 'body': "Success!"})
+            rv = util.add_cors_headers({'statusCode': 200, 'body': "Success!"})
     except Exception as e:
-        rv = config.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
+        rv = util.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
     finally: #1st time I'm legit using a finally... kawaii OwO.
         emails.recipient_lists.delete(list_id)
         return rv

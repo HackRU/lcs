@@ -24,9 +24,9 @@ def forgotUser(event, magiclinks, tests):
         rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink), 'forgot-password', None)
         if rv['statusCode'] != 200:
             return rv
-        return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
+        return util.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
     else:
-        return config.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
+        return util.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
 
 def directorLink(magiclinks, numLinks, event, user):
     links_list = []
@@ -66,7 +66,7 @@ def directorLink(magiclinks, numLinks, event, user):
 def do_director_link(event, magiclinks, user):
     numLinks = event.get('numLinks', 1)
     links_list = directorLink(magiclinks, numLinks, event, user)
-    return config.add_cors_headers({"statusCode":200,"body":links_list})
+    return util.add_cors_headers({"statusCode":200,"body":links_list})
 
 @ensure_schema({
     "type": "object",

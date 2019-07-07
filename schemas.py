@@ -14,9 +14,9 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         def wrapt(event, context, *extras):
             try:
                 js.validate(event, schema)
-                return config.add_cors_headers(fn(event, context, *extras))
+                return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
-                return config.add_cors_headers(on_failure(event, context, e))
+                return util.add_cors_headers(on_failure(event, context, e))
         return wrapt
     return wrap
 

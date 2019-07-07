@@ -34,11 +34,11 @@ def google_cal(event, context, testing=False):
         credentials = store.get()
     except:
         if not testing:
-            return config.add_cors_headers({'statusCode': 400, 'body': 'Misconfigured endpoint.'})
+            return util.add_cors_headers({'statusCode': 400, 'body': 'Misconfigured endpoint.'})
 
     if not credentials or credentials.invalid:
         if not testing:
-            return config.add_cors_headers({'statusCode': 400, 'body': 'Please interactively generate client secret file.'})
+            return util.add_cors_headers({'statusCode': 400, 'body': 'Please interactively generate client secret file.'})
         else:
             flow = oauth2client.client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
             flow.user_agent = APPLICATION_NAME
@@ -55,8 +55,8 @@ def google_cal(event, context, testing=False):
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
     if not events:
-        return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to get events.'})
-    return config.add_cors_headers({'statusCode': 200, 'body': events})
+        return util.add_cors_headers({'statusCode': 400, 'body': 'Unable to get events.'})
+    return util.add_cors_headers({'statusCode': 200, 'body': events})
 
 def slack_announce(event, context):
     slacks = util.coll('slack messages')
@@ -71,12 +71,12 @@ def slack_announce(event, context):
         result = requests.get(url, params)
         reply = result.json()
         if not reply.get('ok'):
-            return config.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
+            return util.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
 
         #clean up the slack response
         allMessages = reply.get('messages')
         if not allMessages:
-            return config.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
+            return util.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
         messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in x, allMessages))
         now_for_slack = str(time.time())
         for msg in messages:
@@ -104,4 +104,4 @@ def slack_announce(event, context):
     else:
         messages = refresh_cache()
 
-    return config.add_cors_headers({'statusCode': 200, 'body': messages})
+    return util.add_cors_headers({'statusCode': 200, 'body': messages})
