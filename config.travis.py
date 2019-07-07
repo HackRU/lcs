@@ -3,7 +3,7 @@ import os
 
 
 # uri should contain auth and default database
-DB_URI_LOCAL = "mongo://127.0.0.1:27017/travis"
+DB_URI_LOCAL = "mongodb://127.0.0.1:27017/travis"
 DB_URI_ATLAS = os.getenv("DB_URI", "")
 DB_URI = DB_URI_LOCAL
 
