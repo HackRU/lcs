@@ -66,7 +66,6 @@ def test_registration_open():
 
 @pytest.mark.run(order=1)
 def test_creation():
-    print("URI----> ", config.DB_URI)
     #open registration
     if not authorize.is_registration_open():
         config.REGISTRATION_DATES = [
