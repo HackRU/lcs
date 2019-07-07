@@ -1,7 +1,7 @@
 import pymongo
-from pymongo import MongoClient
 
 import config
+import util
 from schemas import *
 
 def tidy_results(res):
@@ -37,10 +37,7 @@ def public_read(event, context):
     match = {"$match": {"registration_status": ("checked-in" if event.get('just_here', False) else {"$ne": "unregistered"})}}
     group = {"$group": {"_id": {field: "$" + field for field in fields}, "total": {"$sum": 1}}}
 
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     return {"statusCode": 200, "body": list(tests.aggregate([match, group]))}
 
@@ -58,10 +55,7 @@ def organizer_read(event, context, user):
     if event.get('aggregate', False):
         return public_read(event, context)
 
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     return {"statusCode": 200, "body": tidy_results(list(tests.find(event['query'])))}
 
@@ -83,10 +77,7 @@ def read_info(event, context, user):
     If the aggregate field is present and true, we aggregate
     and otherwise "find_one."
     """
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     if event.get('aggregate', False):
         return {"statusCode": 200, "body": list(tests.aggregate(event['query']))}

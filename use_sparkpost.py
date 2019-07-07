@@ -2,8 +2,8 @@ from sparkpost import SparkPost
 
 from schemas import *
 import config
+import util
 from read import read_info
-from pymongo import MongoClient
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
@@ -126,9 +126,6 @@ def send_email(recipient, link, template, sender):
     """
 
     if sender is None:
-        client = MongoClient(config.DB_URI)
-        db = client[config.DB_NAME]
-        db.authenticate(config.DB_USER,config.DB_PASS)
-        tests = db[config.DB_COLLECTIONS['users']]
+        tests = util.coll('users')
         sender = tests.find_one({"email":recipient})
     return do_substitutions([recipient],[link], template, sender)

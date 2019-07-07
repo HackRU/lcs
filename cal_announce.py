@@ -14,9 +14,10 @@ from oauth2client import tools, client
 from googleapiclient import discovery
 
 import requests
-from pymongo import MongoClient, DESCENDING
+from pymongo import DESCENDING
 import json
 import config
+import util
 
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -58,11 +59,7 @@ def google_cal(event, context, testing=False):
     return config.add_cors_headers({'statusCode': 200, 'body': events})
 
 def slack_announce(event, context):
-    #DB connection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-    slacks = db[config.DB_COLLECTIONS['slack messages']]
+    slacks = util.coll('slack messages')
     num_messages = event.get('num_messages', 30)
 
     def refresh_cache():

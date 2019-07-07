@@ -82,7 +82,6 @@ def e2e_test(url):
     #delete the newborn. (Infanticide.)
     client = MongoClient(config.DB_URI)
     db = client['camelot-test']
-    db.authenticate(config.DB_USER, config.DB_PASS)
     test = db[config.DB_COLLECTIONS['users']]
     u = test.find_one({'email': 'testing@hackru.org'})
     print(u['github'])

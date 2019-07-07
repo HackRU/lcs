@@ -2,15 +2,16 @@ import json
 import random
 import string
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
-from pymongo import MongoClient
 import bcrypt
 
 import config
+import util
 import consume
 from schemas import *
+import util
 
 @ensure_schema({
     "type": "object",
@@ -30,12 +31,7 @@ def authorize(event,context):
     email = event['email']
     pass_ = event['password']
 
-    #DB connection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     checkhash  = tests.find_one({"email":email})
 
@@ -108,12 +104,7 @@ def create_user(event, context):
     password = event['password']
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=8))
 
-    #DB connection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     #if a user of the same email exists, we complain.
     usr = tests.find_one({'email': u_email})
@@ -159,3 +150,13 @@ def create_user(event, context):
     tests.insert_one(doc)
 
     return authorize_then_consume(event, context)
+
+def is_registration_open():
+    """
+    checks regisitration using the configs timezone
+    """
+    now = datetime.now(config.TIMEZONE)
+    for period in config.REGISTRATION_DATES:
+        if period[0] <= now and now <= period[1]:
+            return True
+    return False

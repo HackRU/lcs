@@ -1,4 +1,3 @@
-from pymongo import MongoClient
 import random
 import datetime
 import string
@@ -6,6 +5,7 @@ from datetime import datetime, timedelta
 
 import use_sparkpost
 import config
+import util
 from schemas import *
 
 DEFAULT_LINK_BASE =  'https://hackru.org/magic/{}'
@@ -80,11 +80,8 @@ def genMagicLink(event, context):
     """
        The event object expects and email and  checks if it is a valid request to generate the magic link
     """
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
-    magiclinks = db[config.DB_COLLECTIONS['magic links']]
+    tests = util.coll('users')
+    magiclinks = util.coll('magic links')
 
     if 'forgot' in event:
         return forgotUser(event, magiclinks, tests)
