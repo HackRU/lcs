@@ -24,8 +24,7 @@ def setup_module(m):
 
     #create a user
     result = authorize.create_user({"email": email, "password": pword}, {})
-    if result["statusCode"] != 200:
-        assert False
+    assert result["statusCode"] == 200
     global token
     token = result["body"]["auth"]["token"]
 
@@ -41,20 +40,15 @@ def teardown_module(m):
     config.DB_COLLECTIONS["users"] = old_col
     
 def test_baduser():
-    result = resume.upload_link(payload(email="foo"), {})
+    result = resume.resume(payload(email="foo"), {})
     assert result["statusCode"] == 400
 
-def test_upload_ok():
-    result = resume.upload_link(payload(), {})
-    assert result["statusCode"] == 200
-
-def test_download_ok():
-    result = resume.download_link(payload(), {})
-    assert result["statusCode"] == 200
-
 def test_roundtrip():
-    upload = resume.upload_link(payload(), {})["body"]["url"]
-    download = resume.download_link(payload(), {})["body"]["url"]
+    result = resume.resume(payload(), {})
+    assert result["statusCode"] == 200
+    upload = result["body"]["upload"]
+    download = result["body"]["download"]
+    
     stellar_resume = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_resume)
     assert upload_res.status_code == 200 or upload_res.status_code == 204
@@ -62,4 +56,17 @@ def test_roundtrip():
     download_res = requests.get(download)
     assert download_res.status_code == 200
     assert download_res.content == stellar_resume
+
+    result = resume.resume(payload(), {})
+    assert result["statusCode"] == 200
+    assert result["body"]["exists"] == True
+
+def test_exists():
+    """check using an email that wasn't uploaded"""
+    creation = authorize.create_user({"email": email + "d", "password": pword}, {})
+    assert creation["statusCode"] == 200
+    token = creation["body"]["auth"]["token"]
     
+    result = resume.resume({"email": email + "d", "token": token}, {})
+    assert result["statusCode"] == 200
+    assert not result["body"]["exists"]
