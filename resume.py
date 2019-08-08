@@ -5,6 +5,7 @@ from config import RESUME, RESUME_BUCKET
 
 import boto3
 from botocore.exceptions import ClientError
+import urllib.parse
 
 presign_input = {
     "type": "object",
@@ -17,25 +18,30 @@ presign_input = {
 
 def presign(method, event, ctx, user):
     client = boto3.client("s3", **RESUME)
+    http_method = "GET"
+    if method == "put_object":
+        http_method="PUT"
     try:
         url = client.generate_presigned_url(
             method,
             Params={
                 "Bucket": RESUME_BUCKET,
-                "Key": event["email"]
+                "Key": event["email"] + ".pdf"
             },
+            HttpMethod=http_method,
             ExpiresIn=3600,
         )
-        return {"stausCode": 200, "body": json.dumps({"url": url})}
+
+        return {"statusCode": 200, "body": {"url": url}}
     except ClientError as e:
         return {"statusCode": 500, "body": "failed to connect to s3" + str(e)}
 
 @ensure_schema(presign_input)
 @ensure_logged_in_user()
-def downloadLink(event, ctx, user):
-    return presign("get_object")
+def download_link(event, ctx, user):
+    return presign("get_object", event, ctx, user)
 
 @ensure_schema(presign_input)
 @ensure_logged_in_user()
-def uploadLink(event, ctx, user):
-    return presign("put_object")
+def upload_link(event, ctx, user):
+    return presign("put_object", event, ctx, user)
