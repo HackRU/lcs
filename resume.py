@@ -52,8 +52,9 @@ def exists(email):
         info = client.head_object(Bucket=RESUME_BUCKET, Key=email + ".pdf")
         return True
     except ClientError as e:
-        if e.response["Error"]["Code"] != 404:
+        if e.response["Error"]["Code"] == 404:
             return False
+        raise e
     
 @ensure_schema(presign_input)
 @ensure_logged_in_user()
