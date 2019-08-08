@@ -5,7 +5,6 @@ from config import RESUME, RESUME_BUCKET
 
 import boto3
 from botocore.exceptions import ClientError
-import urllib.parse
 
 presign_input = {
     "type": "object",

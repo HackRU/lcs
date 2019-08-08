@@ -6,7 +6,7 @@ import resume
 
 from pymongo import MongoClient
 import pytest
-import urllib3
+import requests
 
 email = "test@t.t"
 pword = "jjjjjjjf"
@@ -55,12 +55,11 @@ def test_download_ok():
 def test_roundtrip():
     upload = resume.upload_link(payload(), {})["body"]["url"]
     download = resume.download_link(payload(), {})["body"]["url"]
-    client = urllib3.PoolManager()
-    stellar_resume = b'hire me pls'
-    upload_res = client.request("PUT", upload, body=stellar_resume)
-    assert upload_res.status == 200 or upload_res.status == 204
+    stellar_resume = b'hire me plz'
+    upload_res = requests.put(upload, data=stellar_resume)
+    assert upload_res.status_code == 200 or upload_res.status_code == 204
 
-    download_res = client.request("GET", download)
-    assert download_res.status == 200 or download_res.status == 204
-    assert download_res.data == stellar_resume
+    download_res = requests.get(download)
+    assert download_res.status_code == 200
+    assert download_res.content == stellar_resume
     
