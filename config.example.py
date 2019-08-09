@@ -58,3 +58,8 @@ def add_cors_headers(resp):
     resp['headers']['Access-Control-Allow-Credentials'] = True,
     return resp
 
+RESUME = {
+    "aws_access_key_id": "AKI0f9jf209302jfjjfjfjfjfjfjfjfjfjfjfjfish",
+    "aws_secret_access_key": "42069",
+}
+RESUME_BUCKET = "resumesf19"

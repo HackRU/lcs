@@ -39,3 +39,4 @@ typed-ast==1.2.0
 uritemplate==3.0.0
 urllib3==1.24.2
 wrapt==1.11.0
+boto3==1.9.200

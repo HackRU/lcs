@@ -1,4 +1,5 @@
 import datetime as d
+import os
 
 MAPS_API_KEY=""
 DB_URI="127.0.0.1:27017"
@@ -67,4 +68,10 @@ def add_cors_headers(resp):
     resp['headers']['Access-Control-Allow-Headers'] ='Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
     resp['headers']['Access-Control-Allow-Credentials'] = True,
     return resp
+
+RESUME = {
+    "aws_access_key_id": os.environ.get("AWS_ACCESS_KEY_ID"),
+    "aws_secret_access_key": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+}
+RESUME_BUCKET = "resumet"
 
