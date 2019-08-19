@@ -1,7 +1,7 @@
 import json
 
 from schemas import ensure_schema, ensure_logged_in_user
-from config import RESUME, RESUME_BUCKET
+from config import RESUME, RESUME_BUCKET, add_cors_headers
 
 import boto3
 from botocore.exceptions import ClientError
@@ -44,7 +44,7 @@ def exists(email):
 @ensure_logged_in_user()
 def resume(event, ctx, user):
     try:
-        return config.add_cors_headers({
+        return add_cors_headers({
             "statusCode": 200, "body": {
                 "upload": presign("put_object", event, ctx, user),
                 "download": presign("get_object", event, ctx, user),
@@ -52,7 +52,7 @@ def resume(event, ctx, user):
             }
         })
     except ClientError as e:
-        return config.add_cors_headers({
+        return add_cors_headers({
             "statusCode": 500,
             "body": "failed to connect to s3" + str(e)
         })
