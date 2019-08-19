@@ -1,6 +1,7 @@
 import json
 
 from schemas import ensure_schema, ensure_logged_in_user
+
 from config import RESUME, RESUME_BUCKET, add_cors_headers
 
 import boto3
@@ -29,6 +30,7 @@ def presign(method, event, ctx, user):
         HttpMethod=http_method,
         ExpiresIn=3600,
     )
+
 
 def exists(email):
     client = boto3.client("s3", **RESUME)
