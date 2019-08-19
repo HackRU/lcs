@@ -30,22 +30,6 @@ def presign(method, event, ctx, user):
         ExpiresIn=3600,
     )
 
-@ensure_schema(presign_input)
-@ensure_logged_in_user()
-def download_link(event, ctx, user):
-    try:
-        return {"statusCode": 200, "body": {"url": presign("get_object", event, ctx, user)}}
-    except ClientError as e:
-        return {"statusCode": 500, "body": "failed to connect to s3" + str(e)}
-
-@ensure_schema(presign_input)
-@ensure_logged_in_user()
-def upoad_link(event, ctx, user):
-    try:
-        return {"statusCode": 200, "body": {"url": presign("put_object", event, ctx, user)}}
-    except ClientError as e:
-        return {"statusCode": 500, "body": "failed to connect to s3" + str(e)}
-
 def exists(email):
     client = boto3.client("s3", **RESUME)
     try:
@@ -60,11 +44,16 @@ def exists(email):
 @ensure_logged_in_user()
 def resume(event, ctx, user):
     try:
-        return {"statusCode": 200, "body": {
-            "upload": presign("put_object", event, ctx, user),
-            "download": presign("get_object", event, ctx, user),
-            "exists": exists(event["email"])
-        }}
+        return config.add_cors_headers({
+            "statusCode": 200, "body": {
+                "upload": presign("put_object", event, ctx, user),
+                "download": presign("get_object", event, ctx, user),
+                "exists": exists(event["email"])
+            }
+        })
     except ClientError as e:
-        return {"statusCode": 500, "body": "failed to connect to s3" + str(e)}
+        return config.add_cors_headers({
+            "statusCode": 500,
+            "body": "failed to connect to s3" + str(e)
+        })
     
