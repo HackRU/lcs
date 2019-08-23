@@ -19,14 +19,16 @@ presign_input = {
 def presign(method, event, ctx, user):
     client = boto3.client("s3", **RESUME)
     http_method = "GET"
+    params = {
+        "Bucket": RESUME_BUCKET,
+        "Key": event["email"] + ".pdf"
+    }
     if method == "put_object":
         http_method="PUT"
+        params["ContentType"] = "application/pdf"
     return client.generate_presigned_url(
         method,
-        Params={
-            "Bucket": RESUME_BUCKET,
-            "Key": event["email"] + ".pdf"
-        },
+        Params=params,
         HttpMethod=http_method,
         ExpiresIn=3600,
     )
