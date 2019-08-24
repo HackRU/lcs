@@ -3,6 +3,7 @@ import json
 import authorize
 import config
 import resume
+import util
 
 from pymongo import MongoClient
 import pytest
@@ -30,9 +31,7 @@ def setup_module(m):
 
 def teardown_module(m):
     #drop temp collection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
+    db = util.get_db()
     db[config.DB_COLLECTIONS["users"]].drop()
 
     #reset colelction name
