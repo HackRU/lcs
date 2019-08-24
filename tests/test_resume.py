@@ -50,7 +50,7 @@ def test_roundtrip():
     download = result["body"]["download"]
     
     stellar_resume = b'hire me plz'
-    upload_res = requests.put(upload, data=stellar_resume)
+    upload_res = requests.put(upload, data=stellar_resume, headers={"Content-Type": "application/pdf"})
     assert upload_res.status_code == 200 or upload_res.status_code == 204
 
     download_res = requests.get(download)

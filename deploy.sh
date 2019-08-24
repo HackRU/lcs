@@ -15,14 +15,14 @@ if [[ ! -f "config.$1.py" ]]; then
 fi
 
 #make the python libraries ready
-source ~/.pyenv/versions/$(cat .python-version)/bin/activate
+source env/bin/activate
 pip install -r requirements.txt
 
 #make the deploy folder
 mkdir deploy/
 
 #copy the py libraries
-cp -r ~/.pyenv/versions/$(cat .python-version)/lib/python3.6/site-packages/. deploy/
+cp -r env/lib/python3.6/site-packages/. deploy/
 
 #record the stage
 STAGE=$1
