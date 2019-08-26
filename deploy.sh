@@ -1,48 +1,74 @@
-#! /bin/bash
+#!/bin/bash
+set -e
+set -x
+SCRIPT_NAME=$0
+function usage {
+    echo "usage: $SCRIPT_NAME [options] <bucket name> <zip> <fns...>"
+    echo "-n update fns without uploading to s3"
+    echo "-t to append -test to fn names"
+    echo "-d for dry run"
+}
 
-# quick argument checks: 2 args at least.
-if [ $# -lt 2 ]; then
-    echo "USAGE: $0 <Stage> <Files...>"
-    echo "Where stage means that a 'config.stage.py' exists."
-    echo "And files is at least 1  python file to deploy."
+if [ "$#" -lt 2 ]
+then
+    usage
     exit 1
 fi
 
-# make sure that the stage is a stage
-if [[ ! -f "config.$1.py" ]]; then
-    echo "Stage $1 not found. Make sure there is a config.$1.py"
-    exit 1
-fi
+TEST=0
+CP=1
+DRY=0
 
-#make the python libraries ready
-source env/bin/activate
-pip install -r requirements.txt
-
-#make the deploy folder
-mkdir deploy/
-
-#copy the py libraries
-cp -r env/lib/python3.6/site-packages/. deploy/
-
-#record the stage
-STAGE=$1
-shift 1
-
-#the rest of the args are files that we want to deploy.
-for var in "$@"
+for i in 1 2 3
 do
-	cp $var deploy/
+    case "$1" in
+	-t)
+	    TEST=1
+	    shift
+	    ;;
+	-n)
+	    CP=0
+	    shift
+	    ;;
+	-d)
+	    DRY=1
+	    shift
+	    ;;
+    esac
 done
 
-#add the relevant config
-cp "config.$STAGE.py" deploy/
-mv "deploy/config.$STAGE.py" deploy/config.py
+BUCKET=$1
+ZIP=$2
+shift 2
+FNS=$@
 
-#zip the package
-cd deploy/
-zip -r dep.zip .
+if [ -z "$FNS" ]
+then
+    FNS="authorize consume create createmagiclink dayof-events dayof-slack read reimburse resume send-emails update validate"
+fi
 
-#move the zip up and clear the mess.
-cd ..
-cp deploy/dep.zip "deploy-$STAGE.zip"
-rm -rf deploy/
+#echo "$BUCKET"
+#echo "$ZIP"
+#echo "$FNS"
+
+if [ "$CP" -eq 1 ]
+then
+   aws s3 cp $ZIP s3://$BUCKET/$ZIP
+fi
+
+for FN in $FNS
+do
+    if [ "$TEST" -eq 1 ]
+    then
+	FN="${FN}-test"
+    fi
+
+    OPT="--function-name $FN --s3-bucket $BUCKET --s3-key $ZIP"
+
+    if [ "$DRY" -eq 1 ]
+    then
+	OPT="$OPT --dry-run"
+    fi
+    
+    AWS_DEFAULT_REGION="us-west-2" aws lambda update-function-code $OPT
+done
