@@ -8,7 +8,6 @@ import requests
 import bcrypt
 
 import config
-import util
 import consume
 from schemas import *
 import util
