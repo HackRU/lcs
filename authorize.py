@@ -146,7 +146,7 @@ def create_user(event, context):
         "dietary_restrictions": event.get("dietary_restrictions", ''),
         "special_needs": event.get("special_needs", ''),
         "date_of_birth": event.get("date_of_birth", ''),
-        "school": event.get("school", "Rutgers University"),
+        "school": event.get("school", ''),
         "grad_year": event.get("grad_year", ''),
         "gender": event.get("gender", ''),
         "registration_status": event.get("registration_status", "unregistered"),
