@@ -2,8 +2,8 @@ from sparkpost import SparkPost
 
 from schemas import *
 import config
+import util
 from read import read_info
-from pymongo import MongoClient
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
@@ -55,11 +55,11 @@ def do_substitutions(recs, links, template, usr):
                 template=template
         )
         if resp[u'total_accepted_recipients'] != len(recs):
-            rv = config.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
+            rv = util.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
         else:
-            rv = config.add_cors_headers({'statusCode': 200, 'body': "Success!"})
+            rv = util.add_cors_headers({'statusCode': 200, 'body': "Success!"})
     except Exception as e:
-        rv = config.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
+        rv = util.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
     finally: #1st time I'm legit using a finally... kawaii OwO.
         emails.recipient_lists.delete(list_id)
         return rv
@@ -126,9 +126,6 @@ def send_email(recipient, link, template, sender):
     """
 
     if sender is None:
-        client = MongoClient(config.DB_URI)
-        db = client[config.DB_NAME]
-        db.authenticate(config.DB_USER,config.DB_PASS)
-        tests = db[config.DB_COLLECTIONS['users']]
+        tests = util.coll('users')
         sender = tests.find_one({"email":recipient})
     return do_substitutions([recipient],[link], template, sender)

@@ -3,15 +3,11 @@ import sys
 sys.path.append("..")
 
 import config
-from pymongo import MongoClient
+import util
 import jsonschema as js
 
 def connect_to_db():
-    client = MongoClient(config.DB_URI)
-    db = client['lcs-db']
-    db.authenticate(config.DB_USER,config.DB_PASS)
-
-    return db['test']
+    return util.coll('users')
 
 def schema_for_http(status_code, body_schema):
     return {

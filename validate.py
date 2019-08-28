@@ -2,8 +2,9 @@ import string
 import re
 import json
 import pymongo
-from pymongo import MongoClient
+
 import config
+import util
 import requests
 import dateutil.parser as dp
 from datetime import datetime
@@ -20,7 +21,7 @@ from schemas import *
     "required": ["email", "token"]
 })
 @ensure_logged_in_user()
-def validate(event, context, user):
+def validate(event, context, user=None):
     """
     Given an email and token,
     ensure that the token is an
@@ -222,12 +223,7 @@ def update(event, context, a_res):
     auth_email) can from "updates" on the user with email "user_email".
     """
 
-    #connect to the DB.
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     #assuming the auth_email user is authorised, find the user being modified.
     if event['user_email'] == event['auth_email']:

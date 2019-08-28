@@ -1,7 +1,7 @@
 import jsonschema as js
 import config
+import util
 
-from pymongo import MongoClient
 import dateutil.parser as dp
 
 from functools import wraps
@@ -14,9 +14,9 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         def wrapt(event, context, *extras):
             try:
                 js.validate(event, schema)
-                return config.add_cors_headers(fn(event, context, *extras))
+                return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
-                return config.add_cors_headers(on_failure(event, context, e))
+                return util.add_cors_headers(on_failure(event, context, e))
         return wrapt
     return wrap
 
@@ -27,12 +27,7 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
             email = event[email_key]
             token = event[token_key]
 
-            #connect to DB
-            client = MongoClient(config.DB_URI)
-            db = client[config.DB_NAME]
-            db.authenticate(config.DB_USER, config.DB_PASS)
-
-            tests = db[config.DB_COLLECTIONS['users']]
+            tests = util.coll('users')
 
             #try to find our user
             results = tests.find_one({"email":email})

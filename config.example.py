@@ -1,13 +1,11 @@
-import datetime as d
+from datetime import datetime, timezone, timedelta
 
-DB_URI = "ein URL"
-DB_USER = "un usuario"
-DB_PASS = "el llave secreto"
-DB_NAME = "lcs-db"
+# uri should contain auth and default database
+DB_URI = "uri"
 DB_COLLECTIONS = {
-    "users": "test",
-    "magic links": "maglinks",
-    "slack messages": "slack-msgs"
+    "users": "users",
+    "magic links": "magicLinks",
+    "slack messages": "slackMessages"
 }
 
 SLACK_KEYS = {
@@ -15,8 +13,10 @@ SLACK_KEYS = {
     'channel': ''
 }
 
+SPARKPOST_KEY = ""
+
 GOOGLE_CAL_ID = ""
-MAPS_API_KEY=""
+MAPS_API_KEY = ""
 
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
@@ -30,36 +30,21 @@ class TRAVEL:
         "plane": 1 #doesn't matter - makes the code handy.
     }
 
-# I'm too lazy with the EDT off-by-1 here...it won't impact day-of.
-TIMEZONE = d.timezone(d.timedelta(hours=-5))
-# See is_registration_open for how to use this: every time marks a toggle in the state.
-REGISTRATION_DATES = [
-        d.datetime(2018, 9, 19, tzinfo=TIMEZONE),
-        d.datetime(2018, 10, 6, 10, tzinfo=TIMEZONE),
-        d.datetime(2018, 10, 7, 12, tzinfo=TIMEZONE)]
-def is_registration_open():
-    i = 0
-    time = d.datetime.now(d.timezone.utc)
-    while i < len(REGISTRATION_DATES) and time >= REGISTRATION_DATES[i]:
-        i += 1
-    return i % 2 == 0
-
-def add_cors_headers(resp):
-    """
-    Adds headers to allow for cross-origin requests.
-
-    Not gonna lie, stackoverflow told us to do it
-    and it works. We don't know how or why.
-    """
-    if 'headers' not in resp:
-        resp['headers'] = dict()
-    resp['headers']['Access-Control-Allow-Origin'] = '*',
-    resp['headers']['Access-Control-Allow-Headers'] ='Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-    resp['headers']['Access-Control-Allow-Credentials'] = True,
-    return resp
+# edt
+TIMEZONE = timezone(timedelta(hours=-4))
 
 RESUME = {
     "aws_access_key_id": "AKI0f9jf209302jfjjfjfjfjfjfjfjfjfjfjfjfish",
     "aws_secret_access_key": "42069",
 }
 RESUME_BUCKET = "resumesf19"
+
+# first is open second is close
+REGISTRATION_DATES = [
+    # open for registration
+    [datetime(2018, 9, 19, tzinfo=TIMEZONE),
+     datetime(2018, 10, 6, 10, tzinfo=TIMEZONE)],
+    # reopen during the event of
+    [datetime(2018, 10, 7, 12, tzinfo=TIMEZONE),
+     datetime(2018, 10, 9, 12, tzinfo=TIMEZONE)]
+]

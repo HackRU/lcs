@@ -5,7 +5,7 @@ import config
 
 import pytest
 import json
-import datetime as d
+from datetime import datetime, timedelta
 
 def has_token_for(email, thing):
     if 'body' not in thing:
@@ -33,22 +33,51 @@ def test_bad_password():
     auth = authorize.authorize(usr_dict, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "invalid email,hash combo"}), auth)
 
+def test_registration_open():
+    # born too late to explore the planet
+    config.REGISTRATION_DATES = [[
+        datetime.now(config.TIMEZONE) + timedelta(hours=-2),
+        datetime.now(config.TIMEZONE) + timedelta(hours=-1)
+    ]]
+    assert not authorize.is_registration_open()
+
+    # born too early to explore the universe
+    config.REGISTRATION_DATES = [[
+        datetime.now(config.TIMEZONE) + timedelta(hours=+1),
+        datetime.now(config.TIMEZONE) + timedelta(hours=+2)
+    ]]
+    assert not authorize.is_registration_open()
+
+    # born just in time to register for HackRU
+    config.REGISTRATION_DATES = [[
+        datetime.now(config.TIMEZONE) + timedelta(hours=-1),
+        datetime.now(config.TIMEZONE) + timedelta(hours=+1)
+    ]]
+    assert authorize.is_registration_open()
+
+    #day of
+    config.REGISTRATION_DATES = [
+        [datetime.now(config.TIMEZONE) + timedelta(hours=-6),
+         datetime.now(config.TIMEZONE) + timedelta(hours=-5)],
+        [datetime.now(config.TIMEZONE) + timedelta(hours=-1),
+         datetime.now(config.TIMEZONE) + timedelta(hours=+1)],
+    ]
+    assert authorize.is_registration_open()
+
 @pytest.mark.run(order=1)
 def test_creation():
-    now = d.datetime.now(d.timezone.utc)
-    idx_of_time = list(
-            i for i in enumerate(config.REGISTRATION_DATES + [d.datetime.now(d.timezone.utc)]) \
-            if i[1] >= now)[0][0]
-    assert (not config.is_registration_open()) == idx_of_time % 2
-
     #open registration
-    if not config.is_registration_open():
-        config.REGISTRATION_DATES = []
-    assert config.is_registration_open()
+    if not authorize.is_registration_open():
+        config.REGISTRATION_DATES = [
+            [datetime.now(config.TIMEZONE) + timedelta(hours=-6),
+             datetime.now(config.TIMEZONE) + timedelta(hours=+6)]
+        ]
+    assert authorize.is_registration_open()
 
     user_email = "creep@radiohead.ed"
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
+    delete_user()
     auth = authorize.create_user(usr_dict, None)
     assert has_token_for(user_email, auth)
 

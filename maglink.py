@@ -1,4 +1,3 @@
-from pymongo import MongoClient
 import random
 import datetime
 import string
@@ -6,6 +5,7 @@ from datetime import datetime, timedelta
 
 import use_sparkpost
 import config
+import util
 from schemas import *
 
 DEFAULT_LINK_BASE =  'https://hackru.org/magic/{}'
@@ -24,9 +24,9 @@ def forgotUser(event, magiclinks, tests):
         rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink), 'forgot-password', None)
         if rv['statusCode'] != 200:
             return rv
-        return config.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
+        return util.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
     else:
-        return config.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
+        return util.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
 
 def directorLink(magiclinks, numLinks, event, user):
     links_list = []
@@ -63,10 +63,10 @@ def directorLink(magiclinks, numLinks, event, user):
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def do_director_link(event, magiclinks, user):
+def do_director_link(event, magiclinks, user=None):
     numLinks = event.get('numLinks', 1)
     links_list = directorLink(magiclinks, numLinks, event, user)
-    return config.add_cors_headers({"statusCode":200,"body":links_list})
+    return util.add_cors_headers({"statusCode":200,"body":links_list})
 
 @ensure_schema({
     "type": "object",
@@ -80,11 +80,8 @@ def genMagicLink(event, context):
     """
        The event object expects and email and  checks if it is a valid request to generate the magic link
     """
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
-    magiclinks = db[config.DB_COLLECTIONS['magic links']]
+    tests = util.coll('users')
+    magiclinks = util.coll('magic links')
 
     if 'forgot' in event:
         return forgotUser(event, magiclinks, tests)

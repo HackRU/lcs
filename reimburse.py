@@ -1,8 +1,9 @@
 import requests as req
-from pymongo import MongoClient, UpdateOne
+from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
 
 import config
+import util
 from schemas import *
 
 #credit to https://stackoverflow.com/a/434328/5292630
@@ -89,10 +90,7 @@ def users_to_reimburse(lookup, users, budget):
 @ensure_logged_in_user()
 @ensure_role([['director']])
 def compute_all_reimburse(event, context, user):
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
     budget = config.TRAVEL.BUDGET
 
     if 'day-of' not in event or not event['day-of']:

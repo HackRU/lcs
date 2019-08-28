@@ -2,15 +2,15 @@ import json
 import random
 import string
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
-from pymongo import MongoClient
 import bcrypt
 
 import config
 import consume
 from schemas import *
+import util
 
 @ensure_schema({
     "type": "object",
@@ -30,20 +30,15 @@ def authorize(event,context):
     email = event['email']
     pass_ = event['password']
 
-    #DB connection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     checkhash  = tests.find_one({"email":email})
 
     if checkhash is not None:
         if not bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']):
-            return config.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
+            return util.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
-        return config.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
+        return util.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
 
     token = str(uuid.uuid4())
 
@@ -60,7 +55,7 @@ def authorize(event,context):
     #throw in the email for frontend.
     update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : update_val}
-    return config.add_cors_headers(ret_val)
+    return util.add_cors_headers(ret_val)
 
 #NOT A LAMBDA
 def authorize_then_consume(event, context):
@@ -101,25 +96,20 @@ def authorize_then_consume(event, context):
     "additionalFields": False
 })
 def create_user(event, context):
-    if not config.is_registration_open() and 'link' not in event:
-        return config.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+    if not is_registration_open() and 'link' not in event:
+        return util.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
     u_email = event['email']
     password = event['password']
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=8))
 
-    #DB connection
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER, config.DB_PASS)
-
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
 
     #if a user of the same email exists, we complain.
     usr = tests.find_one({'email': u_email})
     if usr != None and usr != [] and usr != {}:
         if 'link' not in event:
-            return config.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
+            return util.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
         return authorize_then_consume(event, context)
 
     #The goal here is to have a complete user.
@@ -159,3 +149,13 @@ def create_user(event, context):
     tests.insert_one(doc)
 
     return authorize_then_consume(event, context)
+
+def is_registration_open():
+    """
+    checks regisitration using the configs timezone
+    """
+    now = datetime.now(config.TIMEZONE)
+    for period in config.REGISTRATION_DATES:
+        if period[0] <= now and now <= period[1]:
+            return True
+    return False

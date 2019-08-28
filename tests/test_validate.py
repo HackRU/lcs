@@ -8,7 +8,7 @@ import pytest
 import json
 
 @pytest.mark.run(order=3)
-def validate_token():
+def test_validate_token():
     user_email = "creep@radiohead.ed"
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}

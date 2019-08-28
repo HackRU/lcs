@@ -1,6 +1,6 @@
-from pymongo import MongoClient
 from schemas import *
 import config
+import util
 
 import string
 from datetime import datetime, timedelta
@@ -15,10 +15,11 @@ import bcrypt
     "required": ["email", "token"]
 })
 @ensure_logged_in_user()
-def promotion_link(event, maglinkobj, user, userCollection):
+def promotion_link(event, maglinkobj, user=None):
     """
         Updates User Based on a magic link
     """
+    userCollection = util.coll('users')
     #Grab the permissions object
     permissions = maglinkobj['permissions']
     for i in permissions:
@@ -59,22 +60,18 @@ def consumeUrl(event,context):
     """
         Lambda function to consume a url. Queries the database and checks permissions and updates accordingly
     """
-    client = MongoClient(config.DB_URI)
-    db = client[config.DB_NAME]
-    db.authenticate(config.DB_USER,config.DB_PASS)
-    #user collection
-    tests = db[config.DB_COLLECTIONS['users']]
+    tests = util.coll('users')
     #maglink collection
-    magiclinks = db[config.DB_COLLECTIONS['magic links']]
+    magiclinks = util.coll('magic links')
     maglinkobj = magiclinks.find_one({"link":event['link']})
     if maglinkobj:
         if maglinkobj['forgot']:
             statusCode = forgot_password_link(event, tests, maglinkobj)
         else:
-            statusCode = promotion_link(event, maglinkobj, tests)
+            statusCode = promotion_link(event, maglinkobj)
         #remove link after consuming
         if statusCode['statusCode'] == 200:
             magiclinks.remove({"link":maglinkobj['link']})
         return statusCode
 
-    return config.add_cors_headers({"statusCode":400,"body":"Invalid magiclink, try again"})
+    return util.add_cors_headers({"statusCode":400,"body":"Invalid magiclink, try again"})
