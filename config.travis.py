@@ -20,7 +20,12 @@ SLACK_KEYS = {
     'channel': ''
 }
 
-GOOGLE_CAL_ID = os.getenv("GOOGLE_CAL_ID", "")
+class GOOGLE_CAL:
+    SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+    CLIENT_ID = os.getenv("GOOGLE_CAL_CLIENT_ID", "")
+    CLIENT_SECRET = os.getenv("GOOGLE_CAL_CLIENT_SECRET", "")
+    CAL_ID = os.getenv("GOOGLE_CAL_ID", "")
+
 MAPS_API_KEY = os.getenv("MAPS_API_KEY", "")
 
 class TRAVEL:

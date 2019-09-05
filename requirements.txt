@@ -10,6 +10,7 @@ chardet==3.0.4
 coverage==4.5.2
 google-api-python-client==1.7.6
 google-auth==1.6.2
+google-auth-oauthlib
 google-auth-httplib2==0.0.3
 googlemaps==3.0.2
 httplib2==0.12.0

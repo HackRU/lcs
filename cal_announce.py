@@ -12,51 +12,65 @@ import dateutil.parser as dp
 from oauth2client.file import Storage
 from oauth2client import tools, client
 from googleapiclient import discovery
+from google_auth_oauthlib import get_user_credentials
+from google.auth.transport.requests import Request
+
 
 import requests
 from pymongo import DESCENDING
 import json
 import config
+from config import GOOGLE_CAL
 import util
+import pickle
 
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'HackRU calendar backend'
+token_path = "./token.pickle"
 
+def gen_token():
+    creds = get_user_credentials(
+        GOOGLE_CAL.SCOPES,
+        GOOGLE_CAL.CLIENT_ID,
+        GOOGLE_CAL.CLIENT_SECRET
+    )
+    # Save the credentials for the next run
+    with open(token_path, 'wb') as token:
+        pickle.dump(creds, token)
+
+@util.cors
 def google_cal(event, context, testing=False):
     num_events = event.get('num_events', 10)
+    # TODO cache login
+    # TODO handle stale credentials
+    # TODO handle bad credentials
 
-    credential_path = 'calendar-python-quickstart.json'
-    credentials = None
-    store = Storage('/tmp/' + credential_path)
-    try:
-        copy2('calendar-python-quickstart.json', '/tmp/')
-        credentials = store.get()
-    except:
-        if not testing:
-            return util.add_cors_headers({'statusCode': 400, 'body': 'Misconfigured endpoint.'})
-
-    if not credentials or credentials.invalid:
-        if not testing:
-            return util.add_cors_headers({'statusCode': 400, 'body': 'Please interactively generate client secret file.'})
-        else:
-            flow = oauth2client.client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-            flow.user_agent = APPLICATION_NAME
-            credentials = tools.run_flow(flow, store)
-            print("storing credentials to {}".format(credential_path))
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('calendar', 'v3', http=http)
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    # IMPORTANT gen_token must be ran and authorized before uploading to lambda,
+    # and token.pickle should be uploaded with it
+    if os.path.exists(token_path):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    else:
+        return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
+        
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds.valid:
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+    
+    service = discovery.build('calendar', 'v3', credentials=creds)
     now = datetime.datetime.utcnow().isoformat() + 'Z'
-    print("getting the next 10 events")
     # pylint: disable=no-member
     eventsResult = service.events().list(
-            calendarId = config.GOOGLE_CAL_ID, timeMin = now, maxResults = num_events * 5,
+            calendarId = GOOGLE_CAL.CAL_ID, timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
+    # TODO handle if there are no events
     if not events:
-        return util.add_cors_headers({'statusCode': 400, 'body': 'Unable to get events.'})
-    return util.add_cors_headers({'statusCode': 200, 'body': events})
+        return {'statusCode': 400, 'body': 'Unable to get events.'}
+    return {'statusCode': 200, 'body': events}
 
 def slack_announce(event, context):
     slacks = util.coll('slack messages')
