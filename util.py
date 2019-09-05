@@ -1,4 +1,5 @@
 import config
+from functools import wraps
 from pymongo import MongoClient
 
 def add_cors_headers(resp):
@@ -14,6 +15,15 @@ def add_cors_headers(resp):
     resp['headers']['Access-Control-Allow-Headers'] ='Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
     resp['headers']['Access-Control-Allow-Credentials'] = True,
     return resp
+
+def cors(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        resp = f(*args, **kwargs)
+        return add_cors_headers(resp)
+    return wrapper
+
+    
 
 _cached = None
 def get_db():
