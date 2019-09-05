@@ -19,6 +19,7 @@ venv/
 env/
 .pytest_cache/
 .coverage
+travisenv
 
 #google gook
 calendar-python-quickstart.json
