@@ -39,9 +39,6 @@ def gen_token():
 @util.cors
 def google_cal(event, context, testing=False):
     num_events = event.get('num_events', 10)
-    # TODO cache login
-    # TODO handle stale credentials
-    # TODO handle bad credentials
 
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -50,7 +47,7 @@ def google_cal(event, context, testing=False):
     # IMPORTANT gen_token must be ran and authorized before uploading to lambda,
     # and token.pickle should be uploaded with it
     if os.path.exists(token_path):
-        with open('token.pickle', 'rb') as token:
+        with open(token_path, 'rb') as token:
             creds = pickle.load(token)
     else:
         return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
@@ -59,6 +56,8 @@ def google_cal(event, context, testing=False):
     if not creds.valid:
         if creds.expired and creds.refresh_token:
             creds.refresh(Request())
+        else:
+            return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
     
     service = discovery.build('calendar', 'v3', credentials=creds)
     now = datetime.datetime.utcnow().isoformat() + 'Z'
