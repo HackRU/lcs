@@ -1,4 +1,4 @@
-from cal_announce
+import cal_announce
 
 def test_get_cal():
     res = cal_announce.google_cal({}, {})
