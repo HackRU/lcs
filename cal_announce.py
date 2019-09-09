@@ -45,7 +45,10 @@ def google_cal(event, context, testing=False):
     # If there are no (valid) credentials available, let the user log in.
     if not creds.valid:
         if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except:
+               return {'statusCode': 500, 'body': 'failed to refresh credentials'}
         else:
             return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
     
