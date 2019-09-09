@@ -1,28 +1,18 @@
-#!/usr/bin/env python
-
-import httplib2
-import os
-from shutil import copy2
-import oauth2client
 import datetime
-import time
 import dateutil.parser as dp
+import os
+import time
 
-#from oauth2client import tools
-from oauth2client.file import Storage
-from oauth2client import tools, client
 from googleapiclient import discovery
 from google_auth_oauthlib import get_user_credentials
 from google.auth.transport.requests import Request
-
-
-import requests
 from pymongo import DESCENDING
-import json
+import requests
+
 import config
 from config import GOOGLE_CAL
-import util
 import pickle
+import util
 
 token_path = "./token.pickle"
 

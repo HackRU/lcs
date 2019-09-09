@@ -7,15 +7,6 @@ from config import RESUME, RESUME_BUCKET
 import boto3
 from botocore.exceptions import ClientError
 
-presign_input = {
-    "type": "object",
-    "properties": {
-        "email": {"type": "string"},
-        "token": {"type": "string"}
-    },
-    "required": ["email", "token"]
-}
-
 def presign(method, event, ctx, user):
     client = boto3.client("s3", **RESUME)
     http_method = "GET"
@@ -44,7 +35,14 @@ def exists(email):
             return False
         raise e
     
-@ensure_schema(presign_input)
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string"},
+        "token": {"type": "string"}
+    },
+    "required": ["email", "token"]
+})
 @ensure_logged_in_user()
 def resume(event, ctx, user):
     try:
