@@ -59,9 +59,6 @@ def google_cal(event, context, testing=False):
             calendarId = GOOGLE_CAL.CAL_ID, timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
-    # TODO handle if there are no events
-    if not events:
-        return {'statusCode': 400, 'body': 'Unable to get events.'}
     return {'statusCode': 200, 'body': events}
 
 def slack_announce(event, context):
