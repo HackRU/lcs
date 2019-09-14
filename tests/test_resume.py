@@ -37,7 +37,7 @@ def teardown_module(m):
     #reset colelction name
     global old_col
     config.DB_COLLECTIONS["users"] = old_col
-    
+
 def test_baduser():
     result = resume.resume(payload(email="foo"), {})
     assert result["statusCode"] == 400
@@ -47,7 +47,7 @@ def test_roundtrip():
     assert result["statusCode"] == 200
     upload = result["body"]["upload"]
     download = result["body"]["download"]
-    
+
     stellar_resume = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_resume, headers={"Content-Type": "application/pdf"})
     assert upload_res.status_code == 200 or upload_res.status_code == 204
@@ -65,7 +65,7 @@ def test_exists():
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
     token = creation["body"]["auth"]["token"]
-    
+
     result = resume.resume({"email": email + "d", "token": token}, {})
     assert result["statusCode"] == 200
     assert not result["body"]["exists"]

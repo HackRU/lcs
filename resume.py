@@ -34,7 +34,7 @@ def exists(email):
         if e.response["Error"]["Code"] == "404":
             return False
         raise e
-    
+
 @ensure_schema({
     "type": "object",
     "properties": {
@@ -44,7 +44,7 @@ def exists(email):
     "required": ["email", "token"]
 })
 @ensure_logged_in_user()
-def resume(event, ctx, user):
+def resume(event, ctx, user=None):
     try:
         return {
             "statusCode": 200, "body": {
@@ -58,4 +58,3 @@ def resume(event, ctx, user):
             "statusCode": 500,
             "body": "failed to connect to s3" + str(e)
         }
-    

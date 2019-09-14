@@ -23,13 +23,13 @@ def cors(f):
         return add_cors_headers(resp)
     return wrapper
 
-    
+
 
 _cached = None
 def get_db():
     """
     if the database uri has a default db and auth info then getting a database doesn't
-    have to involve a lot of config. also caches client so lambda can effectively use 
+    have to involve a lot of config. also caches client so lambda can effectively use
     connection pooling
     """
     global _cached

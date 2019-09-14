@@ -41,7 +41,7 @@ def google_cal(event, context, testing=False):
             creds = pickle.load(token)
     else:
         return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
-        
+
     # If there are no (valid) credentials available, let the user log in.
     if not creds.valid:
         if creds.expired and creds.refresh_token:
@@ -51,7 +51,7 @@ def google_cal(event, context, testing=False):
                return {'statusCode': 500, 'body': 'failed to refresh credentials'}
         else:
             return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
-    
+
     service = discovery.build('calendar', 'v3', credentials=creds)
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     # pylint: disable=no-member
