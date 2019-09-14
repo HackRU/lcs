@@ -26,23 +26,17 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
         def wrapt(event, context, *args):
             email = event[email_key]
             token = event[token_key]
-
             users = util.coll('users')
 
-            # try to find user and pick just the token we're looking for
-            # note: the user object we get will have ONLY the token provided and no other tokens
-            results = list(users.aggregate([{'$match': {'email': email}},
-                                            {'$unwind': '$auth'},
-                                            {'$match': {'auth.token': token}}]))
-            if len(results) == 0:
-                return on_failure(event, context, 'User or token invalid', *args)
+            # try to find user
+            user = users.find_one({'email': email})
+            if user is None:
+                return on_failure(event, context, 'User Not found', *args)
 
-            user = results[0]
-            if datetime.now() > parse(user['auth']['valid_until']):
-                return on_failure(event, context, 'Token Expired', *args)
-
-            #fix for schema since things wil expect an array
-            user['auth'] = [user['auth']]
+            # look for token
+            tokens = list(filter(lambda auth: auth['token'] == token, user['auth']))
+            if len(tokens) == 0 or datetime.now() > parse(tokens[0]['valid_until']):
+                return on_failure(event, context, 'Token invalid', *args)
 
             del user['_id']
             del user['password']
