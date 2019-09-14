@@ -15,4 +15,4 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - python -m pylint *.py && python -m pytest --cov=.
+  - python -m pylint *.py && python -m pylint tests/*.py && python -m pytest --cov=.
