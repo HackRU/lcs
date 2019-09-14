@@ -15,7 +15,12 @@ SLACK_KEYS = {
 
 SPARKPOST_KEY = ""
 
-GOOGLE_CAL_ID = ""
+class GOOGLE_CAL:
+    SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+    CLIENT_ID = ""
+    CLIENT_SECRET = ""
+    CAL_ID = ""
+
 MAPS_API_KEY = ""
 
 class TRAVEL:

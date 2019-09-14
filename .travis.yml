@@ -9,6 +9,7 @@ services:
 before_script:
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
   - cp config.travis.py config.py
+  - echo $GOOGLE_CAL_TOKEN | base64 -d > token.pickle
 
 install:
   - pip install -r requirements.txt
