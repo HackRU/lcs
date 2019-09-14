@@ -2,7 +2,7 @@ import jsonschema as js
 import config
 import util
 
-import dateutil.parser as dp
+from dateutil.parser import parse
 
 from functools import wraps
 from datetime import datetime
@@ -27,20 +27,26 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
             email = event[email_key]
             token = event[token_key]
 
-            tests = util.coll('users')
+            users = util.coll('users')
 
-            #try to find our user
-            results = tests.find_one({"email":email})
-            if results is None or results == None or results == [] or results == ():
-                return on_failure(event, context, "User not found", *args)
+            # try to find user and pick just the token we're looking for
+            # note: the user object we get will have ONLY the token provided and no other tokens
+            results = list(users.aggregate([{'$match': {'email': email}},
+                                            {'$unwind': '$auth'},
+                                            {'$match': {'auth.token': token}}]))
+            if len(results) == 0:
+                return on_failure(event, context, 'User or token invalid', *args)
 
-            #if none of the user's unexpired tokens match the one given, complain.
-            if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
-                return on_failure(event, context, "Token not found", *args)
+            user = results[0]
+            if datetime.now() > parse(user['auth']['valid_until']):
+                return on_failure(event, context, 'Token Expired', *args)
 
-            del results['_id']
-            del results['password']
-            return fn(event, context, results, *args)
+            #fix for schema since things wil expect an array
+            user['auth'] = [user['auth']]
+
+            del user['_id']
+            del user['password']
+            return fn(event, context, user, *args)
         return wrapt
     return rapper
 
