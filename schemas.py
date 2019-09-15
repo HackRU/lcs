@@ -20,7 +20,7 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         return wrapt
     return wrap
 
-def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lambda e, c, m, *a: {"statusCode": 400, "body": m}):
+def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lambda e, c, m, *a: {"statusCode": 403, "body": m}):
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):

@@ -26,13 +26,13 @@ def test_validate_token():
 
     #failures
     val = validate.validate({'email': user_email + 'fl', 'token': token}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "User not found"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "User not found"}), val)
     val = validate.validate({'email': user_email, 'token': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Token invalid"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
     val = validate.validate({'emil': user_email, 'token': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
     val = validate.validate({'email': user_email, 'oken': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
 
     #insert expired token
     expired = 'fish'
@@ -43,7 +43,7 @@ def test_validate_token():
     }}})
 
     val = validate.validate({'email': user_email, 'token': expired}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Token invalid"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
     
     # remove the token
     users.update_one({'email': user_email},{'$pull': {'auth': {'token': expired}}})
