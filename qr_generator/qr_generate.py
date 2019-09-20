@@ -5,9 +5,10 @@ from fpdf import FPDF
 import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-QR_CODE_SPACING = 0.1
-PAGE_WIDTH = 8.5
-PAGE_HEIGHT = 11
+PPI = 72
+QR_CODE_SPACING = 1
+PAGE_WIDTH = 8.5 * PPI
+PAGE_HEIGHT = 11 * PPI
 
 
 def check_side_length(arg: str):
@@ -16,7 +17,7 @@ def check_side_length(arg: str):
         if num <= 0:
             print("Side length is too low. Using the default option of 2 inches")
             return 2
-        if num >= PAGE_WIDTH - 2 * QR_CODE_SPACING:
+        if num * PPI >= PAGE_WIDTH - 2 * QR_CODE_SPACING:
             print("Side length is too high. Using the default option of 2 inches")
             return 2
         return num
@@ -63,6 +64,10 @@ def handle_args():
                             help="color of the QR code (default: black)")
     arg_parser.add_argument("-bc", dest="back_color", type=check_color, required=False, default="white",
                             help="color for the background of the QR code (default: white)")
+    arg_parser.add_argument("-x", dest="x", type=int, required=False, default=0,
+                            help="top left x coordinate for the QR code grid in *pixels* (default: 0)")
+    arg_parser.add_argument("-y", dest="y", type=int, required=False, default=0,
+                            help="top left y coordinate for the QR code grid in *pixels* (default: 0)")
     return arg_parser.parse_args()
 
 
@@ -74,14 +79,18 @@ def generate():
         box_size=10,
         border=0
     )
-    pdf = FPDF(unit="in", format="letter")
-    x = y = QR_CODE_SPACING
-    s = args.side_length
+    pdf = FPDF(unit="pt", format="letter")
+    x = args.x
+    y = args.y
+    s = args.side_length * PPI - 1
     pdf.add_page()
 
     use_max = True
-    if args.per_page != "max" and QR_CODE_SPACING + (s + QR_CODE_SPACING) * args.per_page < PAGE_WIDTH:
-        use_max = False
+    if args.per_page != "max":
+        min_x_pages = (PAGE_WIDTH - args.x) // (s + QR_CODE_SPACING)
+        min_y_pages = (PAGE_HEIGHT - args.y) // (s + QR_CODE_SPACING)
+        if args.per_page <= min_x_pages * min_y_pages:
+            use_max = False
 
     for i in range(args.number):
         qr.add_data(args.prefix + "_" + str(uuid4()))
@@ -92,16 +101,18 @@ def generate():
         os.remove(tmp_img_loc)
         if not use_max and (i+1) % args.per_page == 0:
             pdf.add_page()
-            x = y = QR_CODE_SPACING
+            x = args.x
+            y = args.y
         else:
             x += s + QR_CODE_SPACING
             if x + s + QR_CODE_SPACING > PAGE_WIDTH:
                 y += s + QR_CODE_SPACING
                 if y + s + QR_CODE_SPACING > PAGE_HEIGHT:
                     pdf.add_page()
-                    x = y = QR_CODE_SPACING
+                    x = args.x
+                    y = args.y
                 else:
-                    x = QR_CODE_SPACING
+                    x = args.x
 
         qr.clear()
     pdf.output(os.path.join(BASE_DIR, "qr_codes.pdf"))
