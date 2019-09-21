@@ -50,7 +50,7 @@ REGISTRATION_DATES = [
      datetime(2018, 10, 6, 10, tzinfo=TIMEZONE)],
     # reopen during the event of
     [datetime(2018, 10, 7, 12, tzinfo=TIMEZONE),
-     datetime(2018, 10, 9, 12, tzinfo=TIMEZONE)]
+     datetime(2020, 10, 9, 12, tzinfo=TIMEZONE)]
 ]
 
 RESUME = {
