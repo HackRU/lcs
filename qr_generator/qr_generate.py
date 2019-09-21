@@ -64,10 +64,10 @@ def handle_args():
                             help="color of the QR code (default: black)")
     arg_parser.add_argument("-bc", dest="back_color", type=check_color, required=False, default="white",
                             help="color for the background of the QR code (default: white)")
-    arg_parser.add_argument("-x", dest="x", type=int, required=False, default=0,
-                            help="top left x coordinate for the QR code grid in *pixels* (default: 0)")
-    arg_parser.add_argument("-y", dest="y", type=int, required=False, default=0,
-                            help="top left y coordinate for the QR code grid in *pixels* (default: 0)")
+    arg_parser.add_argument("-x", dest="x", type=int, required=False, default=17,
+                            help="top left x coordinate for the QR code grid in *pixels* (default: 17)")
+    arg_parser.add_argument("-y", dest="y", type=int, required=False, default=41,
+                            help="top left y coordinate for the QR code grid in *pixels* (default: 41)")
     return arg_parser.parse_args()
 
 
