@@ -2,7 +2,6 @@ import string
 import re
 import json
 import pymongo
-from pymongo import ReturnDocument
 
 import config
 import util
