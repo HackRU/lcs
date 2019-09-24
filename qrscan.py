@@ -60,7 +60,6 @@ def qrMatch(event, context, user=None):
 @ensure_logged_in_user(email_key='auth_email')
 @ensure_role([['director', 'organizer', 'volunteer']])
 def attend_event(aws_event, context, user=None):
-    # TODO fix indentation and whitespace
     users = coll('users')
     qr = aws_event['qr']
     event = aws_event['event']

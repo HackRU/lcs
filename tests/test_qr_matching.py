@@ -65,7 +65,6 @@ def test_qr_match():
     assert db.find_one({"email" : hckemail})["qrcode"][0] == qr
 
 def test_attend():
-    # TODO fix indentation and whitespace
     event = 'free_supreme_bricks'
     def attend(qr_code, again=False, auth_email=email, token=token):
         return qrscan.attend_event({
