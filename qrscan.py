@@ -31,7 +31,7 @@ def qr_match(event, context, user=None):
     if result.matched_count == 1:
         return {
             "statusCode" : 200,
-            "body" : {"success" : True}
+            "body" : "success"
         }
     else:
         return {
