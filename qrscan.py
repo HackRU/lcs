@@ -7,7 +7,7 @@ from util import *
 qr_input = {
     "type" : "object",
     "Properties" : {
-        "auth_email" : {"type" : "string"},
+        "auth_email" : {"type" : "string", "format" : "email"},
 	"token" : {"type" : "string"},
 	"email" : {"type" : "string"},
 	"qr_code" : {"type" : "string"}
@@ -23,15 +23,9 @@ def dbinfo():
 
 @ensure_schema(qr_input)
 @ensure_logged_in_user(email_key = "auth_email")
-def qrMatch(event, context, user=None):
+@ensure_role([['director', 'organizer']])
+def qr_match(event, context, user=None):
     collection = coll('users')
-
-    #User the user input to check for the position. Make sure its director and organizer
-    if not user["role"]["organizer"]:
-        return {
-            "statusCode" : 400,
-            "body" : "Permission Denied.  Not a organizer or director"
-        }
 
     result = collection.update_one({'email' : event["email"]}, {'$push' : {'qrcode' : event["qr_code"]}})
     if result.matched_count == 1:
@@ -39,11 +33,10 @@ def qrMatch(event, context, user=None):
             "statusCode" : 200,
             "body" : {"success" : True}
         }
-        #{"status": db.update({'email' : email}, {'$push' : {'qrcode' : qr})
     else:
         return {
-            "statusCode" : 500,
-            "body" : "failed to upload QR into database"
+            "statusCode" : 404,
+            "body" : "User not found"
         }
 
 @ensure_schema({
