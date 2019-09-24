@@ -55,11 +55,11 @@ def teardown_module(m):
     config.DB_COLLECTIONS["users"] = old_col
 
 def test_bad_role():
-    result = qrscan.qrMatch(payload(auth_email=hckemail), {})
+    result = qrscan.qr_match(payload(auth_email=hckemail), {})
     assert result["statusCode"] == 400
 
 def test_qr_match():
-    result = qrscan.qrMatch(payload(), {})
+    result = qrscan.qr_match(payload(), {})
     assert result["statusCode"] == 200
     db = util.coll("users")
     assert db.find_one({"email" : hckemail})["qrcode"][0] == qr
