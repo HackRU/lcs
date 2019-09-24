@@ -94,7 +94,7 @@ def test_attend():
     users.update_one({'email': hckemail}, {'$set': {'day_of.' + event: 0}})
 
     # by qr
-    result = qrscan.qrMatch(payload(), {})
+    result = qrscan.qr_match(payload(), {})
     assert result['statusCode'] == 200
     test(qr)
 
