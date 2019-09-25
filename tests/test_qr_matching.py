@@ -31,8 +31,6 @@ def setup_module(m):
     global old_col
     old_col = config.DB_COLLECTIONS["users"]
     config.DB_COLLECTIONS["users"] = "test-users"
-    #db = util.get_db()
-    #db["test-users"]
 
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
