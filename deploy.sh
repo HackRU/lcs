@@ -44,7 +44,7 @@ FNS=$@
 
 if [ -z "$FNS" ]
 then
-    FNS="authorize consume create createmagiclink dayof-events dayof-slack read reimburse resume send-emails update validate"
+    FNS="authorize consume create createmagiclink dayof-events dayof-slack read reimburse resume send-emails update validate link-qr attend-event"
 fi
 
 #echo "$BUCKET"
