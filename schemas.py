@@ -2,7 +2,7 @@ import jsonschema as js
 import config
 import util
 
-import dateutil.parser as dp
+from dateutil.parser import parse
 
 from functools import wraps
 from datetime import datetime
@@ -20,27 +20,27 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         return wrapt
     return wrap
 
-def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lambda e, c, m, *a: {"statusCode": 400, "body": m}):
+def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lambda e, c, m, *a: {"statusCode": 403, "body": m}):
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):
             email = event[email_key]
             token = event[token_key]
+            users = util.coll('users')
 
-            tests = util.coll('users')
+            # try to find user
+            user = users.find_one({'email': email})
+            if user is None:
+                return on_failure(event, context, 'User Not found', *args)
 
-            #try to find our user
-            results = tests.find_one({"email":email})
-            if results is None or results == None or results == [] or results == ():
-                return on_failure(event, context, "User not found", *args)
+            # look for token
+            tokens = list(filter(lambda auth: auth['token'] == token, user['auth']))
+            if len(tokens) == 0 or datetime.now() > parse(tokens[0]['valid_until']):
+                return on_failure(event, context, 'Token invalid', *args)
 
-            #if none of the user's unexpired tokens match the one given, complain.
-            if not any(i['token'] == token and datetime.now() < dp.parse(i['valid_until']) for i in results['auth']):
-                return on_failure(event, context, "Token not found", *args)
-
-            del results['_id']
-            del results['password']
-            return fn(event, context, results, *args)
+            del user['_id']
+            del user['password']
+            return fn(event, context, user, *args)
         return wrapt
     return rapper
 

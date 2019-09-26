@@ -40,7 +40,7 @@ def teardown_module(m):
     
 def test_baduser():
     result = resume.resume(payload(email="foo"), {})
-    assert result["statusCode"] == 400
+    assert result["statusCode"] == 403
 
 def test_roundtrip():
     result = resume.resume(payload(), {})

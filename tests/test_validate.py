@@ -1,5 +1,6 @@
-from testing_utils import *
+from datetime import datetime
 
+from testing_utils import *
 import authorize
 import validate
 import config
@@ -25,10 +26,24 @@ def test_validate_token():
 
     #failures
     val = validate.validate({'email': user_email + 'fl', 'token': token}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "User not found"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "User not found"}), val)
     val = validate.validate({'email': user_email, 'token': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Token not found"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
     val = validate.validate({'emil': user_email, 'token': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
     val = validate.validate({'email': user_email, 'oken': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(400, {"type": "string"}), val)
+    assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
+
+    #insert expired token
+    expired = 'fish'
+    users = connect_to_db()
+    users.update_one({'email': user_email},{'$push': {'auth': {
+        'token': expired,
+        'valid_until': datetime.now().isoformat()
+    }}})
+
+    val = validate.validate({'email': user_email, 'token': expired}, None)
+    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
+    
+    # remove the token
+    users.update_one({'email': user_email},{'$pull': {'auth': {'token': expired}}})
