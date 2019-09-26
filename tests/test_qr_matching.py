@@ -54,7 +54,7 @@ def teardown_module(m):
 
 def test_bad_role():
     result = qrscan.qr_match(payload(auth_email=hckemail), {})
-    assert result["statusCode"] == 400
+    assert result["statusCode"] == 403
 
 def test_qr_match():
     result = qrscan.qr_match(payload(), {})
