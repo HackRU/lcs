@@ -61,22 +61,20 @@ def req_distance_matrices(users):
 
     return acc
 
-def users_to_reimburse(lookup, users, budget):
+def users_to_reimburse(lookup, users):
     total = 0
     table = dict()
     for user in users:
-        if user['travelling_from']['mode'] != 'plane':
+        if user['travelling_from']['mode'] == 'car':
             dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
-            reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
+            #reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
+            reimburse = config.TRAVEL.CARRATE[dist]
         else:
             reimburse = config.TRAVEL.MAX_REIMBURSE
         total += reimburse
         table[user['email']] = reimburse
 
-    if total > budget:
-        table = {i: table[i] * budget / total for i in table}
-
-    return table, min(total, budget)
+    return table, total
 
 @ensure_schema({
     "type": "object",
@@ -91,15 +89,15 @@ def users_to_reimburse(lookup, users, budget):
 @ensure_role([['director']])
 def compute_all_reimburse(event, context, user):
     tests = util.coll('users')
-    budget = config.TRAVEL.BUDGET
 
     if 'day-of' not in event or not event['day-of']:
-        reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
-        print(reg_stat_to_money)
-        given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
-        budget = config.TRAVEL.BUDGET - given
-        if budget <= 0:
-            return {'statusCode': 512, 'body': "budget allocated fully!"}
+        #I am assuming that the following commented out code is used only when there is a budget
+        #reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
+        #print(reg_stat_to_money)
+        #given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
+        #budget = config.TRAVEL.BUDGET - given
+        #if budget <= 0:
+        #    return {'statusCode': 512, 'body': "budget allocated fully!"}
         user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
     else:
         user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "day_of.checkIn": True}
@@ -110,7 +108,7 @@ def compute_all_reimburse(event, context, user):
     except Exception as e:
         return {'statusCode': 512, 'body': repr(e)}
 
-    table, total = users_to_reimburse(lookup, users, budget)
+    table, total = users_to_reimburse(lookup, users)
     bulk_op = [UpdateOne({'email':i}, {'$set': {'travelling_from.reimbursement': table[i]}}) for i in table]
     try:
         data = tests.bulk_write(bulk_op, ordered=False)
