@@ -2,6 +2,7 @@ import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
 
+import random
 import config
 import util
 from schemas import *
@@ -67,8 +68,10 @@ def users_to_reimburse(lookup, users):
     for user in users:
         if user['travelling_from']['mode'] == 'car':
             dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
-            #reimburse = min(dist * config.TRAVEL.MULTIPLIERS[user['travelling_from']['mode']], config.TRAVEL.MAX_REIMBURSE)
-            reimburse = config.TRAVEL.CARRATE[dist]
+            #I used random to test the code because I could not make an API key. Can be deleted
+            #dist = random.randint(0,500)
+            result = [config.TRAVEL.CARRATE[key] for key in config.TRAVEL.CARRATE if dist in key]
+            reimburse = result[0]
         else:
             reimburse = config.TRAVEL.MAX_REIMBURSE
         total += reimburse
@@ -91,29 +94,25 @@ def compute_all_reimburse(event, context, user):
     tests = util.coll('users')
 
     if 'day-of' not in event or not event['day-of']:
-        #I am assuming that the following commented out code is used only when there is a budget
-        #reg_stat_to_money = {i['_id']: i['amount'] for i in tests.aggregate([{"$group":{"_id": "$registration_status", "amount": {"$sum": "$travelling_from.reimbursement"}}}])}
-        #print(reg_stat_to_money)
-        #given = reg_stat_to_money.get('coming', 0) + reg_stat_to_money.get('confirmed', 0)
-        #budget = config.TRAVEL.BUDGET - given
-        #if budget <= 0:
-        #    return {'statusCode': 512, 'body': "budget allocated fully!"}
         user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
     else:
         user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "day_of.checkIn": True}
 
     users = list(tests.find(user_query))
+
+    #I commented the next 4 lines during testing because it would give me an error since I didnt have an API key
     try:
         lookup = req_distance_matrices(users)
     except Exception as e:
         return {'statusCode': 512, 'body': repr(e)}
-
+    #This line was purely for testing can be deleted if no more test are needed or have API key
+    #lookup = None
+    
     table, total = users_to_reimburse(lookup, users)
+    print(table)
     bulk_op = [UpdateOne({'email':i}, {'$set': {'travelling_from.reimbursement': table[i]}}) for i in table]
     try:
         data = tests.bulk_write(bulk_op, ordered=False)
         return {'statusCode': 200, 'mongo_result': data.bulk_api_result, 'total': total}
     except BulkWriteError as bwe:
         return {'statusCode': 512, 'body': bwe.details}
-
-
