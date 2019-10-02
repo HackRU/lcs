@@ -70,7 +70,7 @@ def users_to_reimburse(lookup, users):
             dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
             #I used random to test the code because I could not make an API key. Can be deleted
             #dist = random.randint(0,500)
-            result = [config.TRAVEL.CARRATE[key] for key in config.TRAVEL.CARRATE if dist in key]
+            result = [config.TRAVEL.CAR_RATE[key] for key in config.TRAVEL.CAR_RATE if dist in key]
             reimburse = result[0]
         else:
             reimburse = config.TRAVEL.MAX_REIMBURSE

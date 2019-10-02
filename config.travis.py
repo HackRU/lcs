@@ -39,6 +39,12 @@ class TRAVEL:
         "bus": 0.3775 / 1609,
         "plane": 1 #doesn't matter - makes the code handy.
     }
+    CAR_RATE = {
+        range(0,50) : 0,
+        range(50,101) : 20,
+        range(101,201) : 40,
+        range(201,2**100000) : 59.99
+    }
 
 # edt
 TIMEZONE = timezone(timedelta(hours=-4))
