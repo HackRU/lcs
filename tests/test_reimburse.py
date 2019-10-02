@@ -16,9 +16,67 @@ email = "director77@gmail.com"
 pword = "1234566"
 token = ""
 old_col = ""
-#Path for json file where it contains a list of travelling_from fields
-path_to_users = "/Users/chia/PythonWorkspace/lcs/tests/tr_data.json"
-users = None
+
+users_result = [20, 0, 0, 60, 60, 40, 59.99]
+users = [
+	    {
+	    	"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "car",
+		    "addr_ready" : True,
+		    "formatted_addr" : "Millburn, NJ, USA"
+		}
+	    },
+	    {   
+		"travelling_from" : {
+		    "is_real" : False,
+		    "mode" : None,
+		    "addr_ready" : False,
+		    "formatted_addr" : None
+		}
+	    },
+	    {
+		"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "car",
+		    "addr_ready" : True,
+		    "formatted_addr" : "Princeton, NJ, USA"
+		}
+	    },
+	    {
+		"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "bus",
+		    "addr_ready" : True,
+		    "formatted_addr" : "College Park, MD, USA"
+		}
+	    },
+	    {
+		"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "train",
+		    "addr_ready" : True,
+		    "formatted_addr" : "Providence, RI, USA"
+		}
+	    },
+	    {
+		"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "car",
+		    "addr_ready" : True,
+		    "formatted_addr" : "White Plains, NY, USA"
+		}
+	    },
+	    {
+		"travelling_from" : {
+		    "is_real" : True,
+		    "mode" : "car",
+		    "addr_ready" : True,
+		    "formatted_addr" : "Pittsburgh, PA, USA"
+		}
+	    }
+        ]
+
 
 def payload(auth_email=email):
     return {"email" : email,
@@ -42,10 +100,6 @@ def setup_module(m):
     updete = db.update_one({"email":email}, {"$set" : { "role" : { "hacker": False, "director" : True}}})
     assert updete.modified_count >= 1
 
-    with open(path_to_users, "r") as f:
-        global users
-        users = json.load(f)
-    
     count = 0
     for user in users:
         user["email"] = str(count) + "@gmail"
@@ -70,6 +124,9 @@ def test_tr():
     assert result['statusCode'] == 200
     
     db = util.coll("users")
+    index = 0
     for user in users:
         if user["travelling_from"]["is_real"] == True:
-            assert db.find_one({"email" : user["email"]})["travelling_from"]["reimbursement"] >= 0
+            result = db.find_one({"email": user["email"]})
+            assert result["travelling_from"]["reimbursement"] >= users_result[index] 
+        index = index + 1
