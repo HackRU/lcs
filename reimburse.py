@@ -2,7 +2,6 @@ import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
 
-import random
 import config
 import util
 from schemas import *
