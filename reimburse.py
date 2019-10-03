@@ -91,10 +91,7 @@ def users_to_reimburse(lookup, users):
 def compute_all_reimburse(event, context, user):
     tests = util.coll('users')
 
-    if 'day-of' not in event or not event['day-of']:
-        user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
-    else:
-        user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "day_of.checkIn": True}
+    user_query = {"travelling_from": {"$exists": True}, "travelling_from.addr_ready": True, "registration_status": "registered"}
 
     users = list(tests.find(user_query))
 
