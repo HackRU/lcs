@@ -31,14 +31,6 @@ MAPS_API_KEY = os.getenv("MAPS_API_KEY", "")
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
     MAX_REIMBURSE = 60
-    BUDGET = 3000
-    MULTIPLIERS = {
-        # 1609 = meters per mile because google returns meters
-        "car": 0.22 / 1609,
-        "train": 0.66 / 1609,
-        "bus": 0.3775 / 1609,
-        "plane": 1 #doesn't matter - makes the code handy.
-    }
     CAR_RATE = {
         range(0,50) : 0,
         range(50,101) : 20,

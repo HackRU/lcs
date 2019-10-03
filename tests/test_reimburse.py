@@ -80,8 +80,7 @@ users = [
 
 def payload(auth_email=email):
     return {"email" : email,
-            "token" : token,
-            "day-of": True}
+            "token" : token}
 
 def setup_module(m):
     db = util.get_db()
@@ -108,7 +107,7 @@ def setup_module(m):
     
         result = db.update_one({'email': user["email"]}, {'$set': user})
         assert result.matched_count == 1
-        result = db.update_one({'email': user["email"]}, {'$set': {'day_of.checkIn': True}})
+        result = db.update_one({'email': user["email"]}, {'$set': {'registration_status': 'registered'}})
         assert result.matched_count == 1
         count = count+1
 
