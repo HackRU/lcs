@@ -26,11 +26,11 @@ MAPS_API_KEY = ""
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
     MAX_REIMBURSE = 60
-    CAR_RATE{= {
+    CAR_RATE = {
         range(0,50) : 0,
         range(50,101) : 20,
         range(101,201) : 40,
-        range(201,2**100000
+        range(201,2**100000) : 59.99
     }
 
 # edt
