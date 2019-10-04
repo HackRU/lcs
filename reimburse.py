@@ -33,6 +33,8 @@ def req_distance_matrices(users):
         origins = "|".join(u['travelling_from']['formatted_addr'] for u in sub_users \
                 if u['travelling_from']['formatted_addr'] not in acc['car'])
         destinations = config.TRAVEL.HACKRU_LOCATION
+        if origins == "": # don't do a request if there are no unique origins
+            continue
 
         car_params = {
             "origins": origins,

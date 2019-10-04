@@ -23,7 +23,7 @@ def dbinfo():
 
 @ensure_schema(qr_input)
 @ensure_logged_in_user(email_key = "auth_email")
-@ensure_role([['director', 'organizer']])
+@ensure_role([['director', 'organizer', 'volunteer']])
 def qr_match(event, context, user=None):
     collection = coll('users')
 

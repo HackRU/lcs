@@ -6,20 +6,21 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 PPI = 72
-QR_CODE_SPACING = 1
+QR_CODE_SPACING = 7
 PAGE_WIDTH = 8.5 * PPI
 PAGE_HEIGHT = 11 * PPI
+DEFAULT_WIDTH = 1.9
 
 
 def check_side_length(arg: str):
     try:
         num = float(arg)
         if num <= 0:
-            print("Side length is too low. Using the default option of 2 inches")
-            return 2
+            print("Side length is too low. Using the default option of 1.9 inches")
+            return DEFAULT_WIDTH
         if num * PPI >= PAGE_WIDTH - 2 * QR_CODE_SPACING:
-            print("Side length is too high. Using the default option of 2 inches")
-            return 2
+            print("Side length is too high. Using the default option of 1.9 inches")
+            return DEFAULT_WIDTH
         return num
     except ValueError:
         msg = f"Couldn't understand \"{arg}\". It should be a valid number or the string \"max\""
@@ -56,8 +57,8 @@ def handle_args():
                                                      "and output them into a PDF")
     arg_parser.add_argument("number", type=int, help="number of QR codes to generate")
     arg_parser.add_argument("prefix", type=str, help="prefix to use while generating the QR code")
-    arg_parser.add_argument("-s", dest="side_length", type=check_side_length, required=False, default=2,
-                            help="side length of the QR code square generated in *inches* (default: 2)")
+    arg_parser.add_argument("-s", dest="side_length", type=check_side_length, required=False, default=1.9,
+                            help="side length of the QR code square generated in *inches* (default: 1.9)")
     arg_parser.add_argument("-n", dest="per_page", type=check_per_page, required=False, default="max",
                             help="number QR codes to put per page of the PDF (default: max - fit as many as possible)")
     arg_parser.add_argument("-fc", dest="fill_color", type=check_color, required=False, default="black",
