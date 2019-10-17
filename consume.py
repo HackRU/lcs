@@ -23,7 +23,7 @@ def promotion_link(event, maglinkobj, user=None):
     #Grab the permissions object
     permissions = maglinkobj['permissions']
     for i in permissions:
-        if i in ['director', 'judge', 'volunteer', 'mentor', 'sponsor']:
+        if i in ['director', 'judge', 'mentor', 'organizer', 'sponsor', 'volunteer']:
             role_bit = 'role.' + i
             userCollection.update_one({'email': user['email']}, {'$set': {role_bit: True}})
 
