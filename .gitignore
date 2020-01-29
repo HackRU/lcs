@@ -33,3 +33,5 @@ client_secret.json
 
 #emacs
 *~
+
+.serverless/*
