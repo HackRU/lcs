@@ -23,6 +23,7 @@ service: lcs-serverless-test
 provider:
   name: aws
   runtime: python3.6
+  stage: dev
 
 # you can overwrite defaults here
 #  stage: dev
@@ -48,12 +49,9 @@ provider:
 #  environment:
 #    variable1: value1
 
-#plugins:
-#  # you must install the plugins locally for them to work
-#  # sls install -n <plugin-name>
-#  - serverless-python-requirements
-
-# you can add packaging information here
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
 package:
   include:
      - '*.py'
@@ -69,6 +67,14 @@ package:
      - '*.md'
      - '*.pyc'
      - '*~'
+     - .pytest_cache/**
+     - .coveragerc
+     - .travis.yml
+     - tavisenv
+     - venv
+     - package.json
+     - package-lock.json
+     - node_modules/**
 #    - exclude-me.py
 #    - exclude-me-dir/**
 
@@ -111,7 +117,7 @@ functions:
       - http:
           path: dayof-events
           integration: lambda
-          method: post
+          method: get
           cors: true
   dayof-slack:
     handler: cal_announce.slack_announce
@@ -119,7 +125,7 @@ functions:
       - http:
           path: dayof-slack
           integration: lambda
-          method: post
+          method: get
           cors: true
   read:
     handler: read.read_info
@@ -130,10 +136,10 @@ functions:
           method: post
           cors: true
   reimburse:
-    handler: authorize.authorize
+    handler: reimburse.compute_all_reimburse
     events:
       - http:
-          path: reimburse.compute_all_reimburse
+          path: reimburse
           integration: lambda
           method: post
           cors: true

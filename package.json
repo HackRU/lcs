@@ -1,0 +1,11 @@
+{
+  "name": "lcs-serverless-test",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless": "^1.62.0",
+    "serverless-offline": "^5.12.1",
+    "serverless-python-requirements": "^5.0.1"
+  }
+}
