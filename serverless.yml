@@ -87,6 +87,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   consume:
     handler: consume.consumeUrl
     events:
@@ -95,6 +98,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   create:
     handler: authorize.create_user
     events:
@@ -103,6 +109,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   createmagiclink:
     handler: maglink.genMagicLink
     events:
@@ -111,6 +120,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   dayof-events:
     handler: cal_announce.google_cal
     events:
@@ -119,6 +131,9 @@ functions:
           integration: lambda
           method: get
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   dayof-slack:
     handler: cal_announce.slack_announce
     events:
@@ -127,6 +142,9 @@ functions:
           integration: lambda
           method: get
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   read:
     handler: read.read_info
     events:
@@ -135,6 +153,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   reimburse:
     handler: reimburse.compute_all_reimburse
     events:
@@ -143,6 +164,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   resume:
     handler: resume.resume
     events:
@@ -151,6 +175,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   send-emails:
     handler: use_sparkpost.send_emails
     events:
@@ -159,6 +186,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   update:
     handler: validate.update
     events:
@@ -167,6 +197,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   validate:
     handler: validate.validate
     events:
@@ -175,6 +208,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   link-qr:
     handler: qrscan.qr_match
     events:
@@ -183,6 +219,9 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
   attend-event:
     handler: qrscan.attend_event
     events:
@@ -191,3 +230,6 @@ functions:
           integration: lambda
           method: post
           cors: true
+          request:
+            template:
+              application/json: '$input.body'
