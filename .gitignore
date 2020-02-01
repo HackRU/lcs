@@ -33,3 +33,7 @@ client_secret.json
 
 #emacs
 *~
+
+.serverless/*
+package-lock.json
+node_modules/**

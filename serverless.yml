@@ -1,0 +1,235 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: lcs-sls
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: dev
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ] }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
+package:
+  include:
+     - '*.py'
+     - token.pickle
+  exclude:
+     - env/**
+     - '*.sh'
+     - qr_gneorator/**
+     - lcs.wiki/**
+     - tests/**
+     - __pycache__/**
+     - .pylintrc
+     - '*.md'
+     - '*.pyc'
+     - '*~'
+     - .pytest_cache/**
+     - .coveragerc
+     - .travis.yml
+     - tavisenv
+     - venv
+     - package.json
+     - package-lock.json
+     - node_modules/**
+#    - exclude-me.py
+#    - exclude-me-dir/**
+
+functions:
+  authorize:
+    handler: authorize.authorize
+    events:
+      - http:
+          path: authorize
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  consume:
+    handler: consume.consumeUrl
+    events:
+      - http:
+          path: consume
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  create:
+    handler: authorize.create_user
+    events:
+      - http:
+          path: create
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  createmagiclink:
+    handler: maglink.genMagicLink
+    events:
+      - http:
+          path: createmagiclink
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  dayof-events:
+    handler: cal_announce.google_cal
+    events:
+      - http:
+          path: dayof-events
+          integration: lambda
+          method: get
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  dayof-slack:
+    handler: cal_announce.slack_announce
+    events:
+      - http:
+          path: dayof-slack
+          integration: lambda
+          method: get
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  read:
+    handler: read.read_info
+    events:
+      - http:
+          path: read
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  reimburse:
+    handler: reimburse.compute_all_reimburse
+    events:
+      - http:
+          path: reimburse
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  resume:
+    handler: resume.resume
+    events:
+      - http:
+          path: resume
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  send-emails:
+    handler: use_sparkpost.send_emails
+    events:
+      - http:
+          path: send-emails
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  update:
+    handler: validate.update
+    events:
+      - http:
+          path: update
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  validate:
+    handler: validate.validate
+    events:
+      - http:
+          path: validate
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  link-qr:
+    handler: qrscan.qr_match
+    events:
+      - http:
+          path: link-qr
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  attend-event:
+    handler: qrscan.attend_event
+    events:
+      - http:
+          path: attend-event
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
