@@ -27,12 +27,12 @@ def authorize(event,context):
        is returned with its expiry time.
        """
 
-    email = event['email']
+    email = lower(event['email'])
     pass_ = event['password']
 
     tests = util.coll('users')
 
-    checkhash  = tests.find_one({"email":email})
+    checkhash = tests.find_one({"email":email})
 
     if checkhash is not None:
         if not bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']):
@@ -49,7 +49,7 @@ def authorize(event,context):
     }
 
     #append to list of auth tokens
-    tests.update_one({"email":event['email']},{"$push":update_val})
+    tests.update_one({"email":email},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
     #throw in the email for frontend.
@@ -99,7 +99,7 @@ def create_user(event, context):
     if not is_registration_open() and 'link' not in event:
         return util.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
-    u_email = event['email']
+    u_email = lower(event['email'])
     password = event['password']
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=8))
 
