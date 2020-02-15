@@ -27,7 +27,7 @@ def authorize(event,context):
        is returned with its expiry time.
        """
 
-    email = lower(event['email'])
+    email = event['email'].lower()
     pass_ = event['password']
 
     tests = util.coll('users')
@@ -99,7 +99,7 @@ def create_user(event, context):
     if not is_registration_open() and 'link' not in event:
         return util.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
 
-    u_email = lower(event['email'])
+    u_email = event['email'].lower()
     password = event['password']
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=8))
 
