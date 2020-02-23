@@ -111,3 +111,27 @@ def delete_user():
     user_email = "creep@radiohead.ed"
     db = connect_to_db()
     db.delete_one({'email':user_email})
+
+@pytest.mark.run(order=5)
+def test_lowercase():
+    #open registration
+    if not authorize.is_registration_open():
+        config.REGISTRATION_DATES = [
+            [datetime.now(config.TIMEZONE) + timedelta(hours=-6),
+             datetime.now(config.TIMEZONE) + timedelta(hours=+6)]
+        ]
+    assert authorize.is_registration_open()
+
+    user_email = "cREep@raDIOhead.ed"
+    passwd = "love"
+    usr_dict = {'email': user_email, 'password': passwd}
+    delete_user()
+    auth = authorize.create_user(usr_dict, None)
+
+    #test if it still authorizes us with both a lowercase email
+    user_email = "creep@radiohead.ed"
+    assert has_token_for(user_email, auth)
+
+    #and an uppercase one
+    user_email = "CREEP@RADIOHEAD.ed"
+    assert has_token_for(user_email, auth)
