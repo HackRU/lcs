@@ -1,3 +1,5 @@
+import os
+
 import authorize
 import config
 import util
@@ -20,6 +22,8 @@ db = None
 
 payload = None
 
+current_slack_key = ""
+
 
 # helper method to unset the slack id in the db document identified by slack_email
 def unset_slack_id(slack_email):
@@ -36,9 +40,13 @@ def set_slack_id(email_to_set, slack_id_to_set):
 # method that sets up the module in preparation for running the tests
 def setup_module(m):
     # import globals and switch the collection to a temporary collection
-    global old_col, token, db, payload
+    global old_col, token, db, payload, current_slack_key
     old_col = config.DB_COLLECTIONS["users"]
     config.DB_COLLECTIONS["users"] = "test-users"
+
+    # swap the key to be fetched from environment variable
+    current_slack_key = config.SLACK_KEYS["token"]
+    config.SLACK_KEYS["token"] = os.getenv("SLACK_API_KEY", "")
 
     # create a dummy user
     result = authorize.create_user({"email": email, "password": password}, {})
@@ -64,10 +72,13 @@ def setup_module(m):
 # tears down a module
 def teardown_module(m):
     # drops the temp collection that was created
-    global db, old_col
+    global db, old_col, current_slack_key
     db = util.get_db()
     db[config.DB_COLLECTIONS["users"]].drop()
     config.DB_COLLECTIONS["users"] = old_col
+
+    # restore the slack api key
+    config.SLACK_KEYS["token"] = current_slack_key
 
 
 def test_bad_email():
