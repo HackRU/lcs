@@ -51,7 +51,7 @@ def generate_dm_link(event, context, user):
     # calls the API to open a group dm
     response = requests.post(url=api_link, data=slack_api_payload, headers=slack_api_headers)
     # ensures there weren't any errors calling the API
-    if response.status_code != requests.codes.OK:
+    if response.status_code != 200:
         return create_error_response("Encountered a Slack API error")
     # fetches the json and examines it to determine if it was successful
     response_json = response.json()
