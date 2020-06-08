@@ -5,39 +5,36 @@ from config import *
 from util import *
 
 qr_input = {
-    "type" : "object",
-    "Properties" : {
-        "auth_email" : {"type" : "string", "format" : "email"},
-	"token" : {"type" : "string"},
-	"email" : {"type" : "string"},
-	"qr_code" : {"type" : "string"}
+    "type": "object",
+    "properties": {
+        "auth_email": {"type": "string", "format": "email"},
+        "token": {"type": "string"},
+        "email": {"type": "string"},
+        "qr_code": {"type": "string"}
     },
-    "required" : ["auth_email", "token", "email", "qr_code"]
+    "required": ["auth_email", "token", "email", "qr_code"]
 }
 
 def dbinfo():
-    collection = coll("users")
-    print("collection name: " + str(collection.name))
-    print("collection database: " + str(collection.database))
-    print("collection document count: " + str(collection.count_documents))
+    user_coll = coll("users")
+    print("collection name: " + str(user_coll.name))
+    print("collection database: " + str(user_coll.database))
+    print("collection document count: " + str(user_coll.count_documents))
 
 @ensure_schema(qr_input)
-@ensure_logged_in_user(email_key = "auth_email")
+@ensure_logged_in_user(email_key="auth_email")
 @ensure_role([['director', 'organizer', 'volunteer']])
 def qr_match(event, context, user=None):
-    collection = coll('users')
+    """
+    Function used to associate a given QR code with the given email
+    """
+    user_coll = coll('users')
 
-    result = collection.update_one({'email' : event["email"]}, {'$push' : {'qrcode' : event["qr_code"]}})
+    result = user_coll.update_one({'email': event["email"]}, {'$push': {'qrcode': event["qr_code"]}})
     if result.matched_count == 1:
-        return {
-            "statusCode" : 200,
-            "body" : "success"
-        }
+        return {"statusCode": 200, "body": "success"}
     else:
-        return {
-            "statusCode" : 404,
-            "body" : "User not found"
-        }
+        return {"statusCode": 404, "body": "User not found"}
 
 @ensure_schema({
     'type': 'object',
@@ -53,29 +50,33 @@ def qr_match(event, context, user=None):
 @ensure_logged_in_user(email_key='auth_email')
 @ensure_role([['director', 'organizer', 'volunteer']])
 def attend_event(aws_event, context, user=None):
+    """
+    Function used to mark that a user has attended an event
+    """
     users = coll('users')
     qr = aws_event['qr']
     event = aws_event['event']
     again = aws_event.get('again', False)
 
     def attend(user):
+        # if the user has already attended the event and is not an event that can be re-attended, complain
         if not again and user['day_of'].get(event, 0) > 0:
             return {'statusCode': 402, 'body': 'user already checked into event'}
+        # update the user data to reflect event attendance by incrementing the count of the event by 1
         new_user = users.find_one_and_update({'email': user['email']},
                                              {'$inc': {'day_of.' + event: 1}},
                                              return_document=pymongo.ReturnDocument.AFTER)
 
-        return {'statusCode': 200, 'body': {
-            'email': user['email'],
-            'new_count': new_user['day_of'][event]
-        }}
+        return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}}
 
+    # TODO: revisit if it's valid for qr to be an email
     user = users.find_one({'email': qr})
-    if user:
+    if user is not None:
         return attend(user)
 
+    # find the user using the QR code from the database
     user = users.find_one({'qrcode': qr})
-    if user:
+    if user is not None:
         return attend(user)
 
     return {'statusCode': 404, 'body': 'user not found'}

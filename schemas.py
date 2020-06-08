@@ -1,5 +1,4 @@
 import jsonschema as js
-import config
 import util
 
 from dateutil.parser import parse
@@ -8,6 +7,9 @@ from functools import wraps
 from datetime import datetime
 
 def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "body": "Error in JSON: {}".format(err)}):
+    """
+    Wrapper function used to validate the schema and that the given JSON follows it
+    """
     js.Draft4Validator.check_schema(schema)
     def wrap(fn):
         @wraps(fn)
@@ -20,7 +22,11 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         return wrapt
     return wrap
 
-def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lambda e, c, m, *a: {"statusCode": 403, "body": m}):
+def ensure_logged_in_user(email_key='email', token_key='token',
+                          on_failure=lambda e, c, m, *a: {"statusCode": 403, "body": m}):
+    """
+    Wrapper function used to authorize user using email and an auth token
+    """
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):
@@ -45,6 +51,9 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
     return rapper
 
 def ensure_role(roles, on_failure = lambda e, c, u, *a: {"statusCode": 403, "body": "User does not have priviledges."}):
+    """
+    Wrapper function used to validate that a user has at least 1 role within each subset of the set of roles
+    """
     def ensure_auth_user(fn):
         @wraps(fn)
         def wrapt(event, context, user, *args):

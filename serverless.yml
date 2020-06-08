@@ -59,7 +59,7 @@ package:
   exclude:
      - env/**
      - '*.sh'
-     - qr_gneorator/**
+     - qr_generator/**
      - lcs.wiki/**
      - tests/**
      - __pycache__/**
@@ -91,7 +91,7 @@ functions:
             template:
               application/json: '$input.body'
   consume:
-    handler: consume.consumeUrl
+    handler: consume.consume_url
     events:
       - http:
           path: consume
@@ -113,7 +113,7 @@ functions:
             template:
               application/json: '$input.body'
   createmagiclink:
-    handler: maglink.genMagicLink
+    handler: maglink.gen_magic_link
     events:
       - http:
           path: createmagiclink

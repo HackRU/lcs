@@ -1,51 +1,70 @@
 import random
 import datetime
 import string
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import use_sparkpost
-import config
-import util
 from schemas import *
 
-DEFAULT_LINK_BASE =  'https://hackru.org/magic/{}'
+DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
 
-def forgotUser(event, magiclinks, tests):
-    user = tests.find_one({"email":event['email']})
-    if user:
-        magiclink = 'forgot-' +  ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
-        obj_to_insert = {}
-        obj_to_insert['email'] = event['email']
-        obj_to_insert['link'] = magiclink
-        obj_to_insert['forgot'] = True
-        obj_to_insert[ "valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+def forgot_user(event, magiclinks, user_coll):
+    """
+    Function used to generate forgotten password magic links
+    """
+    # find the user who forgot their password
+    user = user_coll.find_one({"email": event['email']})
+    # if the user is not found, then return an error
+    if user is None:
+        return util.add_cors_headers({"statusCode": 400, "body": "Invalid email: please create an account."})
+    else:
+        # generate the magic link using the prefix "forgot" concatenated with 32 random alphanumeric characters
+        magiclink = 'forgot-' + ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(32)])
+        # create magic link object that stores other details
+        obj_to_insert = {'email': event['email'],
+                         'link': magiclink,
+                         'forgot': True,
+                         'valid_until': (datetime.now() + timedelta(hours=3)).isoformat()}
+        # add it to the collection of magic links
         magiclinks.insert_one(obj_to_insert)
+        # creates the complete link using a provided link_base (default one is used if it's absent)
         link_base = event.get('link_base', DEFAULT_LINK_BASE)
+        # uses sparkpost to send an email with the complete link to the registered email address
         rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink), 'forgot-password', None)
         if rv['statusCode'] != 200:
             return rv
-        return util.add_cors_headers({"statusCode":200,"body":"Forgot password link has been emailed to you"})
-    else:
-        return util.add_cors_headers({"statusCode":400,"body":"Invalid email: please create an account."})
+        return util.add_cors_headers({"statusCode": 200, "body": "Forgot password link has been emailed to you"})
 
-def directorLink(magiclinks, numLinks, event, user):
+def director_link(magiclinks, num_links, event, user):
+    """
+    Function used to generate magic links for one or more users to be promoted
+    """
     links_list = []
     permissions = []
+    # fetches the permissions the promoted users should have
     for i in event['permissions']:
-            permissions.append(i)
-    for j in range(min(numLinks, len(event['emailsTo']))):
-        magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
-        obj_to_insert = {}
-        obj_to_insert['permissions'] = permissions
-        obj_to_insert['email'] = event['emailsTo'][j]
-        obj_to_insert['forgot'] = False
-        obj_to_insert['link'] = magiclink
-        obj_to_insert["valid_until"] = (datetime.now() + timedelta(hours=3)).isoformat()
+        permissions.append(i)
+    # for each of the emails requested to be promoted...
+    for j in range(min(num_links, len(event['emailsTo']))):
+        # a unique magic link is generated as 32 random alphanumeric characters
+        magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(32)])
+        # an object is created to be stored in the database
+        obj_to_insert = {'permissions': permissions,
+                         'email': event['emailsTo'][j],
+                         'forgot': False,
+                         'link': magiclink,
+                         "valid_until": (datetime.now() + timedelta(hours=3)).isoformat()}
+        # this object is stored in the collection of magic links in the database
         magiclinks.insert_one(obj_to_insert)
+        # the complete link is then created using a given link_base (or a default if none is provided)
         link_base = event.get('link_base', DEFAULT_LINK_BASE)
         link = link_base.format(magiclink)
-        sent = use_sparkpost.send_email(obj_to_insert['email'],magiclink, event.get('template', 'upgrade-user'), user)['body']
+        # sends the email
+        sent = use_sparkpost.send_email(obj_to_insert['email'], link,
+                                        event.get('template', 'upgrade-user'), user)['body']
+        # adds a tuple containing the link and the return value from attempting to send the email
         links_list.append((magiclink, sent))
+    # the list of tuples generated is returned
     return links_list
 
 @ensure_schema({
@@ -64,9 +83,12 @@ def directorLink(magiclinks, numLinks, event, user):
 @ensure_logged_in_user()
 @ensure_role([['director']])
 def do_director_link(event, magiclinks, user=None):
-    numLinks = event.get('numLinks', 1)
-    links_list = directorLink(magiclinks, numLinks, event, user)
-    return util.add_cors_headers({"statusCode":200,"body":links_list})
+    """
+    Function used by directors to promote users through magiclinks
+    """
+    num_links = event.get('numLinks', 1)
+    links_list = director_link(magiclinks, num_links, event, user)
+    return util.add_cors_headers({"statusCode": 200, "body": links_list})
 
 @ensure_schema({
     "type": "object",
@@ -76,13 +98,14 @@ def do_director_link(event, magiclinks, user=None):
     },
     "required": ["email"]
 })
-def genMagicLink(event, context):
+def gen_magic_link(event, context):
     """
-       The event object expects and email and  checks if it is a valid request to generate the magic link
+    The event object expects an email and checks if it is a valid request to generate the magic link
     """
-    tests = util.coll('users')
+    user_coll = util.coll('users')
     magiclinks = util.coll('magic links')
 
+    # depending on the type of magic link request, the appropriate function is called
     if 'forgot' in event:
-        return forgotUser(event, magiclinks, tests)
+        return forgot_user(event, magiclinks, user_coll)
     return do_director_link(event, magiclinks)
