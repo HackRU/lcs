@@ -1,11 +1,11 @@
 import json
 import random
 import string
-import uuid
 from datetime import datetime, timedelta, timezone
 
 import requests
 import bcrypt
+import jwt
 
 import config
 import consume
@@ -26,7 +26,6 @@ def authorize(event,context):
        validation, the user is granted a token which
        is returned with its expiry time.
        """
-
     email = event['email'].lower()
     pass_ = event['password']
 
@@ -39,12 +38,31 @@ def authorize(event,context):
             return util.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
         return util.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
-
-    token = str(uuid.uuid4())
-
+    """
     update_val = {"auth": {
             "token":token,
             "valid_until":(datetime.now() + timedelta(days=3)).isoformat()
+        }
+    }
+    """
+    # Build jwt to use as auth token
+    # The data in the jwt and in plain text in the response is redundant for now as 
+    #   the frontend + other clients require these fields and are not updated
+    #   to work with jwts yet
+    # TODO: Update frontend and remove non jwt aspects of response
+    # JWT and lcs use different timestamp formats
+    # JWT is required to use a js NumericDate
+    
+    exp = datetime.now() + timedelta(days=3)
+    payload = {
+        "email": email,
+        "exp": int(exp.timestamp()),
+    }
+
+    encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
+    update_val = {"auth": {
+            "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
+            "valid_until": exp.isoformat()
         }
     }
 
@@ -54,7 +72,7 @@ def authorize(event,context):
     #return the value pushed, that is, auth token with expiry time.
     #throw in the email for frontend.
     update_val['auth']['email'] = email
-    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" },"body" : update_val}
+    ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" }, "body": update_val}
     return util.add_cors_headers(ret_val)
 
 #NOT A LAMBDA

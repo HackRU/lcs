@@ -1,6 +1,7 @@
 import jsonschema as js
 import config
 import util
+import jwt
 
 from dateutil.parser import parse
 
@@ -32,12 +33,26 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
             user = users.find_one({'email': email})
             if user is None:
                 return on_failure(event, context, 'User Not found', *args)
-
+            
             # look for token
             tokens = list(filter(lambda auth: auth['token'] == token, user['auth']))
+            """
             if len(tokens) == 0 or datetime.now() > parse(tokens[0]['valid_until']):
                 return on_failure(event, context, 'Token invalid', *args)
-
+            """
+            if len(tokens) > 0:
+                tk = tokens[0]['token']
+                try:
+                    decoded_jwt = jwt.decode(tk, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
+                    # if jwt decodes correctly there will be no exception
+                    # TODO: better something with decoded_jwt
+                    # For now, simply decoding the jwt will either raise an exception or succeed
+                    # if it succeeds, we dont need to do anything
+                    # if there is an exception, return failure
+                except:
+                    return on_failure(event, context, 'Token invalid', *args)
+            else:
+                return on_failure(event, context, 'Token invalid', *args)
             del user['_id']
             del user['password']
             return fn(event, context, user, *args)
