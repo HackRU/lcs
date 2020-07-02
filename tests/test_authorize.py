@@ -26,7 +26,7 @@ def has_token_for(email, thing):
         "required": ["auth"]
     }), thing)
 
-def test_bad_password():
+def test_bad_email():
     user_email = "team@nonruhackathon.notemail.com"
     passwd = "arghf"
     usr_dict = {'email': user_email, 'password': passwd}
@@ -98,6 +98,15 @@ def test_creation_fail_cases():
     #we guarantee the string value here since we produce the error message
     assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Duplicate user!"}), auth)
 
+    # Fail if registration is closed
+    config.REGISTRATION_DATES = [[
+        datetime.now(config.TIMEZONE) + timedelta(hours=-2),
+        datetime.now(config.TIMEZONE) + timedelta(hours=-1)
+    ]]
+    assert not authorize.is_registration_open()
+    auth = authorize.create_user(usr_dict, None)
+    assert check_by_schema(schema_for_http(403, {"statusCode": 403, "body": "Registration Closed!"}), auth)
+
 @pytest.mark.run(order=2)
 def test_login_success():
     user_email = "creep@radiohead.ed"
@@ -105,6 +114,14 @@ def test_login_success():
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
     assert has_token_for(user_email, auth)
+
+@pytest.mark.run(order=2)
+def test_bad_password():
+    user_email = "creep@radiohead.ed"
+    passwd = "wrong"
+    usr_dict = {'email': user_email, 'password': passwd}
+    auth = authorize.authorize(usr_dict, None)
+    assert check_by_schema(schema_for_http(403, {"statusCode": 403, "body": "Wrong Password"}), auth)
 
 @pytest.mark.run(order=4)
 def delete_user():
