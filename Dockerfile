@@ -1,5 +1,6 @@
-# First get a semi recent node version for serverless
-
+# Commands to build and run using this Dockerfile
+# docker build -t lcs .
+# docker run -p 3000:3000 -p 3001:3001 -p 3002:3002 -it --name serverless lcs
 # Set up the base image as ubuntu
 FROM ubuntu:18.04
 # And update it
@@ -12,7 +13,7 @@ RUN apt-get install --yes nodejs
 RUN apt-get install --yes build-essential
 
 # Pip for the python version
-RUN apt install python3-pip --yes
+RUN apt-get install python3-pip --yes
 
 # Recognize the python3 version we are using, we should be using 3.8
 RUN python3 -V
@@ -25,14 +26,15 @@ ADD requirements.txt /
 RUN pip3 install -r requirements.txt
 
 
-# Now install the node dependencies for serverless
-RUN npm install -g serverless
-
+# Add package and package-lock to determine required dependencies
 ADD package.json /
 ADD package-lock.json /
+
+# Add serverless.yml for lambda functions
 ADD serverless.yml /
 
+# Install the node packages outlined in package-lock.json (if present) or package.json
 RUN npm install
 
-RUN sls offline start
-
+# Run serverless offline
+ENTRYPOINT ["node_modules/.bin/sls", "offline", "--host", "0.0.0.0", "start"]
