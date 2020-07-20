@@ -62,7 +62,6 @@ def authorize(event,context):
     encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
     update_val = {"auth": {
             "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
-            "valid_until": exp.isoformat()
         }
     }
 
