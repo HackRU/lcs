@@ -35,13 +35,9 @@ def ensure_logged_in_user(email_key='email', token_key='token', on_failure = lam
                 return on_failure(event, context, 'User Not found', *args)
             
             # look for token
-            tokens = list(filter(lambda auth: auth['token'] == token, user['auth']))
-            """
-            if len(tokens) == 0 or datetime.now() > parse(tokens[0]['valid_until']):
-                return on_failure(event, context, 'Token invalid', *args)
-            """
+            tokens = list(filter(lambda tk: tk == token, user['token']))
             if len(tokens) > 0:
-                tk = tokens[0]['token']
+                tk = tokens[0]
                 try:
                     decoded_jwt = jwt.decode(tk, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
                     # if jwt decodes correctly there will be no exception

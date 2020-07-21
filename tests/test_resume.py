@@ -27,7 +27,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pword}, {})
     assert result["statusCode"] == 200
     global token
-    token = result["body"]["auth"]["token"]
+    token = result["body"]["token"]
 
 def teardown_module(m):
     #drop temp collection
@@ -64,7 +64,7 @@ def test_exists():
     """check using an email that wasn't uploaded"""
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
-    token = creation["body"]["auth"]["token"]
+    token = creation["body"]["token"]
     
     result = resume.resume({"email": email + "d", "token": token}, {})
     assert result["statusCode"] == 200

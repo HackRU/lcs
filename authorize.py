@@ -53,17 +53,14 @@ def authorize(event,context):
     }
 
     encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
-    update_val = {"auth": {
-            "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
-        }
+    update_val = {
+        "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
     }
 
     #append to list of auth tokens
     tests.update_one({"email":email},{"$push":update_val})
 
     #return the value pushed, that is, auth token with expiry time.
-    #throw in the email for frontend.
-    update_val['auth']['email'] = email
     ret_val = { "statusCode":200,"isBase64Encoded": False, "headers": { "Content-Type":"application/json" }, "body": update_val}
     return util.add_cors_headers(ret_val)
 

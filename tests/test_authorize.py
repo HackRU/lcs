@@ -13,16 +13,9 @@ def has_token_for(email, thing):
     return check_by_schema(schema_for_http(200, {
         "type": "object",
         "properties": {
-            "auth": {
-                "type": "object",
-                "properties": {
-                    "token": {"type": "string"},
-                    "email": {"type": "string", "const": email}
-                },
-                "required": ["token", "email"]
-            }
+            "token": {"type": "string"}
         },
-        "required": ["auth"]
+        "required": ["token"]
     }), thing)
 
 def test_bad_password():

@@ -35,7 +35,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
     global token
-    token = result["body"]["auth"]["token"]
+    token = result["body"]["token"]
     db = util.coll("users")
     updete = db.update_one({"email":email}, {"$set" : { "role" : { "hacker" : False , "organizer" : True}}})
     assert updete.modified_count >= 1
@@ -43,7 +43,7 @@ def setup_module(m):
     result = authorize.create_user({"email": hckemail, "password": hckword}, {})
     assert result["statusCode"] == 200
     global hcktoken
-    hcktoken = result["body"]["auth"]["token"]
+    hcktoken = result["body"]["token"]
 
 def teardown_module(m):
     db = util.get_db()
