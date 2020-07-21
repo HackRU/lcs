@@ -17,10 +17,9 @@ def has_token_for(email, thing):
                 "type": "object",
                 "properties": {
                     "token": {"type": "string"},
-                    "valid_until": {"type": "string"},
                     "email": {"type": "string", "const": email}
                 },
-                "required": ["token", "email", "valid_until"]
+                "required": ["token", "email"]
             }
         },
         "required": ["auth"]

@@ -38,13 +38,6 @@ def authorize(event,context):
             return util.add_cors_headers({"statusCode":403,"body":"Wrong Password"})
     else:
         return util.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
-    """
-    update_val = {"auth": {
-            "token":token,
-            "valid_until":(datetime.now() + timedelta(days=3)).isoformat()
-        }
-    }
-    """
     # Build jwt to use as auth token
     # The data in the jwt and in plain text in the response is redundant for now as 
     #   the frontend + other clients require these fields and are not updated
