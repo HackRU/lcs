@@ -1,11 +1,8 @@
 import jsonschema as js
 import util
 import jwt
-
-from dateutil.parser import parse
-
+import config
 from functools import wraps
-from datetime import datetime
 
 def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "body": "Error in JSON: {}".format(err)}):
     """
