@@ -25,6 +25,7 @@ users = [
             "mode": "car",
             "addr_ready": True,
             "formatted_addr": "Montclair, NJ, USA"
+
         }
     },
     {
@@ -128,7 +129,7 @@ def test_tr():
     db = util.coll("users")
     index = 0
     for user in users:
-        if user["travelling_from"]["is_real"] == True:
+        if user["travelling_from"]["is_real"]:
             result = db.find_one({"email": user["email"]})
             assert result["travelling_from"]["reimbursement"] >= users_result[index]
         index = index + 1

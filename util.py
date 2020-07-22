@@ -12,11 +12,14 @@ def add_cors_headers(resp):
     if 'headers' not in resp:
         resp['headers'] = dict()
     resp['headers']['Access-Control-Allow-Origin'] = '*',
-    resp['headers']['Access-Control-Allow-Headers'] ='Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+    resp['headers']['Access-Control-Allow-Headers'] = 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
     resp['headers']['Access-Control-Allow-Credentials'] = True,
     return resp
 
 def cors(f):
+    """
+    Wrapper function that adds CORS headers to the return value of the function that is being wrapped
+    """
     @wraps(f)
     def wrapper(*args, **kwargs):
         resp = f(*args, **kwargs)
