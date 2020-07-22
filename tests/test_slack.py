@@ -51,7 +51,7 @@ def setup_module(m):
     # create a dummy user
     result = authorize.create_user({"email": email, "password": password}, {})
     assert result["statusCode"] == 200
-    token = result["body"]["auth"]["token"]
+    token = result["body"]["token"]
     payload = {
         "email": email,
         "token": token,
