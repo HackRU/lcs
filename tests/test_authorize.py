@@ -2,10 +2,12 @@ from testing_utils import *
 
 import authorize
 import config
+import validate
 
 import pytest
 import json
 from datetime import datetime, timedelta
+import time
 
 def has_token_for(email, thing):
     if 'body' not in thing:
@@ -144,3 +146,46 @@ def test_lowercase():
     #and an uppercase one
     user_email = "CREEP@RADIOHEAD.ed"
     assert has_token_for(user_email, auth)
+
+@pytest.mark.run(order=6)
+def test_multi_tokens():
+    #open registration
+    if not authorize.is_registration_open():
+        config.REGISTRATION_DATES = [
+            [datetime.now(config.TIMEZONE) + timedelta(hours=-6),
+             datetime.now(config.TIMEZONE) + timedelta(hours=+6)]
+        ]
+    assert authorize.is_registration_open()
+
+    user_email = "creep@radiohead.ed"
+    passwd = "love"
+    usr_dict = {'email': user_email, 'password': passwd}
+    delete_user()
+
+    num_tests = 5
+
+    tokens = [''] * num_tests
+
+    # Create user
+    auth = authorize.create_user(usr_dict, None) # creates user and 1 token in db
+    tokens[0] = auth['body']['token']
+
+    # make sure we can validate user with token1
+    val = validate.validate({'email': user_email, 'token': tokens[0]}, None)
+    assert check_by_schema(schema_for_http(200, {"type": "object", "const": usr_dict}), val)
+
+    for i in range(1, num_tests): # create num_tests - 1  tokens and test them 
+        # we need to sleep 1s here because otherwise the jwts generated will be the exact same when run locally
+        # this is because the token is essentially a function of time (in seconds)
+        time.sleep(1)
+
+        auth = authorize.authorize(usr_dict, None) # authorize user and get new token, creates a second token in dbs
+        tokens[i] = auth['body']['token']
+
+        # sanity check to make sure all tokens are unique
+        for j in range(i - 1):
+            assert tokens[i] != tokens[j]
+
+        # attempt to validate with new token
+        val = validate.validate({'email': user_email, 'token': tokens[i]}, None)
+        assert check_by_schema(schema_for_http(200, {"type": "object", "const": usr_dict}), val)
