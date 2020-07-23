@@ -2,6 +2,7 @@ import datetime
 import dateutil.parser as dp
 import os
 import time
+import json
 
 from googleapiclient import discovery
 from google_auth_oauthlib import get_user_credentials
@@ -40,7 +41,7 @@ def google_cal(event, context, testing=False):
         with open(token_path, 'rb') as token:
             creds = pickle.load(token)
     else:
-        return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
+        return {'statusCode': 500, 'body': json.dumps('couldn\'t find stored authorization token in ' + os.getcwd())}
         
     # If there are no (valid) credentials available, let the user log in.
     if not creds.valid:
@@ -48,9 +49,9 @@ def google_cal(event, context, testing=False):
             try:
                 creds.refresh(Request())
             except:
-               return {'statusCode': 500, 'body': 'failed to refresh credentials'}
+               return {'statusCode': 500, 'body': json.dumps('failed to refresh credentials')}
         else:
-            return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
+            return {'statusCode': 500, 'body': json.dumps('google calendar credentials invalid')}
     
     service = discovery.build('calendar', 'v3', credentials=creds)
     now = datetime.datetime.utcnow().isoformat() + 'Z'
@@ -59,7 +60,7 @@ def google_cal(event, context, testing=False):
             calendarId = GOOGLE_CAL.CAL_ID, timeMin = now, maxResults = num_events * 5,
             singleEvents = True, orderBy = 'startTime').execute()
     events = eventsResult.get('items', [])
-    return {'statusCode': 200, 'body': events}
+    return {'statusCode': 200, 'body': json.dumps(events)}
 
 def slack_announce(event, context):
     slacks = util.coll('slack messages')
@@ -74,12 +75,12 @@ def slack_announce(event, context):
         result = requests.get(url, params)
         reply = result.json()
         if not reply.get('ok'):
-            return util.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
+            return util.add_cors_headers({'statusCode': 400, 'body': json.dumps('Unable to retrieve messages')})
 
         #clean up the slack response
         allMessages = reply.get('messages')
         if not allMessages:
-            return util.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
+            return util.add_cors_headers({'statusCode': 400, 'body': json.dumps('No messages found.')})
         messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in x, allMessages))
         now_for_slack = str(time.time())
         for msg in messages:
@@ -107,4 +108,4 @@ def slack_announce(event, context):
     else:
         messages = refresh_cache()
 
-    return util.add_cors_headers({'statusCode': 200, 'body': messages})
+    return util.add_cors_headers({'statusCode': 200, 'body': json.dumps(messages)})

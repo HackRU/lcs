@@ -1,4 +1,5 @@
 import re
+import json
 
 import config
 import googlemaps as gm
@@ -21,7 +22,7 @@ def validate(event, context, user=None):
     unexpired token of the user with
     the provided email.
     """
-    return {"statusCode": 200, "body": user, "isBase64Encoded": False}
+    return {"statusCode": 200, "body": json.dumps(user), "isBase64Encoded": False}
 
 def validate_updates(user, updates, auth_usr = None):
     """
@@ -222,15 +223,15 @@ def update(event, context, auth_user):
     elif auth_user['role']['organizer'] or auth_user['role']['director']:
         results = user_coll.find_one({"email": event['user_email']})
     else:
-        return {"statusCode": 403, "body": "Permission denied"}
+        return {"statusCode": 403, "body": json.dumps("Permission denied")}
 
     # ensure that the user was indeed found.
     if results is None or results == [] or results == {}:
-        return {"statusCode": 400, "body": "User email not found."}
+        return {"statusCode": 400, "body": json.dumps("User email not found.")}
 
     # validate the updates, passing only the allowable ones through.
     updates = validate_updates(results, event['updates'], auth_user)
 
     # update the user and report success.
     user_coll.update_one({'email': event['user_email']}, updates)
-    return {"statusCode": 200, "body": "Successful request."}
+    return {"statusCode": 200, "body": json.dumps("Successful request.")}

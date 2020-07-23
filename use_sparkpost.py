@@ -1,4 +1,5 @@
 from sparkpost import SparkPost
+import json
 
 from schemas import *
 import config
@@ -27,7 +28,7 @@ def list_all_templates(event, context, user):
     from sparkpost.
     """
     templs = emails.templates.list()
-    return {'statusCode': 400, 'body': templs}
+    return {'statusCode': 400, 'body': json.dumps(templs)}
 
 def do_substitutions(recs, links, template, usr):
     """
@@ -59,12 +60,12 @@ def do_substitutions(recs, links, template, usr):
         )
         # if the email wasn't successfully sent to everyone on the list, complain
         if resp[u'total_accepted_recipients'] != len(recs):
-            rv = util.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
+            rv = util.add_cors_headers({'statusCode': 500, 'body': json.dumps("Sparkpost troubles!")})
         else:
-            rv = util.add_cors_headers({'statusCode': 200, 'body': "Success!"})
+            rv = util.add_cors_headers({'statusCode': 200, 'body': json.dumps("Success!")})
     # in case of any Exception being raised, complain
     except Exception as e:
-        rv = util.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
+        rv = util.add_cors_headers({'statusCode': 400, 'body': json.dumps("Error: " + str(e))})
     # cleanup by deleting the RecipientLists instance
     finally:
         emails.recipient_lists.delete(list_id)
@@ -99,7 +100,7 @@ def send_to_emails(event, context, usr):
     """
     # disallow non-director users from sending emails to anyone but themselves
     if not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
-        return {'statusCode': 400, 'body': "Not authorized to send emails!"}
+        return {'statusCode': 400, 'body': json.dumps("Not authorized to send emails!")}
     else:  # note, below this point, we can assume usr is a director or that the recipients list has length 1.
         # recall that a non-director cannot have this: they must have "recipients"
         if 'query' in event and 'recipients' not in event:
@@ -111,7 +112,7 @@ def send_to_emails(event, context, usr):
             event['recipients'] = [i['email'] for i in queried['body'] if 'email' in i]
             # in case no recipients can be assumed, complains
             if len(event['recipients']) == 0:
-                return {'statusCode': 204, 'body': "No recipients found!"}
+                return {'statusCode': 204, 'body': json.dumps("No recipients found!")}
         # if links are given, then the appropriate method is called to send emails
         elif 'links' in event:
             return do_substitutions(event['recipients'], event['links'], event['template'], usr)
@@ -124,12 +125,12 @@ def send_to_emails(event, context, usr):
             )
             # in case any emails failed to be sent, complain
             if resp[u'total_accepted_recipients'] != len(event['recipients']):
-                return {'statusCode': 500, 'body': "Sparkpost troubles!"}
+                return {'statusCode': 500, 'body': json.dumps("Sparkpost troubles!")}
             else:
-                return {'statusCode': 200, 'body': "Success!"}
+                return {'statusCode': 200, 'body': json.dumps("Success!")}
         # in case of any Exception raised, complain
         except Exception:
-            return {'statusCode': 400, 'body': "Template not found or error in sending"}
+            return {'statusCode': 400, 'body': json.dumps("Template not found or error in sending")}
 
 def send_email(recipient, link, template, sender):
     """
