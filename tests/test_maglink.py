@@ -47,10 +47,10 @@ def test_director_link(mock_send_email):
     util.coll('users').update_one({'email': user_email}, {'$set': {'role.director': True}})
 
     auth = authorize.authorize({'email': user_email, 'password': user_pass}, None)
-    token = auth['body']['auth']['token']
+    token = json.loads(auth['body'])['auth']['token']
     res = maglink.gen_magic_link({'email': user_email, 'token': token, 'emailsTo': [target_email], 'permissions': target_perms}, None)
     assert check_by_schema(schema_for_http(403, {'statusCode': 200}), res)
-    link = res['body'][0][0]
+    link = json.loads(res['body'])[0][0]
     assert util.coll('magic links').find_one({'link': link}) is not None
 
     # Remove the role after we're done
@@ -67,6 +67,6 @@ def test_director_link_bad_perms(mock_send_email):
 
     # Fail without director role
     auth = authorize.authorize({'email': user_email, 'password': user_pass}, None)
-    token = auth['body']['auth']['token']
+    token = json.loads(auth['body'])['auth']['token']
     res = maglink.gen_magic_link({'email': user_email, 'token': token, 'emailsTo': [target_email], 'permissions': target_perms}, None)
     assert check_by_schema(schema_for_http(403, {'statusCode': 403, 'body': 'User does not have priviledges.'}), res)

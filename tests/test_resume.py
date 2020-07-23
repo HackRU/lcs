@@ -27,7 +27,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pword}, {})
     assert result["statusCode"] == 200
     global token
-    token = result["body"]["auth"]["token"]
+    token = json.loads(result["body"])["auth"]["token"]
 
 def teardown_module(m):
     #drop temp collection
@@ -45,8 +45,8 @@ def test_baduser():
 def test_roundtrip():
     result = resume.resume(payload(), {})
     assert result["statusCode"] == 200
-    upload = result["body"]["upload"]
-    download = result["body"]["download"]
+    upload = json.loads(result["body"])["upload"]
+    download = json.loads(result["body"])["download"]
     
     stellar_resume = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_resume, headers={"Content-Type": "application/pdf"})
@@ -58,14 +58,14 @@ def test_roundtrip():
 
     result = resume.resume(payload(), {})
     assert result["statusCode"] == 200
-    assert result["body"]["exists"] == True
+    assert json.loads(result["body"])["exists"] == True
 
 def test_exists():
     """check using an email that wasn't uploaded"""
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
-    token = creation["body"]["auth"]["token"]
+    token = json.loads(creation["body"])["auth"]["token"]
     
     result = resume.resume({"email": email + "d", "token": token}, {})
     assert result["statusCode"] == 200
-    assert not result["body"]["exists"]
+    assert not json.loads(result["body"])["exists"]

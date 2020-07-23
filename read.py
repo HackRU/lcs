@@ -1,4 +1,5 @@
 from schemas import *
+import json
 
 def tidy_results(res):
     """
@@ -44,7 +45,7 @@ def public_read(event, context):
     group = {"$group": {"_id": {field: "$" + field for field in fields}, "total": {"$sum": 1}}}
     user_coll = util.coll('users')
     # aggregate's pipelining is used to fetch the results from the user data
-    return {"statusCode": 200, "body": list(user_coll.aggregate([match, group]))}
+    return {"statusCode": 200, "body": json.dumps(list(user_coll.aggregate([match, group])))}
 
 def user_read(event, context, user):
     """
@@ -58,7 +59,7 @@ def user_read(event, context, user):
     if user['registration_status'] in ['unregistered', 'registered', 'rejected']:
         if 'travelling_from' in user and 'reimbursement' in user['travelling_from']:
             del user['travelling_from']['reimbursement']
-    return {"statusCode": 200, "body": [user]}
+    return {"statusCode": 200, "body": json.dumps([user])}
 
 @ensure_role([['director', 'organizer']], on_failure=lambda e, c, u, *a: user_read(e, c, u))
 def organizer_read(event, context, user):
@@ -72,7 +73,7 @@ def organizer_read(event, context, user):
 
     # otherwise, the organizer submitted query is ran on the database and results are returned
     user_coll = util.coll('users')
-    return {"statusCode": 200, "body": tidy_results(list(user_coll.find(event['query'])))}
+    return {"statusCode": 200, "body": json.dumps(tidy_results(list(user_coll.find(event['query']))))}
 
 @ensure_schema({
     "type": "object",
@@ -97,5 +98,5 @@ def read_info(event, context, user=None):
     tests = util.coll('users')
 
     if event.get('aggregate', False):
-        return {"statusCode": 200, "body": list(tests.aggregate(event['query']))}
-    return {"statusCode": 200, "body": tidy_results(list(tests.find(event['query'])))}
+        return {"statusCode": 200, "body": json.dumps(list(tests.aggregate(event['query'])))}
+    return {"statusCode": 200, "body": json.dumps(tidy_results(list(tests.find(event['query']))))}

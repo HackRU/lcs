@@ -2,6 +2,7 @@ from schemas import *
 import util
 
 import bcrypt
+import json
 
 @ensure_schema({
     "type": "object",
@@ -26,7 +27,7 @@ def promotion_link(event, maglinkobj, user=None):
             role_bit = 'role.' + i
             user_coll.update_one({'email': user['email']}, {'$set': {role_bit: True}})
 
-    return {"statusCode": 200, "body": "Successfully updated your role"}
+    return {"statusCode": 200, "body": json.dumps("Successfully updated your role")}
 
 @ensure_schema({
     "type": "object",
@@ -45,10 +46,10 @@ def forgot_password_link(event, user_coll, maglinkobj):
     # verifies that the user exists (and complain if they don't)
     user_data = user_coll.find_one({"email": maglinkobj['email']})
     if user_data is None:
-        return {"statusCode": 400, "body": "We could not find that email"}
+        return {"statusCode": 400, "body": json.dumps("We could not find that email")}
     # sets the password to the new password given by the user
     user_coll.update_one({"email": maglinkobj['email']}, {'$set': {'password': pass_}})
-    return {"statusCode": 200, "body": "Successfully updated your password"}
+    return {"statusCode": 200, "body": json.dumps("Successfully updated your password")}
 
 @ensure_schema({
     "type": "object",
@@ -69,7 +70,7 @@ def consume_url(event, context):
     maglinkobj = magiclinks.find_one({"link": event['link']})
     # complain if the link is invalid
     if maglinkobj is None:
-        return util.add_cors_headers({"statusCode": 400, "body": "Invalid magiclink, try again"})
+        return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Invalid magiclink, try again")})
     # the appropriate function is called to consume this link depending on whether the magic link is for forgotten
     # password or some other type
     if maglinkobj['forgot']:

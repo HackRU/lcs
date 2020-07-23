@@ -5,6 +5,8 @@ sys.path.append("..")
 import config
 import util
 import jsonschema as js
+import json
+from copy import deepcopy
 
 def connect_to_db():
     return util.coll('users')
@@ -27,7 +29,10 @@ def schema_for_http(status_code, body_schema):
     }
 
 def check_by_schema(schema, thing):
-    js.validate(thing, schema)
+    copy = deepcopy(thing)
+    if 'body' in copy:
+        copy['body'] = json.loads(copy['body'])
+    js.validate(copy, schema)
     return True
 
 def get_db_user(email):
