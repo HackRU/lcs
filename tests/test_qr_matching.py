@@ -15,11 +15,7 @@ hckword = "123456"
 hcktoken = ""
 
 
-payload = {
-        "token": token,
-        "link_email": hckemail,
-        "qr_code": qr
-    }
+payload = None
 
 
 def setup_module(m):
@@ -29,8 +25,13 @@ def setup_module(m):
 
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
-    global token
+    global token, payload
     token = result["body"]["token"]
+    payload = {
+        "token": token,
+        "link_email": hckemail,
+        "qr_code": qr
+    }
     db = util.coll("users")
     update = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "organizer": True}}})
     assert update.modified_count >= 1
@@ -50,7 +51,11 @@ def teardown_module(m):
 
 
 def test_bad_role():
-    result = qrscan.qr_match(payload, {})
+    result = qrscan.qr_match({
+        "token": hcktoken,
+        "link_email": hckemail,
+        "qr_code": qr
+    }, {})
     assert result["statusCode"] == 403
 
 
