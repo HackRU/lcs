@@ -46,7 +46,6 @@ def setup_module(m):
 
     # swap the key to be fetched from environment variable
     current_slack_key = config.SLACK_KEYS["token"]
-    config.SLACK_KEYS["token"] = os.getenv("SLACK_API_TOKEN_BOT", "")
 
     # create a dummy user
     result = authorize.create_user({"email": email, "password": password}, {})
