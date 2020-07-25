@@ -5,9 +5,11 @@ from pymongo.errors import BulkWriteError
 import config
 from schemas import *
 
-#credit to https://stackoverflow.com/a/434328/5292630
+
+# credit to https://stackoverflow.com/a/434328/5292630
 def chunker(seq, size):
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
 
 def req_matrix_and_clean(params):
     """
@@ -32,6 +34,7 @@ def req_matrix_and_clean(params):
     # converts the results into a dictionary where the key is the address and the value is the distance, if it was
     # successfully given from the Google API, otherwise it's defaulted to 0
     return {val: elem_to_dist(mat['rows'][idx]['elements'][0]) for idx, val in enumerate(mat['origin_addresses'])}
+
 
 def req_distance_matrices(users):
     """
@@ -81,6 +84,7 @@ def req_distance_matrices(users):
     # the entire distance matrix is returned after all the distances have been fetched
     return acc
 
+
 def users_to_reimburse(lookup, users):
     """
     Function that creates a table of how much reimbursement each of the given users should receive as well as the sum
@@ -111,14 +115,14 @@ def users_to_reimburse(lookup, users):
 
     return table, total
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "day-of": {"type": "boolean"}
     },
-    "required": ["email", "token"]
+    "required": ["token"]
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])

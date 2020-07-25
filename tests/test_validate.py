@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from testing_utils import *
 import authorize
 import validate
@@ -7,8 +5,8 @@ import config
 from datetime import datetime, timedelta
 
 import pytest
-import json
 import jwt
+
 
 @pytest.mark.run(order=3)
 def test_validate_token():
@@ -17,25 +15,18 @@ def test_validate_token():
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
     token = auth['body']['token']
-
-    print("token is " + token)
-
-    #make sure user exists
+    # make sure user exists
     user_dict = get_db_user(user_email)
     assert 'email' in user_dict and user_dict['email'] == user_email
 
-    #success
-    val = validate.validate({'email': user_email, 'token': token}, None)
+    # success
+    val = validate.validate({'token': token}, None)
     assert check_by_schema(schema_for_http(200, {"type": "object", "const": user_dict}), val)
 
-    #failures
-    val = validate.validate({'email': user_email + 'fl', 'token': token}, None)
-    assert check_by_schema(schema_for_http(403, {"type": "string", "const": "User not found"}), val)
+    # failures
     val = validate.validate({'email': user_email, 'token': token + 'fl'}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
-    val = validate.validate({'emil': user_email, 'token': token + 'fl'}, None)
-    assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
-    val = validate.validate({'email': user_email, 'oken': token + 'fl'}, None)
+    val = validate.validate({'oken': token}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
 
     # create expired jwt
@@ -51,10 +42,10 @@ def test_validate_token():
     }
 
     users = connect_to_db()
-    users.update_one({'email': user_email},{'$push': expired})
+    users.update_one({'email': user_email}, {'$push': expired})
 
     val = validate.validate({'email': user_email, 'token': expired}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
     
     # remove the token
-    users.update_one({'email': user_email},{'$pull': expired})
+    users.update_one({'email': user_email}, {'$pull': expired})

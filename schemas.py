@@ -1,13 +1,12 @@
 import jsonschema as js
 import util
 import jwt
-from dateutil.parser import parse
 
 import config
 from functools import wraps
-from datetime import datetime
 
-def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "body": "Error in JSON: {}".format(err)}):
+
+def ensure_schema(schema, on_failure=lambda e, c, err: {"statusCode": 400, "body": "Error in JSON: {}".format(err)}):
     """
     Wrapper function used to validate the schema and that the given JSON follows it
     """
@@ -23,16 +22,22 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         return wrapt
     return wrap
 
-def ensure_logged_in_user(email_key='email', token_key='token',
-                          on_failure=lambda e, c, m, *a: {"statusCode": 403, "body": m}):
+
+def ensure_logged_in_user(token_key='token', on_failure=lambda e, c, m, *a: {"statusCode": 403, "body": m}):
     """
     Wrapper function used to authorize user using email and an auth token
     """
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):
-            email = event[email_key]
+
             token = event[token_key]
+            try:
+                decoded_payload = jwt.decode(token, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
+            except jwt.exceptions.InvalidTokenError as err:
+                return on_failure(event, context, str(err), *args)
+
+            email = decoded_payload["email"]
             users = util.coll('users')
 
             # try to find user
@@ -42,26 +47,16 @@ def ensure_logged_in_user(email_key='email', token_key='token',
             
             # look for token
             tokens = list(filter(lambda tk: tk == token, user['token']))
-            if len(tokens) > 0:
-                tk = tokens[0]
-                try:
-                    decoded_jwt = jwt.decode(tk, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
-                    # if jwt decodes correctly there will be no exception
-                    # TODO: better something with decoded_jwt
-                    # For now, simply decoding the jwt will either raise an exception or succeed
-                    # if it succeeds, we dont need to do anything
-                    # if there is an exception, return failure
-                except:
-                    return on_failure(event, context, 'Token invalid', *args)
-            else:
-                return on_failure(event, context, 'Token invalid', *args)
+            if len(tokens) == 0:
+                return on_failure(event, context, 'Unauthorized token', *args)
             del user['_id']
             del user['password']
             return fn(event, context, user, *args)
         return wrapt
     return rapper
 
-def ensure_role(roles, on_failure = lambda e, c, u, *a: {"statusCode": 403, "body": "User does not have priviledges."}):
+
+def ensure_role(roles, on_failure=lambda e, c, u, *a: {"statusCode": 403, "body": "User does not have privileges."}):
     """
     Wrapper function used to validate that a user has at least 1 role within each subset of the set of roles
     """

@@ -1,7 +1,5 @@
 import json
-import random
-import string
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import bcrypt
 import jwt
 
@@ -9,6 +7,7 @@ import config
 import consume
 from schemas import *
 import util
+
 
 @ensure_schema({
     "type": "object",
@@ -42,7 +41,7 @@ def authorize(event, context):
             return util.add_cors_headers({"statusCode": 403, "body": "Wrong Password"})
     # if no data is found associated with the given email, error is returned
     else:
-        return util.add_cors_headers({"statusCode":403,"body":"invalid email,hash combo"})
+        return util.add_cors_headers({"statusCode": 403, "body": "invalid email,hash combo"})
     # Build a JWT to use as an authentication token, put embedded within its payload the email
     # along with an expiration timestamp in the format of a js NumericDate (as that is what is required
     # for JWT's authentication scheme
@@ -51,7 +50,7 @@ def authorize(event, context):
         "email": email,
         "exp": int(exp.timestamp()),
     }
-    
+
     encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
     update_val = {
         "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
@@ -60,7 +59,7 @@ def authorize(event, context):
     # appends the newly generated token to the list of auth tokens associated with this user
     user_coll.update_one({"email": email}, {"$push": update_val})
 
-    #return the value pushed, that is, auth token with expiry time.
+    # return the value pushed, that is, auth token with expiry time.
     ret_val = {
         "statusCode": 200,
         "isBase64Encoded": False,
@@ -68,6 +67,7 @@ def authorize(event, context):
         "body": update_val
     }
     return util.add_cors_headers(ret_val)
+
 
 # NOT A LAMBDA
 def authorize_then_consume(event, context):
@@ -81,6 +81,7 @@ def authorize_then_consume(event, context):
         if consume_val['statusCode'] != 200:
             rv['statusCode'] = 400
     return rv
+
 
 @ensure_schema({
     "type": "object",
@@ -171,6 +172,7 @@ def create_user(event, context):
 
     # calls the function to also consume any links provided
     return authorize_then_consume(event, context)
+
 
 def is_registration_open():
     """

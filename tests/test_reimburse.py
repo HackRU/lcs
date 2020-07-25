@@ -1,15 +1,8 @@
-import json
-
-from pymongo import MongoClient
-import pytest
-import requests
-
 import authorize
 import config
 
 from testing_utils import *
 import util
-import validate
 import reimburse
 
 email = "director77@gmail.com"
@@ -79,11 +72,6 @@ users = [
 ]
 
 
-def payload(auth_email=email):
-    return {"email": email,
-            "token": token}
-
-
 def setup_module(m):
     db = util.get_db()
     db["test-users"].drop()
@@ -123,7 +111,7 @@ def teardown_module(m):
 
 
 def test_tr():
-    result = reimburse.compute_all_reimburse(payload(), {})
+    result = reimburse.compute_all_reimburse({"token": token}, {})
     assert result['statusCode'] == 200
 
     db = util.coll("users")

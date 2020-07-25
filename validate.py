@@ -9,18 +9,14 @@ from schemas import *
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"}
     },
-    "required": ["email", "token"]
+    "required": ["token"]
 })
 @ensure_logged_in_user()
 def validate(event, context, user=None):
     """
-    Given an email and token,
-    ensure that the token is an
-    unexpired token of the user with
-    the provided email.
+    Given a token, ensure that the token is an unexpired token of the user with the provided email.
     """
     return {"statusCode": 200, "body": user, "isBase64Encoded": False}
 
@@ -118,36 +114,38 @@ def validate_updates(user, updates, auth_usr=None):
     # determines the validity of the update. We "and" all the regexes, so an update is valid for all regexes it matches,
     # not just one.
     validator = {
-            # this is a Mongo internal. DO NOT TOUCH.
-            '_id': say_no,
-            #TODO: we have to figure out "forgot password"
-            'password': say_no,
-            # no hacks on the role object
-            '^role$': say_no,
-            # can't me self-made judge?
-            'role\\.judge': say_no_to_non_admin, #TODO: do magic links need these?
-            # can't unmake hacker
-            'role\\.hacker': say_no_to_non_admin,
-            # can't self-make organizer or director
-            'role\\.director': say_no_to_non_admin,
-            'role\\.organizer': say_no_to_non_admin,
-            # can't change email
-            'email': say_no,
-            # can't change your own votes
-            'votes': say_no_to_non_admin,
-            'votes_from': say_no_to_non_admin,
-            'skipped_users': say_no_to_non_admin,
-            # or MLH info
-            'mlh': say_no,
-            # no destroying the day-of object
-            'day_of': say_no_to_just_hacker,
-            'day_of\\.[A-Za-z1-2_]+': say_no_to_just_hacker,
-            'registration_status': check_registration,
-            # auth tokens are never given access
-            'token': say_no,
-            # travel info
-            'travelling_from\\.mode': lambda x, y, z: y in ('bus', 'train', 'car', 'plane'),
-            'travelling_from\\.formatted_addr': lambda x, y, z: check_addr(y),
+        # this is a Mongo internal. DO NOT TOUCH.
+        '_id': say_no,
+        #TODO: we have to figure out "forgot password"
+        'password': say_no,
+        # no hacks on the role object
+        '^role$': say_no,
+        # can't me self-made judge?
+        'role\\.judge': say_no_to_non_admin, #TODO: do magic links need these?
+        # can't unmake hacker
+        'role\\.hacker': say_no_to_non_admin,
+        # can't self-make organizer or director
+        'role\\.director': say_no_to_non_admin,
+        'role\\.organizer': say_no_to_non_admin,
+        # can't change email
+        'email': say_no,
+        # can't change your own votes
+        'votes': say_no_to_non_admin,
+        'votes_from': say_no_to_non_admin,
+        'skipped_users': say_no_to_non_admin,
+        # or MLH info
+        'mlh': say_no,
+        # no destroying the day-of object
+        'day_of': say_no_to_just_hacker,
+        'day_of\\.[A-Za-z1-2_]+': say_no_to_just_hacker,
+        'registration_status': check_registration,
+        # auth tokens are never given access
+        'token': say_no,
+        # travel info
+        'travelling_from\\.mode': lambda x, y, z: y in ('bus', 'train', 'car', 'plane'),
+        'travelling_from\\.formatted_addr': lambda x, y, z: check_addr(y),
+        'slack_id': lambda x, y, z: re.match(r"^[UW][A-Z0-9]{2,}$", y) is not None,
+
     }
 
     def find_dotted(key):
@@ -184,9 +182,8 @@ def validate_updates(user, updates, auth_usr=None):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "user_email": {"type": "string", "format": "email"},
-        "auth_email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
+        "user_email": {"type": "string", "format": "email"},
         "updates": {
             "type": "object",
             "properties": {
@@ -210,21 +207,20 @@ def validate_updates(user, updates, auth_usr=None):
             "additionalProperties": False
         }
     },
-    "required": ["user_email", "auth_email", "token", "updates"]
+    "required": ["user_email", "token", "updates"]
 })
-@ensure_logged_in_user(email_key="auth_email", token_key="auth")
+@ensure_logged_in_user()
 def update(event, context, auth_user):
     """
-    Given a user email, an auth email, an auth token, and the dictionary of updates, performs all updates the
-    authorised user (with email auth_email) can from "updates" on the user with email "user_email".
+    Given a user email, a token, and the dictionary of updates, performs all updates the
+    authorised user is permitted to, from the "updates" object, on the user with email "user_email".
     """
 
     user_coll = util.coll('users')
 
-    # assuming the auth_email user is authorised, find the user being modified.
-
+    # assuming the user is authorised through the token, find the user being modified.
     # if the user making changes is the same the one to be updated, no need for extra lookups
-    if event['user_email'] == event['auth_email']:
+    if event['user_email'] == auth_user['email']:
         # save a query in the nice case
         results = auth_user
     # if the user is an admin, they may modify any user.

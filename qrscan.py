@@ -1,19 +1,7 @@
-import json
 from schemas import ensure_schema, ensure_logged_in_user, ensure_role
 import pymongo
-from config import *
+import config
 from util import *
-
-qr_input = {
-    "type": "object",
-    "properties": {
-        "auth_email": {"type": "string", "format": "email"},
-        "token": {"type": "string"},
-        "email": {"type": "string"},
-        "qr_code": {"type": "string"}
-    },
-    "required": ["auth_email", "token", "email", "qr_code"]
-}
 
 def dbinfo():
     user_coll = coll("users")
@@ -21,35 +9,44 @@ def dbinfo():
     print("collection database: " + str(user_coll.database))
     print("collection document count: " + str(user_coll.count_documents))
 
-@ensure_schema(qr_input)
-@ensure_logged_in_user(email_key="auth_email")
+
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "token": {"type": "string"},
+        "link_email": {"type": "string"},
+        "qr_code": {"type": "string"}
+    },
+    "required": ["token", "link_email", "qr_code"]
+})
+@ensure_logged_in_user()
 @ensure_role([['director', 'organizer', 'volunteer']])
-def qr_match(event, context, user=None):
+def qr_match(event, context, user):
     """
     Function used to associate a given QR code with the given email
     """
     user_coll = coll('users')
 
-    result = user_coll.update_one({'email': event["email"]}, {'$push': {'qrcode': event["qr_code"]}})
+    result = user_coll.update_one({'email': event["link_email"]}, {'$push': {'qrcode': event["qr_code"]}})
     if result.matched_count == 1:
         return {"statusCode": 200, "body": "success"}
     else:
         return {"statusCode": 404, "body": "User not found"}
 
+
 @ensure_schema({
     'type': 'object',
     'properties': {
-        'auth_email': {'type': 'string', 'format': 'email'},
         'token': {'type': 'string'},
         'qr': {'type': 'string'},
         'event': {'type': 'string'},
         'again': {'type': 'boolean'}
     },
-    'required': ['auth_email', 'token', 'qr', 'event']
+    'required': ['token', 'qr', 'event']
 })
-@ensure_logged_in_user(email_key='auth_email')
+@ensure_logged_in_user()
 @ensure_role([['director', 'organizer', 'volunteer']])
-def attend_event(aws_event, context, user=None):
+def attend_event(aws_event, context, user):
     """
     Function used to mark that a user has attended an event
     """

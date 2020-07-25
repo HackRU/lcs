@@ -7,20 +7,20 @@ from read import read_info
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"}
     },
-    "required": ["email", "token"]
+    "required": ["token"]
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
 def list_all_templates(event, context, user):
     """
     Gets a list of all the templates iff the
-    user (email, token keys in event) is an
+    user (identified using token key in event) is an
     authenticated director.
 
     The template list is some sort of dictionary
@@ -28,6 +28,7 @@ def list_all_templates(event, context, user):
     """
     templs = emails.templates.list()
     return {'statusCode': 400, 'body': templs}
+
 
 def do_substitutions(recs, links, template, usr):
     """
@@ -70,15 +71,15 @@ def do_substitutions(recs, links, template, usr):
         emails.recipient_lists.delete(list_id)
         return rv
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "template": {"type": "string"},
         "recipients": {"type": "array"}
     },
-    "required": ["email", "token", "template"]
+    "required": ["token", "template"]
 })
 @ensure_logged_in_user()
 def send_to_emails(event, context, usr):
@@ -130,6 +131,7 @@ def send_to_emails(event, context, usr):
         # in case of any Exception raised, complain
         except Exception:
             return {'statusCode': 400, 'body': "Template not found or error in sending"}
+
 
 def send_email(recipient, link, template, sender):
     """

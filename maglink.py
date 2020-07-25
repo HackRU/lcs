@@ -1,13 +1,21 @@
 import random
 import datetime
 import string
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import use_sparkpost
 from schemas import *
 
 DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
 
+
+@ensure_schema({
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"},
+    },
+    "required": ["email"]
+})
 def forgot_user(event, magiclinks, user_coll):
     """
     Function used to generate forgotten password magic links
@@ -34,6 +42,7 @@ def forgot_user(event, magiclinks, user_coll):
         if rv['statusCode'] != 200:
             return rv
         return util.add_cors_headers({"statusCode": 200, "body": "Forgot password link has been emailed to you"})
+
 
 def director_link(magiclinks, num_links, event, user):
     """
@@ -67,10 +76,10 @@ def director_link(magiclinks, num_links, event, user):
     # the list of tuples generated is returned
     return links_list
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "template": {"type": "string"},
         "link_base": {"type": "string"},
@@ -78,11 +87,11 @@ def director_link(magiclinks, num_links, event, user):
         "emailsTo": {"type": "array"},
         "numLinks": {"type": "integer"}
     },
-    "required": ["email", "token", "permissions", "emailsTo"]
+    "required": ["token", "permissions", "emailsTo"]
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def do_director_link(event, magiclinks, user=None):
+def do_director_link(event, magiclinks, user):
     """
     Function used by directors to promote users through magiclinks
     """
@@ -90,13 +99,12 @@ def do_director_link(event, magiclinks, user=None):
     links_list = director_link(magiclinks, num_links, event, user)
     return util.add_cors_headers({"statusCode": 200, "body": links_list})
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
-        "link_base": {"type": "string"},
-    },
-    "required": ["email"]
+        "link_base": {"type": "string"}
+    }
 })
 def gen_magic_link(event, context):
     """
