@@ -91,7 +91,7 @@ def director_link(magiclinks, num_links, event, user):
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def do_director_link(event, magiclinks, user):
+def do_director_link(event, magiclinks, user=None):
     """
     Function used by directors to promote users through magiclinks
     """
