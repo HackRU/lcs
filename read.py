@@ -1,5 +1,6 @@
 from schemas import *
 
+
 def tidy_results(res):
     """
     Function used to clean up read results before returning to the user
@@ -8,6 +9,7 @@ def tidy_results(res):
         del i['_id']
         del i['password']
     return res
+
 
 @ensure_schema({
     "type": "object",
@@ -46,6 +48,7 @@ def public_read(event, context):
     # aggregate's pipelining is used to fetch the results from the user data
     return {"statusCode": 200, "body": list(user_coll.aggregate([match, group]))}
 
+
 def user_read(event, context, user):
     """
     Function used by a LCS user to fetch their information
@@ -60,13 +63,13 @@ def user_read(event, context, user):
             del user['travelling_from']['reimbursement']
     return {"statusCode": 200, "body": [user]}
 
+
 @ensure_role([['director', 'organizer']], on_failure=lambda e, c, u, *a: user_read(e, c, u))
 def organizer_read(event, context, user):
     """
     Function responsible for performing an organizer query. In-case of insufficient permissions, falls back on user_read
     """
     # if aggregation is desired, a public read will suffice
-    # TODO:
     if event.get('aggregate', False):
         return public_read(event, context)
 
@@ -74,10 +77,10 @@ def organizer_read(event, context, user):
     user_coll = util.coll('users')
     return {"statusCode": 200, "body": tidy_results(list(user_coll.find(event['query'])))}
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "query": {"type": "object"},
         "aggregate": {"type": "boolean"}

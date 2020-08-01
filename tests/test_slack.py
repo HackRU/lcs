@@ -46,14 +46,12 @@ def setup_module(m):
 
     # swap the key to be fetched from environment variable
     current_slack_key = config.SLACK_KEYS["token"]
-    config.SLACK_KEYS["token"] = os.getenv("SLACK_API_TOKEN_BOT", "")
 
     # create a dummy user
     result = authorize.create_user({"email": email, "password": password}, {})
     assert result["statusCode"] == 200
-    token = result["body"]["auth"]["token"]
+    token = result["body"]["token"]
     payload = {
-        "email": email,
         "token": token,
         "other_email": other_email
     }
@@ -81,18 +79,13 @@ def teardown_module(m):
     config.SLACK_KEYS["token"] = current_slack_key
 
 
-def test_bad_email():
-    response = generate_dm_link({"email": "invalid@email.com", "token": token, "other_email": other_email}, {})
-    assert response["statusCode"] == 403
-
-
 def test_bad_token():
-    response = generate_dm_link({"email": email, "token": "bad token", "other_email": other_email}, {})
+    response = generate_dm_link({"token": "bad token", "other_email": other_email}, {})
     assert response["statusCode"] == 403
 
 
 def test_bad_other_email():
-    response = generate_dm_link({"email": email, "token": token, "other_email": "invalid@email.com"}, {})
+    response = generate_dm_link({"token": token, "other_email": "invalid@email.com"}, {})
     assert response["statusCode"] == 403
 
 

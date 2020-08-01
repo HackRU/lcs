@@ -4,7 +4,8 @@ from schemas import ensure_schema, ensure_logged_in_user
 import boto3
 from botocore.exceptions import ClientError
 
-def presign(method, event, s3_client):
+
+def presign(method, user, s3_client):
     """
     Function used to generate a presign URL to download/upload resume
     """
@@ -14,7 +15,7 @@ def presign(method, event, s3_client):
     # which is the user's email followed by the .pdf extension
     params = {
         "Bucket": config.RESUME_BUCKET,
-        "Key": event["email"] + ".pdf"
+        "Key": user["email"] + ".pdf"
     }
     # if instead the desired method is PUT, then ContentType is set and the http method is changed to PUT
     if method == "put_object":
@@ -41,14 +42,14 @@ def exists(email, s3_client):
         if e.response["Error"]["Code"] == "404":
             return False
         raise e
-    
+
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string"},
         "token": {"type": "string"}
     },
-    "required": ["email", "token"]
+    "required": ["token"]
 })
 @ensure_logged_in_user()
 def resume(event, ctx, user):
@@ -62,9 +63,9 @@ def resume(event, ctx, user):
     try:
         return {
             "statusCode": 200, "body": {
-                "upload": presign(method="put_object", event=event, s3_client=client),
-                "download": presign(method="get_object", event=event, s3_client=client),
-                "exists": exists(email=event["email"], s3_client=client)
+                "upload": presign(method="put_object", user=user, s3_client=client),
+                "download": presign(method="get_object", user=user, s3_client=client),
+                "exists": exists(email=user["email"], s3_client=client)
             }
         }
     # if there are any errors, they are communicated back

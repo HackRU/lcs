@@ -11,10 +11,10 @@
 #
 # Happy Coding!
 
-service: lcs-sls
 # app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
+service: lcs-sls
+
+
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -52,6 +52,7 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
+  - serverless-dotenv-plugin
 package:
   include:
      - '*.py'
@@ -233,3 +234,13 @@ functions:
           request:
             template:
               application/json: '$input.body'
+  slack-dm:
+    handler: slack.generate_dm_link
+    -http:
+      path: slack-dm
+      integration: lambda
+      method: post
+      cors: true
+      request:
+        template:
+          application/json: '$input.body'

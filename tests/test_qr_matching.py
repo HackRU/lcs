@@ -1,15 +1,8 @@
-import json
-
-from pymongo import MongoClient
-import pytest
-import requests
-
 import authorize
 import config
 import qrscan
 from testing_utils import *
 import util
-import validate
 
 email = "organizer@email.com"
 pwrord = "1234567"
@@ -21,11 +14,9 @@ hckemail = "hacker@email.com"
 hckword = "123456"
 hcktoken = ""
 
-def payload(auth_email=email):
-    return {"auth_email" : auth_email,
-            "token" : token,
-            "email" : hckemail,
-            "qr_code" : qr}
+
+payload = None
+
 
 def setup_module(m):
     global old_col
@@ -34,16 +25,22 @@ def setup_module(m):
 
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
-    global token
-    token = result["body"]["auth"]["token"]
+    global token, payload
+    token = result["body"]["token"]
+    payload = {
+        "token": token,
+        "link_email": hckemail,
+        "qr_code": qr
+    }
     db = util.coll("users")
-    updete = db.update_one({"email":email}, {"$set" : { "role" : { "hacker" : False , "organizer" : True}}})
-    assert updete.modified_count >= 1
+    update = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "organizer": True}}})
+    assert update.modified_count >= 1
 
     result = authorize.create_user({"email": hckemail, "password": hckword}, {})
     assert result["statusCode"] == 200
     global hcktoken
-    hcktoken = result["body"]["auth"]["token"]
+    hcktoken = result["body"]["token"]
+
 
 def teardown_module(m):
     db = util.get_db()
@@ -52,26 +49,33 @@ def teardown_module(m):
     global old_col
     config.DB_COLLECTIONS["users"] = old_col
 
+
 def test_bad_role():
-    result = qrscan.qr_match(payload(auth_email=hckemail), {})
+    result = qrscan.qr_match({
+        "token": hcktoken,
+        "link_email": hckemail,
+        "qr_code": qr
+    }, {})
     assert result["statusCode"] == 403
 
+
 def test_qr_match():
-    result = qrscan.qr_match(payload(), {})
+    result = qrscan.qr_match(payload, {})
     assert result["statusCode"] == 200
     db = util.coll("users")
-    assert db.find_one({"email" : hckemail})["qrcode"][0] == qr
+    assert db.find_one({"email": hckemail})["qrcode"][0] == qr
+
 
 def test_attend():
     event = 'free_supreme_bricks'
-    def attend(qr_code, again=False, auth_email=email, token=token):
+
+    def attend(qr_code, again=False, token=token):
         return qrscan.attend_event({
-            'auth_email': auth_email,
             'token': token,
             'qr': qr_code,
             'again': again,
             'event': event
-        },{})
+        }, {})
 
     def test(qr_code):
         # once
@@ -92,7 +96,7 @@ def test_attend():
     users.update_one({'email': hckemail}, {'$set': {'day_of.' + event: 0}})
 
     # by qr
-    result = qrscan.qr_match(payload(), {})
+    result = qrscan.qr_match(payload, {})
     assert result['statusCode'] == 200
     test(qr)
 
@@ -100,6 +104,6 @@ def test_attend():
     result = attend('this_inst_an_email_or_qr@gmail.com')
     assert result['statusCode'] == 404
 
-    #bad privs
-    result = attend(email, auth_email=hckemail, token=hcktoken)
+    # bad privs
+    result = attend(email, token=hcktoken)
     assert result['statusCode'] == 403
