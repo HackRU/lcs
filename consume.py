@@ -3,13 +3,13 @@ import util
 
 import bcrypt
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"}
     },
-    "required": ["email", "token"]
+    "required": ["token"]
 })
 @ensure_logged_in_user()
 def promotion_link(event, maglinkobj, user=None):
@@ -27,6 +27,7 @@ def promotion_link(event, maglinkobj, user=None):
             user_coll.update_one({'email': user['email']}, {'$set': {role_bit: True}})
 
     return {"statusCode": 200, "body": "Successfully updated your role"}
+
 
 @ensure_schema({
     "type": "object",
@@ -49,6 +50,7 @@ def forgot_password_link(event, user_coll, maglinkobj):
     # sets the password to the new password given by the user
     user_coll.update_one({"email": maglinkobj['email']}, {'$set': {'password': pass_}})
     return {"statusCode": 200, "body": "Successfully updated your password"}
+
 
 @ensure_schema({
     "type": "object",

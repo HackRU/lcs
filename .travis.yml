@@ -1,18 +1,37 @@
+
 language: python
 
+#Set up the basic environment to be python
 python:
   - "3.6.6"
 
+#Recognize mongodb as a service
 services:
   - mongodb
 
-before_script:
+before_script: 
+  #Create a user for our tests
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
+  #Copy the config file
   - cp config.travis.py config.py
-  - echo $GOOGLE_CAL_TOKEN | base64 -d > token.pickle
+  #Create token.pickle
+  - echo $TRAVIS_GOOGLE_CAL_TOKEN | base64 -d > token.pickle
 
 install:
-  - pip install -r requirements.txt
+    #Install all the requirements
+    - pip install -r requirements.txt
 
-script:
+script: 
+  # Run tests
   - python -m pylint *.py && python -m pytest --cov=.
+      
+deploy:
+  - provider: script
+    script: bash ./deployment/deploy_production.sh
+    on:
+      branch: production
+
+  - provider: script
+    script: bash ./deployment/deploy_develop.sh
+    on:
+      branch: deploy

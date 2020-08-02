@@ -1,5 +1,4 @@
 import datetime
-import dateutil.parser as dp
 import os
 import time
 
@@ -16,6 +15,7 @@ import util
 
 token_path = "./token.pickle"
 
+
 def gen_token():
     creds = get_user_credentials(
         GOOGLE_CAL.SCOPES,
@@ -25,6 +25,7 @@ def gen_token():
     # Save the credentials for the next run
     with open(token_path, 'wb') as token:
         pickle.dump(creds, token)
+
 
 @util.cors
 def google_cal(event, context, testing=False):
@@ -41,32 +42,32 @@ def google_cal(event, context, testing=False):
             creds = pickle.load(token)
     else:
         return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
-        
+
     # If there are no (valid) credentials available, let the user log in.
     if not creds.valid:
         if creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except:
-               return {'statusCode': 500, 'body': 'failed to refresh credentials'}
+                return {'statusCode': 500, 'body': 'failed to refresh credentials'}
         else:
             return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
-    
+
     service = discovery.build('calendar', 'v3', credentials=creds)
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     # pylint: disable=no-member
-    eventsResult = service.events().list(
-            calendarId = GOOGLE_CAL.CAL_ID, timeMin = now, maxResults = num_events * 5,
-            singleEvents = True, orderBy = 'startTime').execute()
-    events = eventsResult.get('items', [])
+    events_result = service.events().list(calendarId=GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
+                                          singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
     return {'statusCode': 200, 'body': events}
+
 
 def slack_announce(event, context):
     slacks = util.coll('slack messages')
     num_messages = event.get('num_messages', 30)
 
     def refresh_cache():
-        #refresh cache
+        # refresh cache
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
         url = 'https://slack.com/api/channels.history'
@@ -76,29 +77,29 @@ def slack_announce(event, context):
         if not reply.get('ok'):
             return util.add_cors_headers({'statusCode': 400, 'body': 'Unable to retrieve messages'})
 
-        #clean up the slack response
-        allMessages = reply.get('messages')
-        if not allMessages:
+        # clean up the slack response
+        all_messages = reply.get('messages')
+        if not all_messages:
             return util.add_cors_headers({'statusCode': 400, 'body': 'No messages found.'})
-        messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in x, allMessages))
+        messages = list(filter(lambda x: x.get('type') == 'message' and 'subtype' not in x, all_messages))
         now_for_slack = str(time.time())
         for msg in messages:
-            #update the cache
+            # update the cache
             msg['c_ts'] = now_for_slack
             m = list(slacks.find({'text': msg['text']}))
-            if m == None or m == [] or m == ():
+            if m is None or m == [] or m == ():
                 slacks.insert_one(msg)
             else:
                 slacks.update_one({'text': msg['text']}, {'$set': {'c_ts': msg['c_ts']}})
         return messages
 
-    #check cache
+    # check cache
     cache = list(slacks.find().sort([('c_ts', DESCENDING)]).limit(1))
     if len(cache) == 1:
         latest_msg = cache[0]
         msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg['ts']) / 1e3)
         if msg_time + datetime.timedelta(minutes=10) > datetime.datetime.now():
-            #cache hit
+            # cache hit
             messages = list(slacks.find().sort([('ts', DESCENDING)]).limit(num_messages))
             for msg in messages:
                 del msg['_id']

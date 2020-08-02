@@ -4,7 +4,7 @@ import os
 
 # uri should contain auth and default database
 DB_URI_LOCAL = "mongodb://127.0.0.1:27017/travis"
-DB_URI_ATLAS = os.getenv("DB_URI", "")
+DB_URI_ATLAS = os.getenv("TRAVIS_DB_URI", "")
 DB_URI = DB_URI_LOCAL
 
 DB_COLLECTIONS = {
@@ -13,20 +13,20 @@ DB_COLLECTIONS = {
     "slack messages": "slackMessages"
 }
 
-SPARKPOST_KEY = os.getenv("SPARKPOST_KEY", "")
+SPARKPOST_KEY = os.getenv("TRAVIS_SPARKPOST_KEY", "")
 
 SLACK_KEYS = {
-    'token': '',
-    'channel': ''
+    'token': os.getenv("TRAVIS_SLACK_API_TOKEN_BOT"),
+    'channel': os.getenv("TRAVIS_SLACK_CHANNEL_ID")
 }
 
 class GOOGLE_CAL:
     SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-    CLIENT_ID = os.getenv("GOOGLE_CAL_CLIENT_ID", "")
-    CLIENT_SECRET = os.getenv("GOOGLE_CAL_CLIENT_SECRET", "")
-    CAL_ID = os.getenv("GOOGLE_CAL_ID", "")
+    CLIENT_ID = os.getenv("TRAVIS_GOOGLE_CAL_CLIENT_ID", "")
+    CLIENT_SECRET = os.getenv("TRAVIS_GOOGLE_CAL_CLIENT_SECRET", "")
+    CAL_ID = os.getenv("TRAVIS_GOOGLE_CAL_ID", "")
 
-MAPS_API_KEY = os.getenv("MAPS_API_KEY", "")
+MAPS_API_KEY = os.getenv("TRAVIS_MAPS_API_KEY", "")
 
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
@@ -52,8 +52,11 @@ REGISTRATION_DATES = [
 ]
 
 RESUME = {
-    "aws_access_key_id": os.environ.get("AWS_ACCESS_KEY_ID"),
-    "aws_secret_access_key": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+    "aws_access_key_id": os.environ.get("TRAVIS_AWS_ACCESS_KEY_ID"),
+    "aws_secret_access_key": os.environ.get("TRAVIS_AWS_SECRET_ACCESS_KEY"),
 }
 RESUME_BUCKET = "resumet"
 
+# Json webtoken
+JWT_SECRET  = os.getenv("TRAVIS_JWT_SECRET", "")
+JWT_ALGO = os.getenv("TRAVIS_JWT_ALGO", "")

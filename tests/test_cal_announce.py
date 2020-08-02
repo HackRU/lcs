@@ -1,9 +1,11 @@
 import cal_announce
 
+
 def test_get_cal():
     res = cal_announce.google_cal({}, {})
     print(res)
     assert res["statusCode"] == 200
+
 
 def test_missing_tok():
     real = cal_announce.token_path

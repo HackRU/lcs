@@ -1,15 +1,8 @@
-import json
-
-from pymongo import MongoClient
-import pytest
-import requests
-
 import authorize
 import config
 
 from testing_utils import *
 import util
-import validate
 import reimburse
 
 email = "director77@gmail.com"
@@ -24,7 +17,8 @@ users = [
             "is_real": True,
             "mode": "car",
             "addr_ready": True,
-            "formatted_addr": "Essex County, NJ, USA"
+            "formatted_addr": "Montclair, NJ, USA"
+
         }
     },
     {
@@ -78,11 +72,6 @@ users = [
 ]
 
 
-def payload(auth_email=email):
-    return {"email": email,
-            "token": token}
-
-
 def setup_module(m):
     db = util.get_db()
     db["test-users"].drop()
@@ -95,7 +84,7 @@ def setup_module(m):
     assert result["statusCode"] == 200
 
     global token
-    token = result["body"]["auth"]["token"]
+    token = result["body"]["token"]
     db = util.coll("users")
     updete = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "director": True}}})
     assert updete.modified_count >= 1
@@ -122,7 +111,7 @@ def teardown_module(m):
 
 
 def test_tr():
-    result = reimburse.compute_all_reimburse(payload(), {})
+    result = reimburse.compute_all_reimburse({"token": token}, {})
     assert result['statusCode'] == 200
 
     db = util.coll("users")

@@ -1,13 +1,13 @@
 import json
-import uuid
-from datetime import timedelta
-
+from datetime import datetime, timedelta
 import bcrypt
+import jwt
 
 import config
 import consume
 from schemas import *
 import util
+
 
 @ensure_schema({
     "type": "object",
@@ -42,24 +42,24 @@ def authorize(event, context):
     # if no data is found associated with the given email, error is returned
     else:
         return util.add_cors_headers({"statusCode": 403, "body": "invalid email,hash combo"})
+    # Build a JWT to use as an authentication token, put embedded within its payload the email
+    # along with an expiration timestamp in the format of a js NumericDate (as that is what is required
+    # for JWT's authentication scheme
+    exp = datetime.now() + timedelta(days=3)
+    payload = {
+        "email": email,
+        "exp": int(exp.timestamp()),
+    }
 
-    # authentication token is generated for authentication
-    token = str(uuid.uuid4())
-
-    # generated token is stored alongside it's expiry time (3 days after generation) within a dictionary
+    encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
     update_val = {
-        "auth": {
-            "token": token,
-            "valid_until": (datetime.now() + timedelta(days=3)).isoformat()
-        }
+        "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
     }
 
     # appends the newly generated token to the list of auth tokens associated with this user
     user_coll.update_one({"email": email}, {"$push": update_val})
 
     # return the value pushed, that is, auth token with expiry time.
-    # throw in the email for frontend.
-    update_val['auth']['email'] = email
     ret_val = {
         "statusCode": 200,
         "isBase64Encoded": False,
@@ -68,18 +68,20 @@ def authorize(event, context):
     }
     return util.add_cors_headers(ret_val)
 
+
 # NOT A LAMBDA
 def authorize_then_consume(event, context):
     rv = authorize(event, context)
     if 'link' in event:
         consumption_event = {
             'link': event['link'],
-            'token': json.loads(rv['body'])['auth']['token']
+            'token': json.loads(rv['body'])['token']
         }
         consume_val = consume.consume_url(consumption_event, None)
         if consume_val['statusCode'] != 200:
             rv['statusCode'] = 400
     return rv
+
 
 @ensure_schema({
     "type": "object",
@@ -170,6 +172,7 @@ def create_user(event, context):
 
     # calls the function to also consume any links provided
     return authorize_then_consume(event, context)
+
 
 def is_registration_open():
     """

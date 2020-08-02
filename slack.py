@@ -21,11 +21,10 @@ def process_slack_error(error_str: str):
 @ensure_schema({
     "type": "object",
     "properties": {
-        "email": {"type": "string", "format": "email"},
         "token": {"type": "string"},
         "other_email": {"type": "string", "format": "email"}
     },
-    "required": ["email", "token", "other_email"]
+    "required": ["token", "other_email"]
 })
 @ensure_logged_in_user()  # makes sure that the requester is a logged in user
 def generate_dm_link(event, context, user):

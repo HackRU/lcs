@@ -2,6 +2,7 @@ import config
 from functools import wraps
 from pymongo import MongoClient
 
+
 def add_cors_headers(resp):
     """
     Adds headers to allow for cross-origin requests.
@@ -16,6 +17,7 @@ def add_cors_headers(resp):
     resp['headers']['Access-Control-Allow-Credentials'] = True,
     return resp
 
+
 def cors(f):
     """
     Wrapper function that adds CORS headers to the return value of the function that is being wrapped
@@ -26,7 +28,6 @@ def cors(f):
         return add_cors_headers(resp)
     return wrapper
 
-    
 
 _cached = None
 def get_db():
@@ -39,6 +40,7 @@ def get_db():
     if not _cached:
         _cached = MongoClient(config.DB_URI).get_database()
     return _cached
+
 
 def coll(collname):
     return get_db()[config.DB_COLLECTIONS[collname]]
