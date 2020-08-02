@@ -20,30 +20,18 @@ before_script:
 install:
     #Install all the requirements
     - pip install -r requirements.txt
-  #   #Install npm
-  #   - wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
-  #   - source ~/.nvm/nvm.sh
-  #   - nvm install 7 # for Node v7
-  #   #Install serverless and created node modules
-  #   - npm install -g serverless
-  #   - travis_retry npm install
 
 script: 
   # Run tests
   - python -m pylint *.py && python -m pytest --cov=.
       
 deploy:
-      
   - provider: script
-    script: 
-      #temporary for production for now
-      - cp config.prod.py config.py
-      - echo $PRODUCTION_GOOGLE_CAL_TOKEN | base64 -d > token.pickle
+    script: bash ./deployment/deploy_production.sh
     on:
       branch: production
 
-
   - provider: script
-    script: bash deploy_develop.sh
+    script: bash ./deployment/deploy_develop.sh
     on:
-      branch: jwt
+      branch: deploy
