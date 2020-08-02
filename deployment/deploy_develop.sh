@@ -1,5 +1,5 @@
 echo "Setting up node"
-bash setup.sh;
+bash .\\deployment\\setup.sh;
 
 echo "Copying config"
 #Copy the config
