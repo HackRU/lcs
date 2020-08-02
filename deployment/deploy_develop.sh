@@ -34,12 +34,6 @@ do
    printenv $i >> .env.dev
 done
 
-
-# echo "aws_access_key_id=\c">> aws_config
-# printenv DEVELOP_AWS_ACCESS_KEY_ID >> aws_config
-# echo "aws_secret_access_key">> aws_config
-# printenv DEVELOP_AWS_SECRET_ACCESS_KEY_DEVELOPMENT >> aws_config
-
 # Deploying!
 echo "Deploying!"
 npx serverless deploy --stage dev 
