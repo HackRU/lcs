@@ -1,9 +1,8 @@
-echo "Setting up node"
-bash .\\deployment\\setup.sh;
+bash ./deployment/setup.sh;
 
 echo "Copying config"
 #Copy the config
-cp config.prod.py config.py
+cp ./deployment/config.prod.py config.py
 
 #Exporting necessary environment variables
 echo "Setting up environment variables for permissions"
