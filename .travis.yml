@@ -34,4 +34,4 @@ deploy:
   - provider: script
     script: bash ./deployment/deploy_develop.sh
     on:
-      branch: update-deploy-script
+      branch: deploy
