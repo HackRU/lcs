@@ -1,7 +1,11 @@
 echo "Setting up node"
 bash .\\deployment\\setup.sh;
+pwd
+
 
 echo "Copying config"
+
+
 #Copy the config
 cp config.dev.py config.py
 
