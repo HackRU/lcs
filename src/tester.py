@@ -97,7 +97,7 @@ def update_validation_test(random = True):
 
     update_val = {
     }
-    from validate import validate_updates
+    from src.validate import validate_updates
     # a different fake user (I waste so much time).
     fake_usr = {
         "_id": "The Mongo Longo",

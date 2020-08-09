@@ -1,8 +1,7 @@
 from testing_utils import *
 
-import authorize
 import config
-import validate
+from src import validate, authorize
 
 import pytest
 from datetime import datetime, timedelta

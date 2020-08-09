@@ -1,4 +1,4 @@
-import cal_announce
+from src import cal_announce
 
 
 def test_get_cal():

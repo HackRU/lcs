@@ -2,8 +2,7 @@ import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
 
-import config
-from schemas import *
+from src.schemas import *
 
 
 # credit to https://stackoverflow.com/a/434328/5292630

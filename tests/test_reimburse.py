@@ -1,9 +1,7 @@
-import authorize
+from src import authorize, util, reimburse
 import config
 
 from testing_utils import *
-import util
-import reimburse
 
 email = "director77@gmail.com"
 pword = "1234566"

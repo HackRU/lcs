@@ -11,7 +11,7 @@ import requests
 import config
 from config import GOOGLE_CAL
 import pickle
-import util
+from src import util
 
 token_path = "./token.pickle"
 

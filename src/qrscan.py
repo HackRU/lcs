@@ -1,7 +1,6 @@
-from schemas import ensure_schema, ensure_logged_in_user, ensure_role
+from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 import pymongo
-import config
-from util import *
+from src.util import *
 
 def dbinfo():
     user_coll = coll("users")

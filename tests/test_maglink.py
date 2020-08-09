@@ -1,9 +1,8 @@
 from testing_utils import *
 
-from schemas import *
+from src.schemas import *
 
-import authorize
-import maglink
+from src import authorize, maglink
 
 import pytest
 import mock

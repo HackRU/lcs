@@ -1,9 +1,9 @@
 import requests
 
 import config
-import util
-from schemas import ensure_schema, ensure_logged_in_user
-from util import add_cors_headers
+from src import util
+from src.schemas import ensure_schema, ensure_logged_in_user
+from src.util import add_cors_headers
 
 
 def create_error_response(err_msg: str):

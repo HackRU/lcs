@@ -1,5 +1,5 @@
 import config
-from schemas import ensure_schema, ensure_logged_in_user
+from src.schemas import ensure_schema, ensure_logged_in_user
 
 import boto3
 from botocore.exceptions import ClientError

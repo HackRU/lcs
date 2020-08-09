@@ -1,12 +1,9 @@
 import json
 from datetime import datetime, timedelta
 import bcrypt
-import jwt
 
-import config
-import consume
-from schemas import *
-import util
+from src.schemas import *
+from src import util, consume
 
 
 @ensure_schema({

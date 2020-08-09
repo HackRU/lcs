@@ -1,5 +1,5 @@
-from schemas import *
-import util
+from src.schemas import *
+from src import util
 
 import bcrypt
 
