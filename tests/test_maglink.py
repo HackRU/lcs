@@ -1,7 +1,5 @@
 from testing_utils import *
 
-from src.schemas import *
-
 from src import authorize, maglink
 
 import pytest
