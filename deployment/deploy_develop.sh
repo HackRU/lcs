@@ -24,7 +24,8 @@ declare -a env_vars=(
  "DEVELOP_CAR_REIMBURSE"
  "DEVELOP_BUS_REIMBURSE"
  "DEVELOP_PLANE_REIMBURSE"
- "DEVELOP_SLACK_API_TOKEN")
+ "DEVELOP_SLACK_API_TOKEN"
+ "DEVELOP_RESUME_BUCKET")
 
 echo "For loop"
 ## now loop through the above env_vars
