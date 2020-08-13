@@ -15,23 +15,30 @@ SLACK_KEYS = {
 
 SPARKPOST_KEY = ""
 
+
 class GOOGLE_CAL:
+    CAL_ID = ""
+    CAL_API_KEY = ""
+
+    # optional - only needed if private data needs to be accessed
     SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
     CLIENT_ID = ""
     CLIENT_SECRET = ""
-    CAL_ID = ""
+
 
 MAPS_API_KEY = ""
+
 
 class TRAVEL:
     HACKRU_LOCATION = "New Brunswick, NJ, USA"
     MAX_REIMBURSE = 60
     CAR_RATE = {
-        range(0,50) : 0,
-        range(50,101) : 20,
-        range(101,201) : 40,
-        range(201,2**100000) : 59.99
+        range(0, 50): 0,
+        range(50, 101): 20,
+        range(101, 201): 40,
+        range(201, 2 ** 100000): 59.99
     }
+
 
 # edt
 TIMEZONE = timezone(timedelta(hours=-4))
