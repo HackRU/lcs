@@ -40,6 +40,7 @@ def google_cal(event, context, testing=False):
     try:
         service = discovery.build('calendar', 'v3', developerKey=GOOGLE_CAL.CAL_API_KEY)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
+        # pylint: disable=no-member
         events_result = service.events().list(calendarId=GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
                                               singleEvents=True, orderBy='startTime').execute()
         events = events_result.get('items', [])
