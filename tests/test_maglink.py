@@ -10,7 +10,7 @@ user_pass = "love"
 
 
 @pytest.mark.run(order=3)
-@mock.patch('maglink.use_sparkpost.send_email')
+@mock.patch('src.maglink.use_sparkpost.send_email')
 def test_forgot_password_link(mock_send_email):
     # Patch the send_email method to do nothing and always return success
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
@@ -22,7 +22,7 @@ def test_forgot_password_link(mock_send_email):
     assert link['forgot'] is True
 
 
-@mock.patch('maglink.use_sparkpost.send_email')
+@mock.patch('src.maglink.use_sparkpost.send_email')
 def test_forgot_password_link_bad_email(mock_send_email):
     # Patch the send_email method to do nothing and always return success
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
@@ -33,7 +33,7 @@ def test_forgot_password_link_bad_email(mock_send_email):
 
 
 @pytest.mark.run(order=3)
-@mock.patch('maglink.use_sparkpost.send_email')
+@mock.patch('src.maglink.use_sparkpost.send_email')
 def test_director_link(mock_send_email):
     # Patch the send_email method to do nothing and always return success
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
@@ -56,7 +56,7 @@ def test_director_link(mock_send_email):
 
 
 @pytest.mark.run(order=3)
-@mock.patch('maglink.use_sparkpost.send_email')
+@mock.patch('src.maglink.use_sparkpost.send_email')
 def test_director_link_bad_perms(mock_send_email):
     # Patch the send_email method to do nothing and always return success
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
