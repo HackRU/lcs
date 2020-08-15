@@ -23,7 +23,7 @@ install:
 
 script: 
   # Run tests
-  - python -m pylint *.py && python -m pytest --cov=.
+  - python -m pylint *.py && python -m pylint tests/*.py && python -m pytest --cov=.
       
 deploy:
   - provider: script
