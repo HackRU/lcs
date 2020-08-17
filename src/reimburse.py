@@ -125,7 +125,7 @@ def users_to_reimburse(lookup, users):
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def compute_all_reimburse(event, context, user):
+def compute_all_reimburse(event, context, user=None):
     """
     Function used by a director to compute reimbursements
     """
