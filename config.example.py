@@ -20,11 +20,6 @@ class GOOGLE_CAL:
     CAL_ID = ""
     CAL_API_KEY = ""
 
-    # optional - only needed if private data needs to be accessed
-    SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-    CLIENT_ID = ""
-    CLIENT_SECRET = ""
-
 
 MAPS_API_KEY = ""
 

@@ -24,11 +24,6 @@ class GOOGLE_CAL:
     CAL_ID = os.getenv("TRAVIS_GOOGLE_CAL_ID", "")
     CAL_API_KEY = os.getenv("TRAVIS_GOOGLE_CAL_API_KEY", "")
 
-    # optional - only needed if private data needs to be accessed
-    SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-    CLIENT_ID = os.getenv("TRAVIS_GOOGLE_CAL_CLIENT_ID", "")
-    CLIENT_SECRET = os.getenv("TRAVIS_GOOGLE_CAL_CLIENT_SECRET", "")
-
 
 MAPS_API_KEY = os.getenv("TRAVIS_MAPS_API_KEY", "")
 

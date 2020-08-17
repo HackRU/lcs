@@ -1,10 +1,8 @@
 import datetime
 import json
-import pickle
 import time
 
 import requests
-from google_auth_oauthlib import get_user_credentials
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
@@ -12,19 +10,6 @@ from pymongo import DESCENDING
 import config
 import util
 from config import GOOGLE_CAL
-
-token_path = "./token.pickle"
-
-
-def gen_token():
-    creds = get_user_credentials(
-            GOOGLE_CAL.SCOPES,
-            GOOGLE_CAL.CLIENT_ID,
-            GOOGLE_CAL.CLIENT_SECRET
-    )
-    # Save the credentials for the next run
-    with open(token_path, 'wb') as token:
-        pickle.dump(creds, token)
 
 
 @util.cors
