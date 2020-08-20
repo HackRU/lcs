@@ -53,3 +53,4 @@ wrapt==1.11.0
 boto3==1.9.200
 dnspython==1.16.0
 mongodb-migrations==0.7.0
+titlecase==1.1.1
