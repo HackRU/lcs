@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("..")
+sys.path.append("")
 
 from src import util
 import jsonschema as js
