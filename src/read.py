@@ -1,6 +1,7 @@
 from src.schemas import *
 
 
+
 def tidy_results(res):
     """
     Function used to clean up read results before returning to the user

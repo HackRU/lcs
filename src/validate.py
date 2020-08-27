@@ -5,6 +5,7 @@ import googlemaps as gm
 from src.schemas import *
 
 
+
 @ensure_schema({
     "type": "object",
     "properties": {
