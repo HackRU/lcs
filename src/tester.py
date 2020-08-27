@@ -4,6 +4,11 @@ import config
 import uuid
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from validate import validate_updates
+from random import sample, randint
+from functools import reduce
+from sys import argv
+from src.validate import validate_updates
 
 def e2e_test(url):
     """
@@ -97,7 +102,6 @@ def update_validation_test(random = True):
 
     update_val = {
     }
-    from src.validate import validate_updates
     # a different fake user (I waste so much time).
     fake_usr = {
         "_id": "The Mongo Longo",
@@ -219,8 +223,6 @@ def update_validation_test(random = True):
                     d[op].update(d1[op])
             return d
 
-        from random import sample, randint
-        from functools import reduce
         for i in range(5):
             # we randomly sample a random number of tests
             # and "and" all the lambdas. We also merge the
@@ -262,7 +264,6 @@ def update_validation_test(random = True):
             print("Admin case failure, got:", usr_cleaned)
 
 if __name__ == "__main__":
-    from sys import argv
     if len(argv) < 2:
         print("Defaulting to update validation")
         update_validation_test()

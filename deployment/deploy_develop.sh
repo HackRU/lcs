@@ -9,10 +9,9 @@ cp ./deployment/config.dev.py config.py
 echo "Setting up environment variables for permissions"
 
 echo "Copying env vars to .env"
-declare -a env_vars=( 
- "DEVELOP_GOOGLE_CAL_CLIENT_ID"
- "DEVELOP_GOOGLE_CAL_CLIENT_SECRET"
+declare -a env_vars=(
  "DEVELOP_GOOGLE_CAL_ID"
+ "DEVELOP_GOOGLE_CAL_API_KEY"
  "DEVELOP_SPARKPOST_KEY"
  "DEVELOP_MAPS_API_KEY"
  "DEVELOP_DB_URI"

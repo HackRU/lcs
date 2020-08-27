@@ -27,7 +27,7 @@ def run_printer(p_exec, email, qr_path):
     img = qrcode.make(email)
     with open(qr_path, 'wb') as qr_out:
         img.save(qr_out, format='PNG')
-    pr = subprocess.run(p_exec)
+    pr = subprocess.run(p_exec, check=True)
     print(pr)
     return pr.returncode
 

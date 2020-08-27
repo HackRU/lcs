@@ -8,10 +8,9 @@ cp ./deployment/config.prod.py config.py
 echo "Setting up environment variables for permissions"
 
 echo "Copying env vars to .env"
-declare -a env_vars=( 
- "PRODUCTION_GOOGLE_CAL_CLIENT_ID"
- "PRODUCTION_GOOGLE_CAL_CLIENT_SECRET"
+declare -a env_vars=(
  "PRODUCTION_GOOGLE_CAL_ID"
+ "PRODUCTION_GOOGLE_CAL_API_KEY"
  "PRODUCTION_SPARKPOST_KEY"
  "PRODUCTION_MAPS_API_KEY"
  "PRODUCTION_DB_URI"

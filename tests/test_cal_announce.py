@@ -1,5 +1,6 @@
 from src import cal_announce
-
+from unittest.mock import patch
+from config import GOOGLE_CAL
 
 
 def test_get_cal():
@@ -8,10 +9,25 @@ def test_get_cal():
     assert res["statusCode"] == 200
 
 
-def test_missing_tok():
-    real = cal_announce.token_path
-    cal_announce.token_path = "./bogus.pickle"
-    
+@patch.object(GOOGLE_CAL, 'CAL_API_KEY', '')
+def test_missing_key():
     res = cal_announce.google_cal({}, {})
     assert res["statusCode"] == 500
-    cal_announce.token_path = real
+
+
+@patch.object(GOOGLE_CAL, 'CAL_API_KEY', 'bad key')
+def test_bad_key():
+    res = cal_announce.google_cal({}, {})
+    assert res["statusCode"] == 500
+
+
+@patch.object(GOOGLE_CAL, 'CAL_ID', '')
+def test_missing_cal_id():
+    res = cal_announce.google_cal({}, {})
+    assert res["statusCode"] == 500
+
+
+@patch.object(GOOGLE_CAL, 'CAL_ID', 'bad cal id')
+def test_bad_cal_id():
+    res = cal_announce.google_cal({}, {})
+    assert res["statusCode"] == 500
