@@ -14,8 +14,6 @@ before_script:
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
   #Copy the config file
   - cp config.travis.py config.py
-  #Create token.pickle
-  - echo $TRAVIS_GOOGLE_CAL_TOKEN | base64 -d > token.pickle
 
 install:
     #Install all the requirements
