@@ -55,8 +55,8 @@ plugins:
   - serverless-dotenv-plugin
 package:
   include:
-     - '*.py'
-     - token.pickle
+     - 'src/*.py'
+     - 'config.py'
   exclude:
      - env/**
      - '*.sh'
@@ -81,7 +81,7 @@ package:
 
 functions:
   authorize:
-    handler: authorize.authorize
+    handler: src/authorize.authorize
     events:
       - http:
           path: authorize
@@ -92,7 +92,7 @@ functions:
             template:
               application/json: '$input.body'
   consume:
-    handler: consume.consume_url
+    handler: src/consume.consume_url
     events:
       - http:
           path: consume
@@ -103,7 +103,7 @@ functions:
             template:
               application/json: '$input.body'
   create:
-    handler: authorize.create_user
+    handler: src/authorize.create_user
     events:
       - http:
           path: create
@@ -114,7 +114,7 @@ functions:
             template:
               application/json: '$input.body'
   createmagiclink:
-    handler: maglink.gen_magic_link
+    handler: src/maglink.gen_magic_link
     events:
       - http:
           path: createmagiclink
@@ -125,7 +125,7 @@ functions:
             template:
               application/json: '$input.body'
   dayof-events:
-    handler: cal_announce.google_cal
+    handler: src/cal_announce.google_cal
     events:
       - http:
           path: dayof-events
@@ -136,7 +136,7 @@ functions:
             template:
               application/json: '$input.body'
   dayof-slack:
-    handler: cal_announce.slack_announce
+    handler: src/cal_announce.slack_announce
     events:
       - http:
           path: dayof-slack
@@ -147,7 +147,7 @@ functions:
             template:
               application/json: '$input.body'
   read:
-    handler: read.read_info
+    handler: src/read.read_info
     events:
       - http:
           path: read
@@ -158,7 +158,7 @@ functions:
             template:
               application/json: '$input.body'
   reimburse:
-    handler: reimburse.compute_all_reimburse
+    handler: src/reimburse.compute_all_reimburse
     events:
       - http:
           path: reimburse
@@ -169,7 +169,7 @@ functions:
             template:
               application/json: '$input.body'
   resume:
-    handler: resume.resume
+    handler: src/resume.resume
     events:
       - http:
           path: resume
@@ -180,7 +180,7 @@ functions:
             template:
               application/json: '$input.body'
   send-emails:
-    handler: use_sparkpost.send_emails
+    handler: src/use_sparkpost.send_emails
     events:
       - http:
           path: send-emails
@@ -191,7 +191,7 @@ functions:
             template:
               application/json: '$input.body'
   update:
-    handler: validate.update
+    handler: src/validate.update
     events:
       - http:
           path: update
@@ -202,7 +202,7 @@ functions:
             template:
               application/json: '$input.body'
   validate:
-    handler: validate.validate
+    handler: src/validate.validate
     events:
       - http:
           path: validate
@@ -213,7 +213,7 @@ functions:
             template:
               application/json: '$input.body'
   link-qr:
-    handler: qrscan.qr_match
+    handler: src/qrscan.qr_match
     events:
       - http:
           path: link-qr
@@ -224,7 +224,7 @@ functions:
             template:
               application/json: '$input.body'
   attend-event:
-    handler: qrscan.attend_event
+    handler: src/qrscan.attend_event
     events:
       - http:
           path: attend-event
@@ -235,7 +235,7 @@ functions:
             template:
               application/json: '$input.body'
   slack-dm:
-    handler: slack.generate_dm_link
+    handler: src/slack.generate_dm_link
     -http:
       path: slack-dm
       integration: lambda

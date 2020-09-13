@@ -1,7 +1,5 @@
-import authorize
+from src import authorize, util, resume
 import config
-import resume
-import util
 
 import requests
 

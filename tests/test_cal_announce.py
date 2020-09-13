@@ -1,6 +1,5 @@
+from src import cal_announce
 from unittest.mock import patch
-
-import cal_announce
 from config import GOOGLE_CAL
 
 

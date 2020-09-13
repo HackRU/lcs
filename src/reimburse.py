@@ -2,8 +2,7 @@ import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
 
-import config
-from schemas import *
+from src.schemas import *
 
 
 # credit to https://stackoverflow.com/a/434328/5292630
@@ -126,7 +125,7 @@ def users_to_reimburse(lookup, users):
 })
 @ensure_logged_in_user()
 @ensure_role([['director']])
-def compute_all_reimburse(event, context, user):
+def compute_all_reimburse(event, context, user=None):
     """
     Function used by a director to compute reimbursements
     """

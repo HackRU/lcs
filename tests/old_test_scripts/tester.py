@@ -8,7 +8,7 @@ from validate import validate_updates
 from random import sample, randint
 from functools import reduce
 from sys import argv
-
+from src.validate import validate_updates
 
 def e2e_test(url):
     """

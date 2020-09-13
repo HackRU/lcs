@@ -6,9 +6,8 @@ import requests
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
-
-import config
-import util
+import pickle
+from src import util
 from config import GOOGLE_CAL
 
 
