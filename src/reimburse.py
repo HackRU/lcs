@@ -102,7 +102,9 @@ def users_to_reimburse(lookup, users):
         if user['travelling_from']['mode'] == 'car':
             dist = lookup[user['travelling_from']['mode']].get(user['travelling_from']['formatted_addr'], 0)
             dist = round(2*dist/1609.344)
+            print(f"This is the distance: {dist}")
             result = [config.TRAVEL.CAR_RATE[key] for key in config.TRAVEL.CAR_RATE if dist in key]
+            print(f"This is the result: {result}")
             reimburse = result[0]
         # otherwise, they are eligible for the max reimbursement set in the config
         else:
