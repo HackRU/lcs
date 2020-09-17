@@ -8,24 +8,24 @@ from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
 import pickle
 from src import util
-from config import GOOGLE_CAL
+import config
 
 
 @util.cors
 def google_cal(event, context, testing=False):
-    if not GOOGLE_CAL.CAL_API_KEY:
+    if not config.GOOGLE_CAL.CAL_API_KEY:
         return {'statusCode': 500, 'body': 'Google API key not configured'}
 
-    if not GOOGLE_CAL.CAL_ID:
+    if not config.GOOGLE_CAL.CAL_ID:
         return {'statusCode': 500, 'body': 'Google Calendar ID not set'}
 
     num_events = event.get('num_events', 10)
 
     try:
-        service = discovery.build('calendar', 'v3', developerKey=GOOGLE_CAL.CAL_API_KEY, cache_discovery=False)
+        service = discovery.build('calendar', 'v3', developerKey=config.GOOGLE_CAL.CAL_API_KEY, cache_discovery=False)
         now = datetime.datetime.utcnow().isoformat() + 'Z'
         # pylint: disable=no-member
-        events_result = service.events().list(calendarId=GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
+        events_result = service.events().list(calendarId=config.GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
                                               singleEvents=True, orderBy='startTime').execute()
         events = events_result.get('items', [])
         return {'statusCode': 200, 'body': events}
