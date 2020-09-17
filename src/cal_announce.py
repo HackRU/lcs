@@ -8,15 +8,15 @@ from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
 import pickle
 from src import util
-from config import GOOGLE_CAL
+import config
 
 
 @util.cors
 def google_cal(event, context, testing=False):
-    if not GOOGLE_CAL.CAL_API_KEY:
+    if not config.GOOGLE_CAL.CAL_API_KEY:
         return {'statusCode': 500, 'body': 'Google API key not configured'}
 
-    if not GOOGLE_CAL.CAL_ID:
+    if not config.GOOGLE_CAL.CAL_ID:
         return {'statusCode': 500, 'body': 'Google Calendar ID not set'}
 
     num_events = event.get('num_events', 10)
