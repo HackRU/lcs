@@ -32,4 +32,4 @@ deploy:
   - provider: script
     script: bash ./deployment/deploy_develop.sh
     on:
-      branch: fix-relative-import
+      branch: develop
