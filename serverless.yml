@@ -57,6 +57,7 @@ package:
   include:
      - 'src/*.py'
      - 'config.py'
+     - '__init__.py'
   exclude:
      - env/**
      - '*.sh'
