@@ -26,16 +26,16 @@ class GOOGLE_CAL:
 MAPS_API_KEY = os.getenv("PRODUCTION_MAPS_API_KEY", "")
 
 # Currently not used as reimbursement is disabled
-class TRAVEL:
-    HACKRU_LOCATION = "New Brunswick, NJ, USA"
-    MAX_REIMBURSE = float(os.getenv("PRODUCTION_MAX_REIMBURSE", ""))
-    BUDGET = float(os.getenv("PRODUCTION_TRAVEL_BUDGET", ""))
-    MULTIPLIERS = {
-        "car": float(os.getenv("PRODUCTION_CAR_REIMBURSE", )),
-        "train":  float(os.getenv("PRODUCTION_TRAIN_REIMBURSE", )),
-        "bus": float(os.getenv("PRODUCTION_BUS_REIMBURSE", )),
-        "plane":  float(os.getenv("PRODUCTION_PLANE_REIMBURSE", ))
-    }
+# class TRAVEL:
+#     HACKRU_LOCATION = "New Brunswick, NJ, USA"
+#     MAX_REIMBURSE = float(os.getenv("PRODUCTION_MAX_REIMBURSE", ""))
+#     BUDGET = float(os.getenv("PRODUCTION_TRAVEL_BUDGET", ""))
+#     MULTIPLIERS = {
+#         "car": float(os.getenv("PRODUCTION_CAR_REIMBURSE", )),
+#         "train":  float(os.getenv("PRODUCTION_TRAIN_REIMBURSE", )),
+#         "bus": float(os.getenv("PRODUCTION_BUS_REIMBURSE", )),
+#         "plane":  float(os.getenv("PRODUCTION_PLANE_REIMBURSE", ))
+#     }
 
 # edt
 TIMEZONE = timezone(timedelta(hours=-4))
