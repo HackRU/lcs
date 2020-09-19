@@ -20,7 +20,7 @@ def dbinfo():
 })
 @ensure_logged_in_user()
 @ensure_role([['director', 'organizer', 'volunteer']])
-def qr_match(event, context, user=None):
+def qr_match(event, context, user):
     """
     Function used to associate a given QR code with the given email
     """
@@ -45,7 +45,7 @@ def qr_match(event, context, user=None):
 })
 @ensure_logged_in_user()
 @ensure_role([['director', 'organizer', 'volunteer']])
-def attend_event(aws_event, context, user=None):
+def attend_event(aws_event, context, user):
     """
     Function used to mark that a user has attended an event
     """
