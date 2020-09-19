@@ -157,17 +157,17 @@ functions:
           request:
             template:
               application/json: '$input.body'
-  reimburse:
-    handler: src/reimburse.compute_all_reimburse
-    events:
-      - http:
-          path: reimburse
-          integration: lambda
-          method: post
-          cors: true
-          request:
-            template:
-              application/json: '$input.body'
+  # reimburse:
+  #   handler: src/reimburse.compute_all_reimburse
+  #   events:
+  #     - http:
+  #         path: reimburse
+  #         integration: lambda
+  #         method: post
+  #         cors: true
+  #         request:
+  #           template:
+  #             application/json: '$input.body'
   resume:
     handler: src/resume.resume
     events:
