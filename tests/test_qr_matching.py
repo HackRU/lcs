@@ -1,8 +1,7 @@
-import authorize
+from src import authorize, util, qrscan
+
 import config
-import qrscan
 from testing_utils import *
-import util
 
 email = "organizer@email.com"
 pwrord = "1234567"

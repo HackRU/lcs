@@ -2,7 +2,7 @@ import sys
 
 sys.path.append("..")
 
-import util
+from src import util
 import jsonschema as js
 
 

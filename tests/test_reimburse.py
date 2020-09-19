@@ -1,9 +1,7 @@
-import authorize
+from src import authorize, util, reimburse
 import config
 
 from testing_utils import *
-import util
-import reimburse
 
 email = "director77@gmail.com"
 pword = "1234566"
@@ -66,7 +64,7 @@ users = [
             "is_real": True,
             "mode": "car",
             "addr_ready": True,
-            "formatted_addr": "Pittsburgh, PA, USA"
+            "formatted_addr": "Cleveland, OH, USA"
         }
     }
 ]

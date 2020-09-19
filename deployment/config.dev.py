@@ -1,6 +1,5 @@
-from datetime import datetime, timezone, timedelta
 import os
-
+from datetime import datetime, timezone, timedelta
 
 # uri should contain auth and default database
 DB_URI_LOCAL = os.getenv("DEVELOP_DB_URI", "")
@@ -19,24 +18,27 @@ SLACK_KEYS = {
     'channel': os.getenv("DEVELOP_SLACK_CHANNEL_ID")
 }
 
+
 class GOOGLE_CAL:
-    SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-    CLIENT_ID = os.getenv("DEVELOP_GOOGLE_CAL_CLIENT_ID", "")
-    CLIENT_SECRET = os.getenv("DEVELOP_GOOGLE_CAL_CLIENT_SECRET", "")
     CAL_ID = os.getenv("DEVELOP_GOOGLE_CAL_ID", "")
+    CAL_API_KEY = os.getenv("DEVELOP_GOOGLE_CAL_API_KEY", "")
+
 
 MAPS_API_KEY = os.getenv("DEVELOP_MAPS_API_KEY", "")
 
-class TRAVEL:
-    HACKRU_LOCATION = "New Brunswick, NJ, USA"
-    MAX_REIMBURSE = float(os.getenv("DEVELOP_MAX_REIMBURSE", ""))
-    BUDGET = float(os.getenv("DEVELOP_TRAVEL_BUDGET", ""))
-    MULTIPLIERS = {
-        "car": float(os.getenv("DEVELOP_CAR_REIMBURSE", )),
-        "train":  float(os.getenv("DEVELOP_TRAIN_REIMBURSE", )),
-        "bus": float(os.getenv("DEVELOP_BUS_REIMBURSE", )),
-        "plane":  float(os.getenv("DEVELOP_PLANE_REIMBURSE", )) #doesn't matter - makes the code handy.
-    }
+
+# class TRAVEL:
+#     HACKRU_LOCATION = "New Brunswick, NJ, USA"
+#     MAX_REIMBURSE = float(os.getenv("DEVELOP_MAX_REIMBURSE", ""))
+#     BUDGET = float(os.getenv("DEVELOP_TRAVEL_BUDGET", ""))
+#     MULTIPLIERS = {
+#         "car": float(os.getenv("DEVELOP_CAR_REIMBURSE", )),
+#         "train": float(os.getenv("DEVELOP_TRAIN_REIMBURSE", )),
+#         "bus": float(os.getenv("DEVELOP_BUS_REIMBURSE", )),
+#         "plane": float(os.getenv("DEVELOP_PLANE_REIMBURSE", ))  # doesn't matter - makes the code handy.
+#     }
+
+
 # edt
 TIMEZONE = timezone(timedelta(hours=-4))
 

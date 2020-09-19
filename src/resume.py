@@ -1,5 +1,5 @@
 import config
-from schemas import ensure_schema, ensure_logged_in_user
+from src.schemas import ensure_schema, ensure_logged_in_user
 
 import boto3
 from botocore.exceptions import ClientError
@@ -52,7 +52,7 @@ def exists(email, s3_client):
     "required": ["token"]
 })
 @ensure_logged_in_user()
-def resume(event, ctx, user):
+def resume(event, ctx, user=None):
     """
     Function used to upload a user's resume to a S3 bucket
     """
