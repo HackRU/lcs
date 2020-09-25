@@ -38,11 +38,12 @@ class TRAVEL:
 # edt
 TIMEZONE = timezone(timedelta(hours=-4))
 
-RESUME = {
+AWS = {
     "aws_access_key_id": "AKI0f9jf209302jfjjfjfjfjfjfjfjfjfjfjfjfish",
     "aws_secret_access_key": "42069",
 }
 RESUME_BUCKET = "resumesf19"
+WAIVER_BUCKET = "waiversf19"
 
 # first is open second is close
 REGISTRATION_DATES = [

@@ -179,6 +179,17 @@ functions:
           request:
             template:
               application/json: '$input.body'
+  waiver:
+    handler: src/waiver.waiver
+    events:
+      - http:
+          path: waiver
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
   send-emails:
     handler: src/use_sparkpost.send_emails
     events:
