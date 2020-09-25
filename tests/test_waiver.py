@@ -39,7 +39,6 @@ def test_baduser():
 
 def test_roundtrip():
     result = waiver.waiver({"token": token}, {})
-    print("Result: ", result)
     assert result["statusCode"] == 200
     upload = result["body"]["upload"]
     download = result["body"]["download"]
@@ -64,6 +63,5 @@ def test_exists():
     token = creation["body"]["token"]
     
     result = waiver.waiver({"token": token}, {})
-    print("Result: ", result)
     assert result["statusCode"] == 200
     assert not result["body"]["exists"]
