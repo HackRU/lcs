@@ -52,11 +52,12 @@ REGISTRATION_DATES = [
      datetime(2020, 10, 9, 12, tzinfo=TIMEZONE)]
 ]
 
-RESUME = {
+AWS = {
     "aws_access_key_id": os.environ.get("TRAVIS_AWS_ACCESS_KEY_ID"),
     "aws_secret_access_key": os.environ.get("TRAVIS_AWS_SECRET_ACCESS_KEY"),
 }
 RESUME_BUCKET = "resumet"
+WAIVER_BUCKET = "waivert"
 
 # Json webtoken
 JWT_SECRET = os.getenv("TRAVIS_JWT_SECRET", "")

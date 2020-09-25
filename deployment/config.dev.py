@@ -49,11 +49,12 @@ REGISTRATION_DATES = [
      datetime.now(TIMEZONE) + timedelta(days=+1)]
 ]
 
-RESUME = {
+AWS = {
     "aws_access_key_id": os.environ.get("DEVELOP_AWS_ACCESS_KEY_ID"),
     "aws_secret_access_key": os.environ.get("DEVELOP_AWS_SECRET_ACCESS_KEY"),
 }
 RESUME_BUCKET = os.getenv("DEVELOP_RESUME_BUCKET", "")
+WAIVER_BUCKET = os.getenv("DEVELOP_WAIVER_BUCKET", "")
 
 # Json webtoken
 JWT_SECRET = os.getenv("DEVELOP_JWT_SECRET", "")

@@ -50,12 +50,13 @@ REGISTRATION_DATES = [
      datetime(int(os.getenv("PRODUCTION_DAY_OF_END_YEAR", )), int(os.getenv("PRODUCTION_DAY_OF_START_MONTH", )), int(os.getenv("PRODUCTION_DAY_OF_END_DAY", )), int(os.getenv("PRODUCTION_DAY_OF_END_HOUR", )), tzinfo=TIMEZONE)]
 ]
 
-RESUME = {
+AWS = {
     "aws_access_key_id": os.environ.get("PRODUCTION_AWS_ACCESS_KEY_ID"),
     "aws_secret_access_key": os.environ.get("PRODUCTION_AWS_SECRET_ACCESS_KEY"),
     "region_name":  os.environ.get("PRODUCTION_REGION_NAME"),
 }
 RESUME_BUCKET = os.getenv("PRODUCTION_RESUME_BUCKET", "")
+WAIVER_BUCKET = os.getenv("PRODUCTION_WAIVER_BUCKET", "")
 
 # Json webtoken
 JWT_SECRET = os.getenv("PRODUCTION_JWT_SECRET", "")
