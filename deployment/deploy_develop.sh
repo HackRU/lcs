@@ -19,7 +19,8 @@ declare -a env_vars=(
  "DEVELOP_JWT_ALGO"
  "DEVELOP_SLACK_API_TOKEN"
  "DEVELOP_SLACK_CHANNEL_ID"
- "DEVELOP_RESUME_BUCKET")
+ "DEVELOP_RESUME_BUCKET"
+ "DEVELOP_WAIVER_BUCKET")
  
 echo "For loop"
 # Disabled environment variables:
