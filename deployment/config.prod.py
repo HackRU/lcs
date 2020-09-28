@@ -47,7 +47,7 @@ REGISTRATION_DATES = [
      datetime(int(os.getenv("PRODUCTION_END_YEAR", )), int(os.getenv("PRODUCTION_END_MONTH", )), int(os.getenv("PRODUCTION_END_DAY", )), int(os.getenv("PRODUCTION_END_HOUR", )), tzinfo=TIMEZONE)],
     # reopen during the event of
     [datetime(int(os.getenv("PRODUCTION_DAY_OF_START_YEAR", )), int(os.getenv("PRODUCTION_DAY_OF_START_MONTH", )), int(os.getenv("PRODUCTION_DAY_OF_START_DAY", )), int(os.getenv("PRODUCTION_DAY_OF_START_HOUR", )), tzinfo=TIMEZONE),
-     datetime(int(os.getenv("PRODUCTION_DAY_OF_END_YEAR", )), int(os.getenv("PRODUCTION_DAY_OF_START_MONTH", )), int(os.getenv("PRODUCTION_DAY_OF_END_DAY", )), int(os.getenv("PRODUCTION_DAY_OF_END_HOUR", )), tzinfo=TIMEZONE)]
+     datetime(int(os.getenv("PRODUCTION_DAY_OF_END_YEAR", )), int(os.getenv("PRODUCTION_DAY_OF_END_MONTH", )), int(os.getenv("PRODUCTION_DAY_OF_END_DAY", )), int(os.getenv("PRODUCTION_DAY_OF_END_HOUR", )), tzinfo=TIMEZONE)]
 ]
 
 AWS = {
