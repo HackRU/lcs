@@ -3,7 +3,6 @@ from unittest.mock import patch
 from config import GOOGLE_CAL
 
 
-
 def test_get_cal():
     res = cal_announce.google_cal({}, {})
     print(res)
