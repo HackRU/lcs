@@ -1,5 +1,5 @@
 import config
-from schemas import ensure_schema, ensure_logged_in_user
+from src.schemas import ensure_schema, ensure_logged_in_user
 
 import boto3
 from botocore.exceptions import ClientError
@@ -52,12 +52,12 @@ def exists(email, s3_client):
     "required": ["token"]
 })
 @ensure_logged_in_user()
-def resume(event, ctx, user):
+def resume(event, ctx, user=None):
     """
     Function used to upload a user's resume to a S3 bucket
     """
     # creates a client connection to the S3 bucket
-    client = boto3.client("s3", **config.RESUME)
+    client = boto3.client("s3", **config.AWS)
     # attempts to create presigned URLs to upload and download the resume as well as check if a
     # resume for that user already exists in S3
     try:

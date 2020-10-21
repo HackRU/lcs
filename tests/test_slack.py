@@ -1,9 +1,6 @@
-import os
-
-import authorize
+from src import authorize, util
 import config
-import util
-from slack import generate_dm_link
+from src.slack import generate_dm_link
 
 # credentials of the generator
 email = "generator@test.com"

@@ -1,9 +1,10 @@
 import re
 
-import config
 import googlemaps as gm
 
-from schemas import *
+from src.schemas import *
+
+
 
 
 @ensure_schema({

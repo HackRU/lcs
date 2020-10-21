@@ -1,65 +1,37 @@
 import datetime
-import os
+import json
 import time
 
-from googleapiclient import discovery
-from google_auth_oauthlib import get_user_credentials
-from google.auth.transport.requests import Request
-from pymongo import DESCENDING
 import requests
-
-import config
-from config import GOOGLE_CAL
+from googleapiclient import discovery
+from googleapiclient.errors import HttpError
+from pymongo import DESCENDING
 import pickle
-import util
-
-token_path = "./token.pickle"
-
-
-def gen_token():
-    creds = get_user_credentials(
-        GOOGLE_CAL.SCOPES,
-        GOOGLE_CAL.CLIENT_ID,
-        GOOGLE_CAL.CLIENT_SECRET
-    )
-    # Save the credentials for the next run
-    with open(token_path, 'wb') as token:
-        pickle.dump(creds, token)
+from src import util
+import config
 
 
 @util.cors
 def google_cal(event, context, testing=False):
+    if not config.GOOGLE_CAL.CAL_API_KEY:
+        return {'statusCode': 500, 'body': 'Google API key not configured'}
+
+    if not config.GOOGLE_CAL.CAL_ID:
+        return {'statusCode': 500, 'body': 'Google Calendar ID not set'}
+
     num_events = event.get('num_events', 10)
 
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    # IMPORTANT gen_token must be ran and authorized before uploading to lambda,
-    # and token.pickle should be uploaded with it
-    if os.path.exists(token_path):
-        with open(token_path, 'rb') as token:
-            creds = pickle.load(token)
-    else:
-        return {'statusCode': 500, 'body': 'couldn\'t find stored authorization token in ' + os.getcwd()}
-
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds.valid:
-        if creds.expired and creds.refresh_token:
-            try:
-                creds.refresh(Request())
-            except:
-                return {'statusCode': 500, 'body': 'failed to refresh credentials'}
-        else:
-            return {'statusCode': 500, 'body': 'google calendar credentials invalid'}
-
-    service = discovery.build('calendar', 'v3', credentials=creds)
-    now = datetime.datetime.utcnow().isoformat() + 'Z'
-    # pylint: disable=no-member
-    events_result = service.events().list(calendarId=GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
-                                          singleEvents=True, orderBy='startTime').execute()
-    events = events_result.get('items', [])
-    return {'statusCode': 200, 'body': events}
+    try:
+        service = discovery.build('calendar', 'v3', developerKey=config.GOOGLE_CAL.CAL_API_KEY, cache_discovery=False)
+        now = datetime.datetime.utcnow().isoformat() + 'Z'
+        # pylint: disable=no-member
+        events_result = service.events().list(calendarId=config.GOOGLE_CAL.CAL_ID, timeMin=now, maxResults=num_events * 5,
+                                              singleEvents=True, orderBy='startTime').execute()
+        events = events_result.get('items', [])
+        return {'statusCode': 200, 'body': events}
+    except HttpError as err:
+        return {'statusCode': 500,
+                'body': f'Encountered a Google Calendar API error: {json.loads(err.args[1])["error"]["message"]}'}
 
 
 def slack_announce(event, context):

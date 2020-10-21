@@ -1,9 +1,9 @@
 from sparkpost import SparkPost
 
-from schemas import *
+from src.schemas import *
 import config
-import util
-from read import read_info
+from src import util
+from src.read import read_info
 
 emails = SparkPost(config.SPARKPOST_KEY)
 
