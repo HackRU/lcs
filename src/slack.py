@@ -62,6 +62,6 @@ def generate_dm_link(event, context, user=None):
     creation_info = response_json["channel"]
     dm_id = creation_info["id"]
     server_id = creation_info["shared_team_ids"][0]
-    link_to_dm = f"https://apps.slack.com/client/{server_id}/{dm_id}"
+    link_to_dm = f"https://app.slack.com/client/{server_id}/{dm_id}"
     # returns the link and OK status code
     return add_cors_headers({"statusCode": 200, "body": {"slack_dm_link": link_to_dm}})
