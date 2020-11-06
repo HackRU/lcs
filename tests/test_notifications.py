@@ -5,6 +5,6 @@ from src import notifications
 
 def test_notifications():
     try:
-        notifications.main()
+        notifications.update_notification_status()
     except Exception as e:
         print(f"Error: {e}")

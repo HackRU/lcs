@@ -108,7 +108,7 @@ def google_calendar_notifications():
     except Exception as e:
         logging.error(f"Firebase messaging error: {e}")
 
-def main():
+def update_notification_status():
     """This function should be run as a cron job."""
     slack_notifications()
     google_calendar_notifications()
