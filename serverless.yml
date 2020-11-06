@@ -256,6 +256,6 @@ functions:
         template:
           application/json: '$input.body'
   notifications:
-    handler: src/notifications.main
+    handler: src/notifications.update_notification_status
     events:
       - schedule: rate(10 minutes)
