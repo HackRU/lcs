@@ -44,6 +44,9 @@ def check_slack(n=10):
     if slack_resp["statusCode"] != 200:
         return {"error": f'Error retriving slack messages: {slack_resp["statusCode"]} {slack_resp["body"]}'}
 
+    if not slack_resp["body"]:
+        return {"body": None}
+
     latest_msg = slack_resp["body"][0]
     msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg["ts"]))
     body = None
@@ -76,6 +79,9 @@ def check_google_calendar(n=10):
     cal_resp = cal_announce.google_cal({"num_events": 1}, None)
     if cal_resp["statusCode"] != 200:
         return {"error": f'Error retriving Google Calendar events: {cal_resp["statusCode"]} {cal_resp["body"]}'}
+
+    if not cal_resp["body"]:
+        return {"body": None}
 
     latest_cal_event = cal_resp["body"][0]
     event_time = datetime.datetime.strptime(latest_cal_event["start"]["dateTime"], "%Y-%m-%dT%H:%M:%S%z")
