@@ -19,6 +19,9 @@ SLACK_KEYS = {
     'channel': os.getenv("TRAVIS_SLACK_CHANNEL_ID")
 }
 
+class FIREBASE:
+    CREDENTIALS = json.loads(os.getenv("FIREBASE_CREDENTIALS", "{}")) # Firebase serviceAccountKey.json
+    TOPIC = "announcements"
 
 class GOOGLE_CAL:
     CAL_ID = os.getenv("TRAVIS_GOOGLE_CAL_ID", "")
