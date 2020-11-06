@@ -5,7 +5,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import messaging
 
-from cal_announce import slack_announce, google_cal
+from src import cal_announce
 from config import FIREBASE
 
 logger = logging.getLogger()
@@ -13,28 +13,40 @@ logger.setLevel(logging.INFO)
 
 firebase_admin.initialize_app(credentials.Certificate(FIREBASE.CREDENTIALS))
 
-def send_notification(topic, content):
+def send_notification(message_title, message_body, message_topic):
     """Sends a notification to the appropriate topic in Firebase.
 
+    Sends a message consisting of a title and a body in the form of a push
+    notification to the Flutter mobile app.
+
     Documentation:
-    https://firebase.google.com/docs/cloud-messaging/manage-topics
-    https://firebase.google.com/docs/cloud-messaging/send-message#send-messages-to-topics
-    https://firebase.google.com/docs/reference/admin/python/firebase_admin.messaging.html
-    https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
+    https://pub.dev/packages/firebase_messaging
     """
-    message = messaging.Message(topic=topic, data=content)
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=message_title,
+            body=message_body,
+        ),
+        topic=message_topic,
+        data={
+            "title": message_title,
+            "body": message_body,
+            "click_action": "FLUTTER_NOTIFICATION_CLICK"
+        }
+    )
     return messaging.send(message)
 
 def check_slack(n=10):
     """Retrieves latest message from slack. If the message timestamp is within n minutes of the
     current time, returns the message body.
     """
-    slack_resp = slack_announce({"num_messages": 1}, None)
+    slack_resp = cal_announce.slack_announce({"num_messages": 1}, None)
     if slack_resp["statusCode"] != 200:
         return {"error": f'Error retriving slack messages: {slack_resp["statusCode"]} {slack_resp["body"]}'}
 
     latest_msg = slack_resp["body"][0]
     msg_time = datetime.datetime.utcfromtimestamp(float(latest_msg["ts"]))
+    body = None
     if msg_time + datetime.timedelta(minutes=n) > datetime.datetime.utcnow():
         body = latest_msg["text"]
     return {"body": body}
@@ -52,22 +64,25 @@ def slack_notifications():
         return
 
     try:
-        response = send_notification(topic, {"body": slack_msg["body"]})
-        logging.info(f"Firebase message sent successfully! Response: {response}")
+        response = send_notification("New Slack Announcement!", slack_msg["body"], FIREBASE.TOPIC)
+        logging.info(f'Firebase message for Slack ({slack_msg["body"]}) sent successfully! Response: {response}')
     except Exception as e:
         logging.error(f"Firebase messaging error: {e}")
 
 def check_google_calendar(n=10):
-    """WIP - Retrieves latest event from Google Calendar. If the event timestamp is within n minutes of the
+    """Retrieves latest event from Google Calendar. If the event timestamp is within n minutes of the
     current time, returns the event body.
     """
-    cal_resp = google_cal({"num_events": 1}, None)
+    cal_resp = cal_announce.google_cal({"num_events": 1}, None)
     if cal_resp["statusCode"] != 200:
         return {"error": f'Error retriving Google Calendar events: {cal_resp["statusCode"]} {cal_resp["body"]}'}
 
-    # TODO: Check time of latest calendar event and make sure it is within bounds (need to get format of cal_resp)
-
-    return {"body": cal_resp["body"]} # Placeholder
+    latest_cal_event = cal_resp["body"][0]
+    event_time = datetime.datetime.strptime(latest_cal_event["start"]["dateTime"], "%Y-%m-%dT%H:%M:%S%z")
+    body = None
+    if datetime.datetime.now(event_time.tzinfo) + datetime.timedelta(minutes=n) > event_time:
+        body = latest_cal_event["summary"]
+    return {"body": body}
 
 def google_calendar_notifications():
     """Cron job to send Firebase notifications whenever a new Google calendar event is approaching."""
@@ -82,8 +97,8 @@ def google_calendar_notifications():
         return
 
     try:
-        response = send_notification(topic, {"body": google_cal_event["body"]})
-        logging.info(f"Firebase message sent successfully! Response: {response}")
+        response = send_notification("Calender Event Approaching!", google_cal_event["body"], FIREBASE.TOPIC)
+        logging.info(f'Firebase message for Google Calendar ({google_cal_event["body"]}) sent successfully! Response: {response}')
     except Exception as e:
         logging.error(f"Firebase messaging error: {e}")
 

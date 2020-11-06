@@ -255,3 +255,7 @@ functions:
       request:
         template:
           application/json: '$input.body'
+  notifications:
+    handler: src/notifications.main
+    events:
+      - schedule: rate(10 minutes)
