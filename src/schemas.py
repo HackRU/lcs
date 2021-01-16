@@ -1,4 +1,5 @@
 import jsonschema as js
+import json
 from src import util
 import jwt
 
@@ -14,8 +15,9 @@ def ensure_schema(schema, on_failure=lambda e, c, err: {"statusCode": 400, "body
     def wrap(fn):
         @wraps(fn)
         def wrapt(event, context, *extras):
+            #print(f"Hello, {event}")
             try:
-                js.validate(event, schema)
+                js.validate(json.loads(event["body"]), schema)
                 return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
                 return util.add_cors_headers(on_failure(event, context, e))

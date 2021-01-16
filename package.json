@@ -2,10 +2,13 @@
   "name": "lcs-serverless-test",
   "description": "",
   "version": "0.1.0",
-  "dependencies": {},
+  "dependencies": {
+    "n": "^7.0.0"
+  },
   "devDependencies": {
-    "serverless": "^1.62.0",
-    "serverless-offline": "^5.12.1",
+    "serverless": "*",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "*",
     "serverless-python-requirements": "^5.0.1"
   }
 }

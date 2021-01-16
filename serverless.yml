@@ -53,6 +53,7 @@ plugins:
   - serverless-python-requirements
   - serverless-offline
   - serverless-dotenv-plugin
+
 package:
   include:
      - 'src/*.py'
@@ -85,7 +86,6 @@ functions:
     events:
       - http:
           path: authorize
-          integration: lambda
           method: post
           cors: true
           request:
@@ -142,6 +142,16 @@ functions:
           path: dayof-slack
           integration: lambda
           method: get
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  hello:
+    handler: src/hello.hello
+    events:
+      - http:
+          path: hello
+          method: post
           cors: true
           request:
             template:
