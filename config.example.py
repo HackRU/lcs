@@ -15,6 +15,9 @@ SLACK_KEYS = {
 
 SPARKPOST_KEY = ""
 
+class FIREBASE:
+    CREDENTIALS = {} # Firebase serviceAccountKey.json
+    TOPIC = "announcements"
 
 class GOOGLE_CAL:
     CAL_ID = ""
