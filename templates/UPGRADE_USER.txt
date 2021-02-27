@@ -4,7 +4,7 @@ You are receiving this email as the HackRU team has your address indicating you 
 
 Please use this link to enable your special account permission:
 
-{upgrade_user_link}
+{link}
 
 If you do not already have an account, follow the link and then click the button to create an account.
 
