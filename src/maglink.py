@@ -3,7 +3,7 @@ import datetime
 import string
 from datetime import datetime, timedelta
 
-from src import use_sparkpost
+from src import emails
 from src.schemas import *
 
 DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
@@ -37,8 +37,10 @@ def forgot_user(event, magiclinks, user_coll):
         magiclinks.insert_one(obj_to_insert)
         # creates the complete link using a provided link_base (default one is used if it's absent)
         link_base = event.get('link_base', DEFAULT_LINK_BASE)
-        # uses sparkpost to send an email with the complete link to the registered email address
-        rv = use_sparkpost.send_email(event['email'], link_base.format(magiclink), 'forgot-password', None)
+
+        # Send an email with the complete link to the registered email address
+        rv = emails.send_email(event["email"], link_base.format(magiclink), "FORGOT_PASSWORD", None)
+
         if rv['statusCode'] != 200:
             return rv
         return util.add_cors_headers({"statusCode": 200, "body": "Forgot password link has been emailed to you"})
@@ -69,8 +71,8 @@ def director_link(magiclinks, num_links, event, user):
         link_base = event.get('link_base', DEFAULT_LINK_BASE)
         link = link_base.format(magiclink)
         # sends the email
-        sent = use_sparkpost.send_email(obj_to_insert['email'], link,
-                                        event.get('template', 'upgrade-user'), user)['body']
+        sent = emails.send_email(obj_to_insert["email"], link,
+                                        event.get("template", "UPGRADE_USER"), user)["body"]
         # adds a tuple containing the link and the return value from attempting to send the email
         links_list.append((magiclink, sent))
     # the list of tuples generated is returned
