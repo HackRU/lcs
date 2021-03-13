@@ -18,8 +18,11 @@ def do_substitutions(recipients, links, template, user):
         - template:     str
         - user:         LCS user object
     """
-    with open(f"templates/{template}.txt") as template_text:
-        email_body = template_text.read()
+    try:
+        with open(f"templates/{template}.txt") as template_text:
+            email_body = template_text.read()
+    except Exception as e:
+        return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
 
     email_sender = config.EMAIL_ADDRESS
     email_password = config.EMAIL_PASSWORD
@@ -51,7 +54,7 @@ def do_substitutions(recipients, links, template, user):
         return util.add_cors_headers({"statusCode": 500, "body": "Error: " + str(e)})
 
     if failed_emails:
-        return util.add_cors_headers({"statusCode": 500, "body": f"List of emails failed: {failed_emails}"})
+        return util.add_cors_headers({"statusCode": 400, "body": f"List of emails failed: {failed_emails}"})
 
     return util.add_cors_headers({"statusCode": 200, "body": "Success!"})
 
@@ -115,4 +118,4 @@ def send_to_emails(event, context, usr):
             return do_substitutions(event['recipients'], event['links'], event['template'], usr)
         # in case any recipients were specified (without links) or were assumed using the query, then email is sent to
         # these recipients with the provided template
-        return do_substitutions(recipients=event['recipients'], None, template=event['template'], None)
+        return do_substitutions(recipients=event['recipients'], links = None, template=event['template'], user = None)
