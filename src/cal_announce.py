@@ -42,8 +42,8 @@ def slack_announce(event, context):
         # refresh cache
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
-        url = 'https://slack.com/api/channels.history'
-        params = {'token': token, 'channel': channel, 'count': num_messages}
+        url = 'https://slack.com/api/conversations.history'
+        params = {'token': token, 'channel': channel, 'limit': num_messages}
         result = requests.get(url, params)
         reply = result.json()
         if not reply.get('ok'):
