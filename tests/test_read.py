@@ -56,7 +56,7 @@ test_director_aggregate_query = {
 
 def patched_ensure_logged_in_user(role=None):
     def ensure_logged_in_user():
-        def wrapper(fn, *args, **kwargs):
+        def wrapper(fn, *args1, **kwargs1):
             @wraps(fn)
             def wrapt(event, context, *args, **kwargs):
                 tu = test_user.copy()
@@ -137,14 +137,14 @@ def test_invalid_aggregate_organizer_read():
 
 
 @patch("src.schemas.ensure_logged_in_user", patched_ensure_logged_in_user("organizer"))
-def test_successful_organizer_read():
+def test_successful_aggregate_organizer_read():
     importlib.reload(read)
     res = read.read_info(test_aggregate_query, {})
     assert res["statusCode"] == 200
 
 
 @patch("src.schemas.ensure_logged_in_user", patched_ensure_logged_in_user("organizer"))
-def test_successful_organizer_read():
+def test_successful_query_organizer_read():
     importlib.reload(read)
     res = read.read_info(test_elevated_query, {})
     assert res["statusCode"] == 200
