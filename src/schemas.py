@@ -18,7 +18,7 @@ def ensure_schema(schema, on_failure=lambda e, c, err: {"statusCode": 400, "body
                 js.validate(event, schema)
                 return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
-                return util.add_cors_headers(on_failure(event, context, e))
+                return util.add_cors_headers(on_failure(event, context, e.message))
         return wrapt
     return wrap
 
@@ -30,6 +30,9 @@ def ensure_logged_in_user(token_key='token', on_failure=lambda e, c, m, *a: {"st
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):
+
+            if token_key not in event:
+                return on_failure(event, context, "Missing authentication token", *args)
 
             token = event[token_key]
             try:

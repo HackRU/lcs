@@ -44,7 +44,7 @@ def forgot_user(event, magiclinks, user_coll):
         return util.add_cors_headers({"statusCode": 200, "body": "Forgot password link has been emailed to you"})
 
 
-def director_link(magiclinks, num_links, event, user):
+def director_link(magiclinks, event, user):
     """
     Function used to generate magic links for one or more users to be promoted
     """
@@ -54,7 +54,7 @@ def director_link(magiclinks, num_links, event, user):
     for i in event['permissions']:
         permissions.append(i)
     # for each of the emails requested to be promoted...
-    for j in range(min(num_links, len(event['emailsTo']))):
+    for j in range(len(event['emailsTo'])):
         # a unique magic link is generated as 32 random alphanumeric characters
         magiclink = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(32)])
         # an object is created to be stored in the database
@@ -85,7 +85,6 @@ def director_link(magiclinks, num_links, event, user):
         "link_base": {"type": "string"},
         "permissions": {"type": "array"},
         "emailsTo": {"type": "array"},
-        "numLinks": {"type": "integer"}
     },
     "required": ["token", "permissions", "emailsTo"]
 })
@@ -95,8 +94,7 @@ def do_director_link(event, magiclinks, user=None):
     """
     Function used by directors to promote users through magiclinks
     """
-    num_links = event.get('numLinks', 1)
-    links_list = director_link(magiclinks, num_links, event, user)
+    links_list = director_link(magiclinks, event, user)
     return util.add_cors_headers({"statusCode": 200, "body": links_list})
 
 
