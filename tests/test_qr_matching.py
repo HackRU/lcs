@@ -1,6 +1,7 @@
 from src import authorize, util, qrscan
 
 import config
+import json
 from testing_utils import *
 
 email = "organizer@email.com"

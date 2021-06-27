@@ -4,6 +4,7 @@ from src import authorize, maglink
 
 import pytest
 import mock
+import json
 
 user_email = "creep@radiohead.ed"
 user_pass = "love"
