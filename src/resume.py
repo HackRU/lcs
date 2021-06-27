@@ -1,5 +1,6 @@
 import config
 from src.schemas import ensure_schema, ensure_logged_in_user
+import json
 
 import boto3
 from botocore.exceptions import ClientError
@@ -62,11 +63,11 @@ def resume(event, ctx, user=None):
     # resume for that user already exists in S3
     try:
         return {
-            "statusCode": 200, "body": {
+            "statusCode": 200, "body": json.dumps({
                 "upload": presign(method="put_object", user=user, s3_client=client),
                 "download": presign(method="get_object", user=user, s3_client=client),
                 "exists": exists(email=user["email"], s3_client=client)
-            }
+            })
         }
     # if there are any errors, they are communicated back
     except ClientError as e:
