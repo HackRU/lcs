@@ -43,8 +43,9 @@ def slack_announce(event, context):
         token = config.SLACK_KEYS['token']
         channel = config.SLACK_KEYS['channel']
         url = 'https://slack.com/api/conversations.history'
-        params = {'token': token, 'channel': channel, 'limit': num_messages}
-        result = requests.get(url, params)
+        params = {'channel': channel, 'limit': num_messages}
+        headers = {"Authorization": "Bearer {}".format(token)}
+        result = requests.get(url, params=params, headers=headers)
         reply = result.json()
         if not reply.get('ok'):
             return util.add_cors_headers({'statusCode': 400, 'body': json.dumps('Unable to retrieve messages')})
