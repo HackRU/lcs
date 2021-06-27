@@ -164,7 +164,7 @@ def test_multi_tokens():
         time.sleep(1)
 
         auth = authorize.authorize(usr_dict, None)  # authorize user and get new token, creates a second token in dbs
-        tokens[i] = auth['body']['token']
+        tokens[i] = json.loads(auth['body'])['token']
 
         # sanity check to make sure all tokens are unique
         for j in range(i - 1):
