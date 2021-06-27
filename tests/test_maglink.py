@@ -47,7 +47,7 @@ def test_director_link(mock_send_email):
 
     auth = authorize.authorize({'email': user_email, 'password': user_pass}, None)
 
-    token = json.load(auth['body'])['token']
+    token = json.loads(auth['body'])['token']
     res = maglink.gen_magic_link({'token': token, 'emailsTo': [target_email], 'permissions': target_perms}, None)
 
     assert check_by_schema(schema_for_http(403, {'statusCode': 200}), res)

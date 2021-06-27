@@ -152,7 +152,7 @@ def test_multi_tokens():
 
     # Create user
     auth = authorize.create_user(usr_dict, None)  # creates user and 1 token in db
-    tokens[0] = auth['body']['token']
+    tokens[0] = json.loads(auth['body'])['token']
 
     # make sure we can validate user with token1
     val = validate.validate({'token': tokens[0]}, None)
