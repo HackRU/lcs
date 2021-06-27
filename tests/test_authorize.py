@@ -1,6 +1,7 @@
 from testing_utils import *
 
 import config
+import json
 from src import validate, authorize
 
 import pytest
@@ -151,7 +152,7 @@ def test_multi_tokens():
 
     # Create user
     auth = authorize.create_user(usr_dict, None)  # creates user and 1 token in db
-    tokens[0] = auth['body']['token']
+    tokens[0] = json.loads(auth['body'])['token']
 
     # make sure we can validate user with token1
     val = validate.validate({'token': tokens[0]}, None)
@@ -163,7 +164,7 @@ def test_multi_tokens():
         time.sleep(1)
 
         auth = authorize.authorize(usr_dict, None)  # authorize user and get new token, creates a second token in dbs
-        tokens[i] = auth['body']['token']
+        tokens[i] = json.loads(auth['body'])['token']
 
         # sanity check to make sure all tokens are unique
         for j in range(i - 1):
