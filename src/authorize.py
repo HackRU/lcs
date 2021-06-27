@@ -23,8 +23,6 @@ def authorize(event, context):
        validation, the user is granted a token which
        is returned with its expiry time.
        """
-
-    #print(f"IDK {event}")
     
     event = json.loads(event["body"])
 
