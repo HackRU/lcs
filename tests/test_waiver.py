@@ -1,4 +1,4 @@
-from src import authorize, util, resume
+from src import authorize, util, waiver
 import config
 
 import requests
@@ -33,25 +33,25 @@ def teardown_module(m):
 
 
 def test_baduser():
-    result = resume.resume({"token": token + "bad"}, {})
+    result = waiver.waiver({"token": token + "bad"}, {})
     assert result["statusCode"] == 403
 
 
 def test_roundtrip():
-    result = resume.resume({"token": token}, {})
+    result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
     upload = result["body"]["upload"]
     download = result["body"]["download"]
     
-    stellar_resume = b'hire me plz'
-    upload_res = requests.put(upload, data=stellar_resume, headers={"Content-Type": "application/pdf"})
+    stellar_waiver = b'hire me plz'
+    upload_res = requests.put(upload, data=stellar_waiver, headers={"Content-Type": "application/pdf"})
     assert upload_res.status_code == 200 or upload_res.status_code == 204
 
     download_res = requests.get(download)
     assert download_res.status_code == 200
-    assert download_res.content == stellar_resume
+    assert download_res.content == stellar_waiver
 
-    result = resume.resume({"token": token}, {})
+    result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
     assert result["body"]["exists"]
 
@@ -62,6 +62,6 @@ def test_exists():
     assert creation["statusCode"] == 200
     token = creation["body"]["token"]
     
-    result = resume.resume({"token": token}, {})
+    result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
     assert not result["body"]["exists"]

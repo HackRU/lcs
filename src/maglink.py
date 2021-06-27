@@ -3,8 +3,8 @@ import datetime
 import string
 from datetime import datetime, timedelta
 
-import use_sparkpost
-from schemas import *
+from src import use_sparkpost
+from src.schemas import *
 
 DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
 

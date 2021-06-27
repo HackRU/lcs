@@ -14,8 +14,6 @@ before_script:
   - "mongo lcs-db --eval 'db.createUser({user: \"creep\", pwd: \"@radiohead.ed\", roles: [\"readWrite\"]});'"
   #Copy the config file
   - cp config.travis.py config.py
-  #Create token.pickle
-  - echo $TRAVIS_GOOGLE_CAL_TOKEN | base64 -d > token.pickle
 
 install:
     #Install all the requirements
@@ -23,13 +21,13 @@ install:
 
 script: 
   # Run tests
-  - python -m pylint *.py && python -m pytest --cov=.
+  - python -m pylint *.py && python -m pylint tests/*.py && python -m pytest --cov=.
       
 deploy:
   - provider: script
     script: bash ./deployment/deploy_production.sh
     on:
-      branch: production
+      branch: master
 
   - provider: script
     script: bash ./deployment/deploy_develop.sh

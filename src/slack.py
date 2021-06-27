@@ -1,9 +1,9 @@
 import requests
 
 import config
-import util
-from schemas import ensure_schema, ensure_logged_in_user
-from util import add_cors_headers
+from src import util
+from src.schemas import ensure_schema, ensure_logged_in_user
+from src.util import add_cors_headers
 
 
 def create_error_response(err_msg: str):
@@ -27,7 +27,7 @@ def process_slack_error(error_str: str):
     "required": ["token", "other_email"]
 })
 @ensure_logged_in_user()  # makes sure that the requester is a logged in user
-def generate_dm_link(event, context, user):
+def generate_dm_link(event, context, user=None):
     # attempts to find the other user based on the email provided
     other_user = util.coll("users").find_one({"email": event["other_email"]})
     # ensures that other user exists in LCS
@@ -62,6 +62,6 @@ def generate_dm_link(event, context, user):
     creation_info = response_json["channel"]
     dm_id = creation_info["id"]
     server_id = creation_info["shared_team_ids"][0]
-    link_to_dm = f"https://apps.slack.com/client/{server_id}/{dm_id}"
+    link_to_dm = f"https://app.slack.com/client/{server_id}/{dm_id}"
     # returns the link and OK status code
     return add_cors_headers({"statusCode": 200, "body": {"slack_dm_link": link_to_dm}})

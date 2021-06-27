@@ -1,4 +1,6 @@
-from schemas import *
+from src.schemas import *
+
+
 
 
 def tidy_results(res):

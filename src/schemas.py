@@ -1,5 +1,5 @@
 import jsonschema as js
-import util
+from src import util
 import jwt
 
 import config

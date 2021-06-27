@@ -1,6 +1,5 @@
 from testing_utils import *
-import authorize
-import validate
+from src import validate, authorize
 import config
 from datetime import datetime, timedelta
 
