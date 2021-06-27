@@ -1,4 +1,5 @@
 import requests
+import json
 
 import config
 from src import util
@@ -7,13 +8,13 @@ from src.util import add_cors_headers
 
 
 def create_error_response(err_msg: str):
-    return add_cors_headers({"statusCode": 503, "body": err_msg})
+    return add_cors_headers({"statusCode": 503, "body": json.dumps(err_msg)})
 
 
 def process_slack_error(error_str: str):
     if error_str in ["user_not_found", "user_not_visible", "user_disabled"]:
         return add_cors_headers(
-                {"statusCode": 403, "body": f"There was an error with the user id's provided: {error_str}"})
+                {"statusCode": 403, "body": json.dumps(f"There was an error with the user id's provided: {error_str}")})
     else:
         return create_error_response(f"Encountered a slack API error: {error_str}")
 
@@ -32,7 +33,7 @@ def generate_dm_link(event, context, user=None):
     other_user = util.coll("users").find_one({"email": event["other_email"]})
     # ensures that other user exists in LCS
     if other_user is None:
-        return add_cors_headers({"statusCode": 403, "body": "Other user not found within LCS"})
+        return add_cors_headers({"statusCode": 403, "body": json.dumps("Other user not found within LCS")})
     # ensures Slack Token is present in the config
     if "token" not in config.SLACK_KEYS or not config.SLACK_KEYS["token"]:
         return create_error_response("Slack API token not configured")
@@ -42,7 +43,7 @@ def generate_dm_link(event, context, user=None):
     other_slack_id = other_user.get("slack_id", None)
     # ensures both id's exist
     if this_slack_id is None or other_slack_id is None:
-        return add_cors_headers({"statusCode": 403, "body": "Slack ID not present within LCS for the given user(s)"})
+        return add_cors_headers({"statusCode": 403, "body": json.dumps("Slack ID not present within LCS for the given user(s)")})
     # creates the link, payload and headers to make the request
     api_link = r"https://slack.com/api/conversations.open"
     slack_api_payload = {"token": config.SLACK_KEYS["token"], "users": f"{this_slack_id},{other_slack_id}"}
@@ -64,4 +65,4 @@ def generate_dm_link(event, context, user=None):
     server_id = creation_info["shared_team_ids"][0]
     link_to_dm = f"https://app.slack.com/client/{server_id}/{dm_id}"
     # returns the link and OK status code
-    return add_cors_headers({"statusCode": 200, "body": {"slack_dm_link": link_to_dm}})
+    return add_cors_headers({"statusCode": 200, "body": json.dumps({"slack_dm_link": link_to_dm})})
