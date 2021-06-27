@@ -35,10 +35,10 @@ def authorize(event, context):
     if checkhash is not None:
         # if the hash of the given and stored password are different, then it's the wrong password
         if not bcrypt.checkpw(pass_.encode('utf-8'), checkhash['password']):
-            return util.add_cors_headers({"statusCode": 403, "body": "Wrong Password"})
+            return util.add_cors_headers({"statusCode": 403, "body": json.dumps("Wrong Password")})
     # if no data is found associated with the given email, error is returned
     else:
-        return util.add_cors_headers({"statusCode": 403, "body": "invalid email,hash combo"})
+        return util.add_cors_headers({"statusCode": 403, "body": json.dumps("invalid email,hash combo")})
     # Build a JWT to use as an authentication token, put embedded within its payload the email
     # along with an expiration timestamp in the format of a js NumericDate (as that is what is required
     # for JWT's authentication scheme
@@ -61,7 +61,7 @@ def authorize(event, context):
         "statusCode": 200,
         "isBase64Encoded": False,
         "headers": {"Content-Type": "application/json"},
-        "body": update_val
+        "body": json.dumps(update_val)
     }
     return util.add_cors_headers(ret_val)
 
@@ -108,7 +108,7 @@ def authorize_then_consume(event, context):
 def create_user(event, context):
     # if registration is closed and a link is not given, we complain
     if not is_registration_open() and 'link' not in event:
-        return util.add_cors_headers({"statusCode": 403, "body": "Registration Closed!"})
+        return util.add_cors_headers({"statusCode": 403, "body": json.dumps("Registration Closed!")})
 
     # extracts the email and password
     u_email = event['email'].lower()
@@ -126,7 +126,7 @@ def create_user(event, context):
         # if a link is not provided, the intention is assumed to be to create a new user but since a user with this
         # email already exists, we complain
         if 'link' not in event:
-            return util.add_cors_headers({"statusCode": 400, "body": "Duplicate user!"})
+            return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Duplicate user!")})
         # otherwise, the user is authorized and link is consumed
         return authorize_then_consume(event, context)
 
