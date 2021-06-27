@@ -82,7 +82,9 @@ def setup_module(m):
     assert result["statusCode"] == 200
 
     global token
-    token = result["body"]["token"]
+
+    token = json.loads(result["body"])["token"]
+
     db = util.coll("users")
     updete = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "director": True}}})
     assert updete.modified_count >= 1

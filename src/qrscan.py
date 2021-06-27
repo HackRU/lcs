@@ -28,9 +28,9 @@ def qr_match(event, context, user=None):
 
     result = user_coll.update_one({'email': event["link_email"]}, {'$push': {'qrcode': event["qr_code"]}})
     if result.matched_count == 1:
-        return {"statusCode": 200, "body": "success"}
+        return {"statusCode": 200, "body": json.dumps("success")}
     else:
-        return {"statusCode": 404, "body": "User not found"}
+        return {"statusCode": 404, "body": json.dumps("User not found")}
 
 
 @ensure_schema({
@@ -57,13 +57,13 @@ def attend_event(aws_event, context, user=None):
     def attend(user):
         # if the user has already attended the event and is not an event that can be re-attended, complain
         if not again and user['day_of'].get(event, 0) > 0:
-            return {'statusCode': 402, 'body': 'user already checked into event'}
+            return {'statusCode': 402, 'body': json.dumps('user already checked into event')}
         # update the user data to reflect event attendance by incrementing the count of the event by 1
         new_user = users.find_one_and_update({'email': user['email']},
                                              {'$inc': {'day_of.' + event: 1}},
                                              return_document=pymongo.ReturnDocument.AFTER)
 
-        return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}}
+        return {'statusCode': 200, 'body': json.dumps({'email': user['email'], 'new_count': new_user['day_of'][event]})}
 
     # TODO: revisit if it's valid for qr to be an email
     user = users.find_one({'email': qr})
@@ -75,4 +75,4 @@ def attend_event(aws_event, context, user=None):
     if user is not None:
         return attend(user)
 
-    return {'statusCode': 404, 'body': 'user not found'}
+    return {'statusCode': 404, 'body': json.dumps('user not found')}
