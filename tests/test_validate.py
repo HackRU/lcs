@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import pytest
 import jwt
+import json
 
 
 @pytest.mark.run(order=3)
@@ -13,8 +14,10 @@ def test_validate_token():
     passwd = "love"
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
-    token = auth['body']['token']
+
+    token = json.loads(auth['body'])['token']
     # make sure user exists
+
     user_dict = get_db_user(user_email)
     assert 'email' in user_dict and user_dict['email'] == user_email
 

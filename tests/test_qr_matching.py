@@ -1,6 +1,7 @@
 from src import authorize, util, qrscan
 
 import config
+import json
 from testing_utils import *
 
 email = "organizer@email.com"
@@ -25,12 +26,13 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
     global token, payload
-    token = result["body"]["token"]
+    token = json.loads(result["body"])["token"]
     payload = {
         "token": token,
         "link_email": hckemail,
         "qr_code": qr
     }
+
     db = util.coll("users")
     update = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "organizer": True}}})
     assert update.modified_count >= 1
@@ -38,7 +40,7 @@ def setup_module(m):
     result = authorize.create_user({"email": hckemail, "password": hckword}, {})
     assert result["statusCode"] == 200
     global hcktoken
-    hcktoken = result["body"]["token"]
+    hcktoken = json.loads(result["body"])["token"]
 
 
 def teardown_module(m):
