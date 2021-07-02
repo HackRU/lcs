@@ -24,7 +24,7 @@ def has_token_for(thing):
 def test_bad_email():
     user_email = "team@nonruhackathon.notemail.com"
     passwd = "arghf"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     auth = authorize.authorize(usr_dict, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "invalid email,hash combo"}), auth)
 
@@ -73,7 +73,7 @@ def test_creation():
 
     user_email = "creep@radiohead.ed"
     passwd = "love"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     delete_user()
     auth = authorize.create_user(usr_dict, None)
     assert has_token_for(auth)
@@ -83,15 +83,15 @@ def test_creation():
 def test_creation_fail_cases():
     user_email = "creep@radiohead.ed"
     passwd = "love"
-    usr_dict = {'password': passwd}
+    usr_dict = {'body': json.dumps({"password": passwd})}
     auth = authorize.create_user(usr_dict, None)
     assert check_by_schema(schema_for_http(400, {"type": "string"}), auth)
 
-    usr_dict = {'email': user_email}
+    usr_dict = {'body': json.dumps({"email": user_email})}
     auth = authorize.create_user(usr_dict, None)
     assert check_by_schema(schema_for_http(400, {"type": "string"}), auth)
 
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     auth = authorize.create_user(usr_dict, None)
     # we guarantee the string value here since we produce the error message
     assert check_by_schema(schema_for_http(400, {"type": "string", "const": "Duplicate user!"}), auth)
@@ -105,12 +105,11 @@ def test_creation_fail_cases():
     auth = authorize.create_user(usr_dict, None)
     assert check_by_schema(schema_for_http(403, {"statusCode": 403, "body": "Registration Closed!"}), auth)
 
-
 @pytest.mark.run(order=2)
 def test_login_success():
     user_email = "creep@radiohead.ed"
     passwd = "love"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     auth = authorize.authorize(usr_dict, None)
     assert has_token_for(auth)
 
@@ -119,7 +118,7 @@ def test_login_success():
 def test_bad_password():
     user_email = "creep@radiohead.ed"
     passwd = "wrong"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     auth = authorize.authorize(usr_dict, None)
     assert check_by_schema(schema_for_http(403, {"statusCode": 403, "body": "Wrong Password"}), auth)
 
@@ -143,7 +142,7 @@ def test_multi_tokens():
 
     user_email = "creep@radiohead.ed"
     passwd = "love"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({"email": user_email, "password": passwd})}
     delete_user()
 
     num_tests = 5
@@ -155,7 +154,7 @@ def test_multi_tokens():
     tokens[0] = json.loads(auth['body'])['token']
 
     # make sure we can validate user with token1
-    val = validate.validate({'token': tokens[0]}, None)
+    val = validate.validate({'body': json.dumps({'token': tokens[0]})}, None)
     assert check_by_schema(schema_for_http(200, {"type": "object", "const": usr_dict}), val)
 
     for i in range(1, num_tests):  # create num_tests - 1  tokens and test them
@@ -171,5 +170,5 @@ def test_multi_tokens():
             assert tokens[i] != tokens[j]
 
         # attempt to validate with new token
-        val = validate.validate({'token': tokens[i]}, None)
+        val = validate.validate({'body': json.dumps({'token': tokens[i]})}, None)
         assert check_by_schema(schema_for_http(200, {"type": "object", "const": usr_dict}), val)

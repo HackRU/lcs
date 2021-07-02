@@ -16,7 +16,7 @@ def test_forgot_password_link(mock_send_email):
     # Patch the send_email method to do nothing and always return success
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
 
-    res = maglink.gen_magic_link({'email': user_email, 'forgot': True}, None)
+    res = maglink.gen_magic_link({'body': json.dumps({'email': user_email, 'forgot': True})}, None)
     assert check_by_schema(schema_for_http(200, {"statusCode": 200, "body": "Forgot password link has been emailed to you"}), res)
     link = util.coll('magic links').find_one({'email': user_email})
     assert link is not None
@@ -29,7 +29,7 @@ def test_forgot_password_link_bad_email(mock_send_email):
     mock_send_email.return_value = {'statusCode': 200, 'body': ''}
 
     # Fail with email not belonging to any user
-    res = maglink.gen_magic_link({'email': 'bogus', 'forgot': True}, None)
+    res = maglink.gen_magic_link({'body': json.dumps({'email': 'bogus', 'forgot': True})}, None)
     assert check_by_schema(schema_for_http(400, {"statusCode": 400, "body": "Invalid email: please create an account."}), res)
 
 
@@ -45,10 +45,10 @@ def test_director_link(mock_send_email):
     # Add director role to the test user
     util.coll('users').update_one({'email': user_email}, {'$set': {'role.director': True}})
 
-    auth = authorize.authorize({'email': user_email, 'password': user_pass}, None)
+    auth = authorize.authorize({'body': json.dumps({'email': user_email, 'password': user_pass})}, None)
 
     token = json.loads(auth['body'])['token']
-    res = maglink.gen_magic_link({'token': token, 'emailsTo': [target_email], 'permissions': target_perms}, None)
+    res = maglink.gen_magic_link({'body': json.dumps({'token': token, 'emailsTo': [target_email], 'permissions': target_perms})}, None)
 
     assert check_by_schema(schema_for_http(403, {'statusCode': 200}), res)
     link = json.loads(res['body'])[0][0]
@@ -68,7 +68,7 @@ def test_director_link_bad_perms(mock_send_email):
     target_perms = ['director']
 
     # Fail without director role
-    auth = authorize.authorize({'email': user_email, 'password': user_pass}, None)
+    auth = authorize.authorize({'body': json.dumps({'email': user_email, 'password': user_pass})}, None)
     token = json.loads(auth['body'])['token']
-    res = maglink.gen_magic_link({'token': token, 'emailsTo': [target_email], 'permissions': target_perms}, None)
-    assert check_by_schema(schema_for_http(403, {'statusCode': 403, 'body': 'User does not have priviledges.'}), res)
+    res = maglink.gen_magic_link({'body': json.dumps({'token': token, 'emailsTo': [target_email], 'permissions': target_perms})}, None)
+    assert check_by_schema(schema_for_http(403, {'statusCode': 403, 'body': 'User does not have privileges.'}), res)

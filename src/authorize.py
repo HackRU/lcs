@@ -5,10 +5,6 @@ import jwt
 from src.schemas import *
 from src import util, consume
 
-f = open("demofile3.txt", "w+")
-f.write("Woops! I have deleted the content!")
-f.close()
-
 @ensure_schema({
     "type": "object",
     "properties": {
@@ -23,7 +19,7 @@ def authorize(event, context):
        validation, the user is granted a token which
        is returned with its expiry time.
        """
-    
+
     event = json.loads(event["body"])
 
     # extract the email and password from the given object
@@ -74,6 +70,8 @@ def authorize(event, context):
 # NOT A LAMBDA
 def authorize_then_consume(event, context):
     rv = authorize(event, context)
+    event = json.loads(event["body"])
+
     if 'link' in event:
         consumption_event = {
             'link': event['link'],
@@ -115,6 +113,9 @@ def create_user(event, context):
     if not is_registration_open() and 'link' not in event:
         return util.add_cors_headers({"statusCode": 403, "body": json.dumps("Registration Closed!")})
 
+    orig_event = event
+    event = json.loads(event["body"])
+
     # extracts the email and password
     u_email = event['email'].lower()
     password = event['password']
@@ -133,7 +134,7 @@ def create_user(event, context):
         if 'link' not in event:
             return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Duplicate user!")})
         # otherwise, the user is authorized and link is consumed
-        return authorize_then_consume(event, context)
+        return authorize_then_consume(orig_event, context)
 
     # the goal here is to have a complete user; where ever a value is not provided, we put the empty string
     doc = {
@@ -173,7 +174,7 @@ def create_user(event, context):
     user_coll.insert_one(doc)
 
     # calls the function to also consume any links provided
-    return authorize_then_consume(event, context)
+    return authorize_then_consume(orig_event, context)
 
 
 def is_registration_open():

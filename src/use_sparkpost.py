@@ -99,6 +99,7 @@ def send_to_emails(event, context, usr):
     recipient. This substitution is performed using "do_substitutions" specified
     above.
     """
+    event = json.loads(event["body"])
     # disallow non-director users from sending emails to anyone but themselves
     if not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
         return {'statusCode': 400, 'body': json.dumps("Not authorized to send emails!")}

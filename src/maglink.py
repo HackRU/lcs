@@ -20,6 +20,7 @@ def forgot_user(event, magiclinks, user_coll):
     """
     Function used to generate forgotten password magic links
     """
+    event = json.loads(event["body"])
     # find the user who forgot their password
     user = user_coll.find_one({"email": event['email']})
     # if the user is not found, then return an error
@@ -50,6 +51,7 @@ def director_link(magiclinks, num_links, event, user):
     """
     links_list = []
     permissions = []
+    event = json.loads(event["body"])
     # fetches the permissions the promoted users should have
     for i in event['permissions']:
         permissions.append(i)
@@ -95,8 +97,10 @@ def do_director_link(event, magiclinks, user=None):
     """
     Function used by directors to promote users through magiclinks
     """
+    orig_event = event
+    event = json.loads(event["body"])
     num_links = event.get('numLinks', 1)
-    links_list = director_link(magiclinks, num_links, event, user)
+    links_list = director_link(magiclinks, num_links, orig_event, user)
     return util.add_cors_headers({"statusCode": 200, "body": json.dumps(links_list)})
 
 
@@ -113,7 +117,10 @@ def gen_magic_link(event, context):
     user_coll = util.coll('users')
     magiclinks = util.coll('magic links')
 
+    orig_event = event
+    event = json.loads(event["body"])
+
     # depending on the type of magic link request, the appropriate function is called
     if 'forgot' in event:
-        return forgot_user(event, magiclinks, user_coll)
-    return do_director_link(event, magiclinks)
+        return forgot_user(orig_event, magiclinks, user_coll)
+    return do_director_link(orig_event, magiclinks)

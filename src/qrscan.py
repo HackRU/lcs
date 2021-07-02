@@ -26,6 +26,7 @@ def qr_match(event, context, user=None):
     Function used to associate a given QR code with the given email
     """
     user_coll = coll('users')
+    event = json.loads(event["body"])
 
     result = user_coll.update_one({'email': event["link_email"]}, {'$push': {'qrcode': event["qr_code"]}})
     if result.matched_count == 1:
@@ -50,6 +51,8 @@ def attend_event(aws_event, context, user=None):
     """
     Function used to mark that a user has attended an event
     """
+    aws_event = json.loads(aws_event["body"])
+
     users = coll('users')
     qr = aws_event['qr']
     event = aws_event['event']

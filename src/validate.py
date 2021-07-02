@@ -217,7 +217,7 @@ def update(event, context, auth_user):
     Given a user email, a token, and the dictionary of updates, performs all updates the
     authorised user is permitted to, from the "updates" object, on the user with email "user_email".
     """
-
+    event = json.loads(event["body"])
     user_coll = util.coll('users')
 
     # assuming the user is authorised through the token, find the user being modified.

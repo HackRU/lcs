@@ -1,3 +1,4 @@
+from testing_utils import *
 from src import authorize, util, resume
 import config
 import json
@@ -17,7 +18,7 @@ def setup_module(m):
     config.DB_COLLECTIONS["users"] = "test-users"
 
     # create a user
-    result = authorize.create_user({"email": email, "password": pword}, {})
+    result = authorize.create_user({'body': json.dumps({"email": email, "password": pword})}, {})
     assert result["statusCode"] == 200
     global token
     token = json.loads(result["body"])["token"]
@@ -34,12 +35,12 @@ def teardown_module(m):
 
 
 def test_baduser():
-    result = resume.resume({"token": token + "bad"}, {})
+    result = resume.resume({'body': json.dumps({"token": token + "bad"})}, {})
     assert result["statusCode"] == 403
 
 
 def test_roundtrip():
-    result = resume.resume({"token": token}, {})
+    result = resume.resume({'body': json.dumps({"token": token})}, {})
     assert result["statusCode"] == 200
     upload = json.loads(result["body"])["upload"]
     download = json.loads(result["body"])["download"]
@@ -52,18 +53,18 @@ def test_roundtrip():
     assert download_res.status_code == 200
     assert download_res.content == stellar_resume
 
-    result = resume.resume({"token": token}, {})
+    result = resume.resume({'body': json.dumps({"token": token})}, {})
     assert result["statusCode"] == 200
     assert json.loads(result["body"])["exists"]
 
 
 def test_exists():
     """check using an email that wasn't uploaded"""
-    creation = authorize.create_user({"email": email + "d", "password": pword}, {})
+    creation = authorize.create_user({'body': json.dumps({"email": email + "d", "password": pword})}, {})
     assert creation["statusCode"] == 200
     token = json.loads(creation["body"])["token"]
 
     
-    result = resume.resume({"token": token}, {})
+    result = resume.resume({'body': json.dumps({"token": token})}, {})
     assert result["statusCode"] == 200
     assert not json.loads(result["body"])["exists"]

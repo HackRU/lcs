@@ -96,7 +96,6 @@ functions:
     events:
       - http:
           path: consume
-          integration: lambda
           method: post
           cors: true
           request:
@@ -107,7 +106,6 @@ functions:
     events:
       - http:
           path: create
-          integration: lambda
           method: post
           cors: true
           request:
@@ -118,7 +116,6 @@ functions:
     events:
       - http:
           path: createmagiclink
-          integration: lambda
           method: post
           cors: true
           request:
@@ -129,7 +126,6 @@ functions:
     events:
       - http:
           path: dayof-events
-          integration: lambda
           method: get
           cors: true
           request:
@@ -140,18 +136,7 @@ functions:
     events:
       - http:
           path: dayof-slack
-          integration: lambda
           method: get
-          cors: true
-          request:
-            template:
-              application/json: '$input.body'
-  hello:
-    handler: src/hello.hello
-    events:
-      - http:
-          path: hello
-          method: post
           cors: true
           request:
             template:
@@ -161,7 +146,6 @@ functions:
     events:
       - http:
           path: read
-          integration: lambda
           method: post
           cors: true
           request:
@@ -172,7 +156,6 @@ functions:
   #   events:
   #     - http:
   #         path: reimburse
-  #         integration: lambda
   #         method: post
   #         cors: true
   #         request:
@@ -183,7 +166,6 @@ functions:
     events:
       - http:
           path: resume
-          integration: lambda
           method: post
           cors: true
           request:
@@ -194,7 +176,6 @@ functions:
     events:
       - http:
           path: waiver
-          integration: lambda
           method: post
           cors: true
           request:
@@ -205,7 +186,6 @@ functions:
     events:
       - http:
           path: send-emails
-          integration: lambda
           method: post
           cors: true
           request:
@@ -216,7 +196,6 @@ functions:
     events:
       - http:
           path: update
-          integration: lambda
           method: post
           cors: true
           request:
@@ -227,7 +206,6 @@ functions:
     events:
       - http:
           path: validate
-          integration: lambda
           method: post
           cors: true
           request:
@@ -238,7 +216,6 @@ functions:
     events:
       - http:
           path: link-qr
-          integration: lambda
           method: post
           cors: true
           request:
@@ -249,7 +226,6 @@ functions:
     events:
       - http:
           path: attend-event
-          integration: lambda
           method: post
           cors: true
           request:
@@ -259,7 +235,6 @@ functions:
     handler: src/slack.generate_dm_link
     -http:
       path: slack-dm
-      integration: lambda
       method: post
       cors: true
       request:

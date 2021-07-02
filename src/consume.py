@@ -42,6 +42,7 @@ def forgot_password_link(event, user_coll, maglinkobj):
     Function used to deal with a "forgot password" type of magic link
     """
     # the new password is fetched from the given object and then hashed with a salt
+    event = json.loads(event["body"])
     pass_ = event['password']
     pass_ = bcrypt.hashpw(pass_.encode('utf-8'), bcrypt.gensalt(rounds=8))
     # verifies that the user exists (and complain if they don't)
@@ -64,6 +65,7 @@ def consume_url(event, context):
     """
     Lambda function to consume a url. Queries the database and checks permissions and updates accordingly
     """
+    event = json.loads(event["body"])
     # fetches the user collection
     user_coll = util.coll('users')
     # fetches the magic link collection

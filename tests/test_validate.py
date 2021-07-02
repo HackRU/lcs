@@ -12,7 +12,7 @@ import json
 def test_validate_token():
     user_email = "creep@radiohead.ed"
     passwd = "love"
-    usr_dict = {'email': user_email, 'password': passwd}
+    usr_dict = {'body': json.dumps({'email': user_email, 'password': passwd})}
     auth = authorize.authorize(usr_dict, None)
 
     token = json.loads(auth['body'])['token']
@@ -22,13 +22,13 @@ def test_validate_token():
     assert 'email' in user_dict and user_dict['email'] == user_email
 
     # success
-    val = validate.validate({'token': token}, None)
+    val = validate.validate({'body': json.dumps({'token': token})}, None)
     assert check_by_schema(schema_for_http(200, {"type": "object", "const": user_dict}), val)
 
     # failures
-    val = validate.validate({'email': user_email, 'token': token + 'fl'}, None)
+    val = validate.validate({'body': json.dumps({'email': user_email, 'token': token + 'fl'})}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
-    val = validate.validate({'oken': token}, None)
+    val = validate.validate({'body': json.dumps({'oken': token})}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string"}), val)
 
     # create expired jwt
@@ -46,7 +46,7 @@ def test_validate_token():
     users = connect_to_db()
     users.update_one({'email': user_email}, {'$push': expired})
 
-    val = validate.validate({'email': user_email, 'token': expired}, None)
+    val = validate.validate({'body': json.dumps({'email': user_email, 'token': expired})}, None)
     assert check_by_schema(schema_for_http(403, {"type": "string", "const": "Token invalid"}), val)
     
     # remove the token

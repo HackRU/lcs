@@ -1,8 +1,8 @@
+from testing_utils import *
 from src import authorize, util, reimburse
 import json
 import config
 
-from testing_utils import *
 
 email = "director77@gmail.com"
 pword = "1234566"
@@ -79,7 +79,7 @@ def setup_module(m):
     old_col = config.DB_COLLECTIONS["users"]
     config.DB_COLLECTIONS["users"] = "test-users"
 
-    result = authorize.create_user({"email": email, "password": pword}, {})
+    result = authorize.create_user({'body': json.dumps({"email": email, "password": pword})}, {})
     assert result["statusCode"] == 200
 
     global token
@@ -93,7 +93,7 @@ def setup_module(m):
     count = 0
     for user in users:
         user["email"] = str(count) + "@gmail"
-        result = authorize.create_user({"email": user["email"], "password": pword}, {})
+        result = authorize.create_user({'body': json.dumps({"email": user["email"], "password": pword})}, {})
         assert result["statusCode"] == 200
 
         result = db.update_one({'email': user["email"]}, {'$set': user})
@@ -112,7 +112,7 @@ def teardown_module(m):
 
 
 def test_tr():
-    result = reimburse.compute_all_reimburse({"token": token}, {})
+    result = reimburse.compute_all_reimburse({'body': json.dumps({"token": token})}, {})
     assert result['statusCode'] == 200
 
     db = util.coll("users")

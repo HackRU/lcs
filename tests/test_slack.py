@@ -1,3 +1,5 @@
+from testing_utils import *
+
 from src import authorize, util
 import json
 
@@ -47,17 +49,17 @@ def setup_module(m):
     current_slack_key = config.SLACK_KEYS["token"]
 
     # create a dummy user
-    result = authorize.create_user({"email": email, "password": password}, {})
+    result = authorize.create_user({'body': json.dumps({"email": email, "password": password})}, {})
     assert result["statusCode"] == 200
     token = json.loads(result["body"])["token"]
 
-    payload = {
+    payload = {'body': json.dumps({
         "token": token,
         "other_email": other_email
-    }
+    })}
 
     # create another dummy user
-    result = authorize.create_user({"email": other_email, "password": other_password}, {})
+    result = authorize.create_user({'body': json.dumps({"email": other_email, "password": other_password})}, {})
     assert result["statusCode"] == 200
     assert bool(config.SLACK_KEYS["token"])
 
@@ -80,12 +82,12 @@ def teardown_module(m):
 
 
 def test_bad_token():
-    response = generate_dm_link({"token": "bad token", "other_email": other_email}, {})
+    response = generate_dm_link({'body': json.dumps({"token": "bad token", "other_email": other_email})}, {})
     assert response["statusCode"] == 403
 
 
 def test_bad_other_email():
-    response = generate_dm_link({"token": token, "other_email": "invalid@email.com"}, {})
+    response = generate_dm_link({'body': json.dumps({"token": token, "other_email": "invalid@email.com"})}, {})
     assert response["statusCode"] == 403
 
 

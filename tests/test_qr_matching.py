@@ -1,3 +1,4 @@
+from testing_utils import *
 from src import authorize, util, qrscan
 
 import config
@@ -23,7 +24,7 @@ def setup_module(m):
     old_col = config.DB_COLLECTIONS["users"]
     config.DB_COLLECTIONS["users"] = "test-users"
 
-    result = authorize.create_user({"email": email, "password": pwrord}, {})
+    result = authorize.create_user({'body': json.dumps({"email": email, "password": pwrord})}, {})
     assert result["statusCode"] == 200
     global token, payload
     token = json.loads(result["body"])["token"]
@@ -37,7 +38,7 @@ def setup_module(m):
     update = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "organizer": True}}})
     assert update.modified_count >= 1
 
-    result = authorize.create_user({"email": hckemail, "password": hckword}, {})
+    result = authorize.create_user({'body': json.dumps({"email": hckemail, "password": hckword})}, {})
     assert result["statusCode"] == 200
     global hcktoken
     hcktoken = json.loads(result["body"])["token"]
@@ -52,16 +53,16 @@ def teardown_module(m):
 
 
 def test_bad_role():
-    result = qrscan.qr_match({
+    result = qrscan.qr_match({'body': json.dumps({
         "token": hcktoken,
         "link_email": hckemail,
         "qr_code": qr
-    }, {})
+    })}, {})
     assert result["statusCode"] == 403
 
 
 def test_qr_match():
-    result = qrscan.qr_match(payload, {})
+    result = qrscan.qr_match({'body': json.dumps(payload)}, {})
     assert result["statusCode"] == 200
     db = util.coll("users")
     assert db.find_one({"email": hckemail})["qrcode"][0] == qr
@@ -71,12 +72,12 @@ def test_attend():
     event = 'free_supreme_bricks'
 
     def attend(qr_code, again=False, token=token):
-        return qrscan.attend_event({
+        return qrscan.attend_event({'body': json.dumps({
             'token': token,
             'qr': qr_code,
             'again': again,
             'event': event
-        }, {})
+        })}, {})
 
     def test(qr_code):
         # once
@@ -97,7 +98,7 @@ def test_attend():
     users.update_one({'email': hckemail}, {'$set': {'day_of.' + event: 0}})
 
     # by qr
-    result = qrscan.qr_match(payload, {})
+    result = qrscan.qr_match({'body': json.dumps(payload)}, {})
     assert result['statusCode'] == 200
     test(qr)
 

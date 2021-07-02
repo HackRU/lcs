@@ -38,6 +38,7 @@ def public_read(event, context):
     """
     Function responsible for performing a public read (can be requested by anyone)
     """
+    event = json.loads(event["body"])
     # the fields to be aggregated
     fields = event['fields']
     # filter based on the just_here boolean indicating whether or not to aggregate on checked-in users
@@ -53,9 +54,11 @@ def user_read(event, context, user):
     """
     Function used by a LCS user to fetch their information
     """
+    orig_event = event
+    event = json.loads(event["body"])
     # if the desired action is to aggregate, than it is no different from a public read
     if event.get('aggregate', False):
-        return public_read(event, context)
+        return public_read(orig_event, context)
 
     # otherwise, any reimbursement information is removed before sending that user's data back
     if user['registration_status'] in ['unregistered', 'registered', 'rejected']:
@@ -69,9 +72,12 @@ def organizer_read(event, context, user):
     """
     Function responsible for performing an organizer query. In-case of insufficient permissions, falls back on user_read
     """
+    orig_event = event
+    event = json.loads(event["body"])
+
     # if aggregation is desired, a public read will suffice
     if event.get('aggregate', False):
-        return public_read(event, context)
+        return public_read(orig_event, context)
 
     # otherwise, the organizer submitted query is ran on the database and results are returned
     user_coll = util.coll('users')
@@ -98,6 +104,7 @@ def read_info(event, context, user=None):
     If the endpoint is called by a non-director, falls back upon organizer_read
     """
     tests = util.coll('users')
+    event = json.loads(event["body"])
 
     if event.get('aggregate', False):
         return {"statusCode": 200, "body": json.dumps(list(tests.aggregate(event['query'])))}

@@ -29,6 +29,7 @@ def process_slack_error(error_str: str):
 })
 @ensure_logged_in_user()  # makes sure that the requester is a logged in user
 def generate_dm_link(event, context, user=None):
+    event = json.loads(event["body"])
     # attempts to find the other user based on the email provided
     other_user = util.coll("users").find_one({"email": event["other_email"]})
     # ensures that other user exists in LCS
