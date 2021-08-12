@@ -1,5 +1,6 @@
 from src import authorize, util, resume
 import config
+import json
 
 import requests
 
@@ -19,7 +20,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pword}, {})
     assert result["statusCode"] == 200
     global token
-    token = result["body"]["token"]
+    token = json.loads(result["body"])["token"]
 
 
 def teardown_module(m):
@@ -40,8 +41,8 @@ def test_baduser():
 def test_roundtrip():
     result = resume.resume({"token": token}, {})
     assert result["statusCode"] == 200
-    upload = result["body"]["upload"]
-    download = result["body"]["download"]
+    upload = json.loads(result["body"])["upload"]
+    download = json.loads(result["body"])["download"]
     
     stellar_resume = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_resume, headers={"Content-Type": "application/pdf"})
@@ -53,15 +54,16 @@ def test_roundtrip():
 
     result = resume.resume({"token": token}, {})
     assert result["statusCode"] == 200
-    assert result["body"]["exists"]
+    assert json.loads(result["body"])["exists"]
 
 
 def test_exists():
     """check using an email that wasn't uploaded"""
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
-    token = creation["body"]["token"]
+    token = json.loads(creation["body"])["token"]
+
     
     result = resume.resume({"token": token}, {})
     assert result["statusCode"] == 200
-    assert not result["body"]["exists"]
+    assert not json.loads(result["body"])["exists"]
