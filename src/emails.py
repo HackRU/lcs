@@ -22,7 +22,7 @@ def do_substitutions(recipients, links, template, user):
         with open(f"templates/{template}.txt") as template_text:
             email_body = template_text.read()
     except Exception as e:
-        return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
+        return util.add_cors_headers({"statusCode": 400, "body": json.dumps(f"There is no template named {template}.txt")})
 
     email_sender = config.EMAIL_ADDRESS
     email_password = config.EMAIL_PASSWORD
@@ -35,6 +35,8 @@ def do_substitutions(recipients, links, template, user):
 
         smtp.login(email_sender, email_password)
         failed_emails = []
+        if links and len(links) != len(recipients):
+            return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Differing lengths between links and recipients")})
         if links and len(links) == len(recipients):
             for recipient, link in zip(recipients, links):
                 message = email_body.format(link=link)
@@ -51,12 +53,12 @@ def do_substitutions(recipients, links, template, user):
 
         smtp.quit()
     except Exception as e:
-        return util.add_cors_headers({"statusCode": 500, "body": "Error: " + str(e)})
+        return util.add_cors_headers({"statusCode": 500, "body": json.dumps("Error: " + str(e))})
 
     if failed_emails:
-        return util.add_cors_headers({"statusCode": 400, "body": f"List of emails failed: {failed_emails}"})
+        return util.add_cors_headers({"statusCode": 400, "body": json.dumps(f"List of emails failed: {failed_emails}")})
 
-    return util.add_cors_headers({"statusCode": 200, "body": "Success!"})
+    return util.add_cors_headers({"statusCode": 200, "body": json.dumps("Success!")})
 
 
 def send_email(recipient, link, template, sender):
@@ -91,25 +93,34 @@ def send_to_emails(event, context, usr):
     If a valid director is logged in then the 'recipients' list can be
     arbitrary. If a 'query' is provided and no 'recipients' list is, then
     the 'query' is run as if passed to the 'read' endpoint
-    the email key of every returned document is emailed.
+    the email key of every returned document is emailed.  If both lists are provided, 
+    only the 'recipients' list is used.
 
     If there is a 'recipients' list and a 'link' key is provided, it is assumed
     that the 'link' is an array of corresponding links to substitute for each
     recipient. This substitution is performed using "do_substitutions" specified
-    above.
+    above.  If the lengths of the links and recipients are unequal, an error will throw.
+    If a 'query' is provided, it will be ignored as only the 'recipients'
+    list will be used.
     """
     # disallow non-director users from sending emails to anyone but themselves
     if not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
         return {'statusCode': 400, 'body': "Not authorized to send emails!"}
     else:  # note, below this point, we can assume usr is a director or that the recipients list has length 1.
         # recall that a non-director cannot have this: they must have "recipients"
-        if 'query' in event and 'recipients' not in event:
+        if 'query' not in event and 'recipients' not in event:
+            return {'statusCode': 204, 'body': "No recipients or query provided!"}
+        elif 'query' in event and 'recipients' not in event:
             # if there is query, then read_info is called
             queried = read_info(event, context)
             if queried['statusCode'] != 200:
                 return queried
+            event['recipients'] = []
             # if there is an error running the provided query, tries to assume recipients using any emails in query
-            event['recipients'] = [i['email'] for i in queried['body'] if 'email' in i]
+            queried = json.loads(queried['body'])
+            for user in queried:
+                if 'email' in user:
+                    event['recipients'].append(user['email'])
             # in case no recipients can be assumed, complains
             if len(event['recipients']) == 0:
                 return {'statusCode': 204, 'body': "No recipients found!"}
