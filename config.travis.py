@@ -12,6 +12,9 @@ DB_COLLECTIONS = {
     "slack messages": "slackMessages"
 }
 
+EMAIL_ADDRESS = os.getenv("TRAVIS_TEST_EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("TRAVIS_TEST_EMAIL_PASSWORD")
+
 SPARKPOST_KEY = os.getenv("TRAVIS_SPARKPOST_KEY", "")
 
 SLACK_KEYS = {
