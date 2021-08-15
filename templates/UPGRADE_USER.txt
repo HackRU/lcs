@@ -1,0 +1,12 @@
+Hi,
+
+You are receiving this email as the HackRU team has your address indicating you for a special role in HackRU. You are either a director, organizer or volunteer.
+
+Please use this link to enable your special account permission:
+
+{link}
+
+If you do not already have an account, follow the link and then click the button to create an account.
+
+Best,
+HackRU Team
