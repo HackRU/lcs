@@ -2,13 +2,8 @@ import random
 import datetime
 import string
 from datetime import datetime, timedelta
-<<<<<<< HEAD
-
 from src import emails
-=======
 import json
-from src import use_sparkpost
->>>>>>> develop
 from src.schemas import *
 
 DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
