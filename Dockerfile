@@ -1,4 +1,4 @@
-
+# Credit to Kirollos and Anarav for work on Dockerfile
 # Commands to build and run using this Dockerfile
 # docker pull nikolaik/python-nodejs:python3.6-nodejs14
 # docker build -t lcs .
