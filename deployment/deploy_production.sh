@@ -55,7 +55,14 @@ do
    printenv $i >> .env.prod
 done
 
-nvm use 14.17.6
+wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh;
+source ~/.nvm/nvm.sh;
+nvm install 14; # for Node v14
+
+echo "Checking Node..."
+node -v
+
+nvm use 14
 
 ##Checking Package Versions
 echo "Checking Node..."
