@@ -55,11 +55,12 @@ do
    printenv $i >> .env.prod
 done
 
+nvm use 14.17.6
+
 ##Checking Package Versions
 echo "Checking Node..."
 node -v
-echo "Checking Serverless..."
-serverless -v
+
 
 # Deploying!
 echo "Deploying!"
