@@ -55,6 +55,9 @@ do
    printenv $i >> .env.prod
 done
 
+wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh;
+source ~/.nvm/nvm.sh;
+
 nvm use 14
 
 ##Checking Package Versions
