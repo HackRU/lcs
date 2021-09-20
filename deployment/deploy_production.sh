@@ -55,6 +55,12 @@ do
    printenv $i >> .env.prod
 done
 
+##Checking Package Versions
+echo "Checking Node..."
+node -v
+echo "Checking Serverless..."
+serverless -v
+
 # Deploying!
 echo "Deploying!"
 npx serverless deploy --stage prod 
