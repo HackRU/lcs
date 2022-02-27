@@ -1,3 +1,4 @@
+from config import VACCINE_BUCKET
 import os
 from datetime import datetime, timezone, timedelta
 
@@ -59,8 +60,10 @@ AWS = {
     "aws_access_key_id": os.environ.get("TRAVIS_AWS_ACCESS_KEY_ID"),
     "aws_secret_access_key": os.environ.get("TRAVIS_AWS_SECRET_ACCESS_KEY"),
 }
+
 RESUME_BUCKET = "resumet"
 WAIVER_BUCKET = "waivert"
+VACCINE_BUCKET = "vaccinet"
 
 # Json webtoken
 JWT_SECRET = os.getenv("TRAVIS_JWT_SECRET", "")

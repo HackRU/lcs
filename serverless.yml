@@ -52,7 +52,6 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
-  - serverless-dotenv-plugin
 package:
   include:
      - 'src/*.py'
@@ -184,6 +183,17 @@ functions:
     events:
       - http:
           path: waiver
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
+  vaccine:
+    handler: src/vaccine.vaccine
+    events:
+      - http:
+          path: vaccine
           integration: lambda
           method: post
           cors: true
