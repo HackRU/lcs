@@ -5,7 +5,7 @@ source ~/.nvm/nvm.sh;
 nvm install 14; # for Node v14
 #Install serverless and created node modules
 npm install
-npm install -g serverless;
+npm install -g serverless@2.72.2;
 npm i -D serverless-dotenv-plugin;
 
 
