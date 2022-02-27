@@ -39,6 +39,15 @@ do
    printenv $i >> .env.dev
 done
 
+wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh;
+source ~/.nvm/nvm.sh;
+
+nvm use 14
+
+##Checking Package Versions
+echo "Checking Node..."
+node -v
+
 # Deploying!
 echo "Deploying!"
 npx serverless deploy --stage dev 
