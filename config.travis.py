@@ -58,6 +58,7 @@ AWS = {
 }
 RESUME_BUCKET = "resumet"
 WAIVER_BUCKET = "waivert"
+VACCINE_BUCKET = "vaccinet"
 
 # Json webtoken
 JWT_SECRET = os.getenv("TRAVIS_JWT_SECRET", "")

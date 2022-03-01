@@ -190,6 +190,17 @@ functions:
           request:
             template:
               application/json: '$input.body'
+  vaccine:
+    handler: src/vaccine.vaccine
+    events:
+      - http:
+          path: vaccine
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
   send-emails:
     handler: src/use_sparkpost.send_emails
     events:
