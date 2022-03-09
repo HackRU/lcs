@@ -35,6 +35,7 @@ echo "For loop"
 ## now loop through the above env_vars
 for i in "${env_vars[@]}"
 do
+   echo $i 
    echo -e "$i=\c" >> .env.dev
    printenv $i >> .env.dev
 done
