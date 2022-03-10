@@ -21,6 +21,7 @@ declare -a env_vars=(
  "DEVELOP_SLACK_CHANNEL_ID"
  "DEVELOP_RESUME_BUCKET"
  "DEVELOP_WAIVER_BUCKET"
+ "DEVELOP_VACCINE_BUCKET"
  "DEVELOP_AWS_ACCESS_KEY_ID"
  "DEVELOP_AWS_SECRET_ACCESS_KEY")
  
@@ -35,7 +36,6 @@ echo "For loop"
 ## now loop through the above env_vars
 for i in "${env_vars[@]}"
 do
-   echo $i 
    echo -e "$i=\c" >> .env.dev
    printenv $i >> .env.dev
 done

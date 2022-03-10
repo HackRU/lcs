@@ -28,7 +28,7 @@ def list_all_templates(event, context, user):
     from sparkpost.
     """
     templs = emails.templates.list()
-    return {'statusCode': 400, 'body': json.dumps(templs)}
+    return {'statusCode': 400, 'body': templs}
 
 
 def do_substitutions(recs, links, template, usr):
@@ -61,12 +61,12 @@ def do_substitutions(recs, links, template, usr):
         )
         # if the email wasn't successfully sent to everyone on the list, complain
         if resp[u'total_accepted_recipients'] != len(recs):
-            rv = util.add_cors_headers({'statusCode': 500, 'body': json.dumps("Sparkpost troubles!")})
+            rv = util.add_cors_headers({'statusCode': 500, 'body': "Sparkpost troubles!"})
         else:
-            rv = util.add_cors_headers({'statusCode': 200, 'body': json.dumps("Success!")})
+            rv = util.add_cors_headers({'statusCode': 200, 'body': "Success!"})
     # in case of any Exception being raised, complain
     except Exception as e:
-        rv = util.add_cors_headers({'statusCode': 400, 'body': json.dumps("Error: " + str(e))})
+        rv = util.add_cors_headers({'statusCode': 400, 'body': "Error: " + str(e)})
     # cleanup by deleting the RecipientLists instance
     finally:
         emails.recipient_lists.delete(list_id)

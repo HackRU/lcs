@@ -34,7 +34,7 @@ def schema_for_http(status_code, body_schema):
 def check_by_schema(schema, thing):
     copy = deepcopy(thing)
     if 'body' in copy:
-        copy['body'] = json.loads(copy['body'])
+        copy['body'] = copy['body']
     js.validate(copy, schema)
     return True
 

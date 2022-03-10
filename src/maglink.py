@@ -24,7 +24,7 @@ def forgot_user(event, magiclinks, user_coll):
     user = user_coll.find_one({"email": event['email']})
     # if the user is not found, then return an error
     if user is None:
-        return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Invalid email: please create an account.")})
+        return util.add_cors_headers({"statusCode": 400, "body": "Invalid email: please create an account."})
     else:
         # generate the magic link using the prefix "forgot" concatenated with 32 random alphanumeric characters
         magiclink = 'forgot-' + ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(32)])
@@ -43,7 +43,7 @@ def forgot_user(event, magiclinks, user_coll):
 
         if rv['statusCode'] != 200:
             return rv
-        return util.add_cors_headers({"statusCode": 200, "body": json.dumps("Forgot password link has been emailed to you")})
+        return util.add_cors_headers({"statusCode": 200, "body": "Forgot password link has been emailed to you"})
 
 
 def director_link(magiclinks, num_links, event, user):
@@ -99,7 +99,7 @@ def do_director_link(event, magiclinks, user=None):
     """
     num_links = event.get('numLinks', 1)
     links_list = director_link(magiclinks, num_links, event, user)
-    return util.add_cors_headers({"statusCode": 200, "body": json.dumps(links_list)})
+    return util.add_cors_headers({"statusCode": 200, "body": links_list})
 
 
 @ensure_schema({

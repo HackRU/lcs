@@ -20,7 +20,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pword}, {})
     assert result["statusCode"] == 200
     global token
-    token = json.loads(result["body"])["token"]
+    token = result["body"]["token"]
 
 
 def teardown_module(m):
@@ -41,8 +41,8 @@ def test_baduser():
 def test_roundtrip():
     result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
-    upload = json.loads(result["body"])["upload"]
-    download = json.loads(result["body"])["download"]
+    upload = result["body"]["upload"]
+    download = result["body"]["download"]
     
     stellar_waiver = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_waiver, headers={"Content-Type": "application/pdf"})
@@ -54,15 +54,15 @@ def test_roundtrip():
 
     result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
-    assert json.loads(result["body"])["exists"]
+    assert result["body"]["exists"]
 
 
 def test_exists():
     """check using an email that wasn't uploaded"""
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
-    token = json.loads(creation["body"])["token"]
+    token = creation["body"]["token"]
     
     result = waiver.waiver({"token": token}, {})
     assert result["statusCode"] == 200
-    assert not json.loads(result["body"])["exists"]
+    assert not result["body"]["exists"]

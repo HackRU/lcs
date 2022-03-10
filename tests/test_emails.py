@@ -55,11 +55,11 @@ def test_forgot_password_link_bad_email():
     # Fail with email not belonging to any user
     res = emails.send_email(email_bogus, '', "FORGOT_PASSWORD", email_test)
 
-    assert res['statusCode'] == 400 and json.loads(res['body']) == f"List of emails failed: ['{email_bogus}']"
+    assert res['statusCode'] == 400 and res['body'] == f"List of emails failed: ['{email_bogus}']"
 
 def test_email_bad_template():
     template_bogus = 'bogus'
 
     # Fail with template not matching to any file
     res = emails.send_email(email_test, '', template_bogus, email_test)
-    assert res['statusCode'] == 400 and json.loads(res['body']) == f"There is no template named {template_bogus}.txt"
+    assert res['statusCode'] == 400 and res['body'] == f"There is no template named {template_bogus}.txt"

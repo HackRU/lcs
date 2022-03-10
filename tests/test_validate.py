@@ -15,7 +15,7 @@ def test_validate_token():
     usr_dict = {'email': user_email, 'password': passwd}
     auth = authorize.authorize(usr_dict, None)
 
-    token = json.loads(auth['body'])['token']
+    token = auth['body']['token']
     # make sure user exists
 
     user_dict = get_db_user(user_email)

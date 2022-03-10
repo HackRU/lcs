@@ -84,7 +84,7 @@ def setup_module(m):
 
     global token
 
-    token = json.loads(result["body"])["token"]
+    token = result["body"]["token"]
 
     db = util.coll("users")
     updete = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "director": True}}})

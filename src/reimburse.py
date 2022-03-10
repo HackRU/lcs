@@ -141,7 +141,7 @@ def compute_all_reimburse(event, context, user=None):
     try:
         lookup = req_distance_matrices(users)
     except Exception as e:
-        return {'statusCode': 512, 'body': json.dumps(repr(e))}
+        return {'statusCode': 512, 'body': repr(e)}
     # This line was purely for testing can be deleted if no more test are needed or have API key
     #lookup = None
 
@@ -154,4 +154,4 @@ def compute_all_reimburse(event, context, user=None):
         data = user_coll.bulk_write(bulk_op, ordered=False)
         return {'statusCode': 200, 'mongo_result': data.bulk_api_result, 'total': total}
     except BulkWriteError as bwe:
-        return {'statusCode': 512, 'body': json.dumps(bwe.details)}
+        return {'statusCode': 512, 'body': bwe.details}

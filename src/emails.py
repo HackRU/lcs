@@ -22,7 +22,7 @@ def do_substitutions(recipients, links, template, user):
         with open(f"templates/{template}.txt") as template_text:
             email_body = template_text.read()
     except Exception as e:
-        return util.add_cors_headers({"statusCode": 400, "body": json.dumps(f"There is no template named {template}.txt")})
+        return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
 
     email_sender = config.EMAIL_ADDRESS
     email_password = config.EMAIL_PASSWORD
@@ -36,7 +36,7 @@ def do_substitutions(recipients, links, template, user):
         smtp.login(email_sender, email_password)
         failed_emails = []
         if links and len(links) != len(recipients):
-            return util.add_cors_headers({"statusCode": 400, "body": json.dumps("Differing lengths between links and recipients")})
+            return util.add_cors_headers({"statusCode": 400, "body": "Differing lengths between links and recipients"})
         if links and len(links) == len(recipients):
             for recipient, link in zip(recipients, links):
                 message = email_body.format(link=link)
@@ -53,12 +53,12 @@ def do_substitutions(recipients, links, template, user):
 
         smtp.quit()
     except Exception as e:
-        return util.add_cors_headers({"statusCode": 500, "body": json.dumps("Error: " + str(e))})
+        return util.add_cors_headers({"statusCode": 500, "body": "Error: " + str(e)})
 
     if failed_emails:
-        return util.add_cors_headers({"statusCode": 400, "body": json.dumps(f"List of emails failed: {failed_emails}")})
+        return util.add_cors_headers({"statusCode": 400, "body": f"List of emails failed: {failed_emails}"})
 
-    return util.add_cors_headers({"statusCode": 200, "body": json.dumps("Success!")})
+    return util.add_cors_headers({"statusCode": 200, "body": "Success!"})
 
 
 def send_email(recipient, link, template, sender):

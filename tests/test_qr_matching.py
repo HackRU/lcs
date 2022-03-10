@@ -26,7 +26,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": pwrord}, {})
     assert result["statusCode"] == 200
     global token, payload
-    token = json.loads(result["body"])["token"]
+    token = result["body"]["token"]
     payload = {
         "token": token,
         "link_email": hckemail,
@@ -40,7 +40,7 @@ def setup_module(m):
     result = authorize.create_user({"email": hckemail, "password": hckword}, {})
     assert result["statusCode"] == 200
     global hcktoken
-    hcktoken = json.loads(result["body"])["token"]
+    hcktoken = result["body"]["token"]
 
 
 def teardown_module(m):
