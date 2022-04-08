@@ -2,7 +2,8 @@ import json
 from datetime import datetime, timedelta
 import bcrypt
 import jwt
-from src.schemas import *
+import config
+from src.schemas import ensure_schema
 from src import util, consume
 
 

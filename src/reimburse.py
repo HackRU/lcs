@@ -1,9 +1,9 @@
 import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
-import json
-
-from src.schemas import *
+from src import util
+import config
+from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 
 
 # credit to https://stackoverflow.com/a/434328/5292630

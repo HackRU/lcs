@@ -6,7 +6,6 @@ import requests
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
-import pickle
 from src import util
 import config
 

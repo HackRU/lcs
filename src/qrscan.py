@@ -1,7 +1,6 @@
 from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 import pymongo
-import json
-from src.util import *
+from src.util import coll
 
 def dbinfo():
     user_coll = coll("users")
