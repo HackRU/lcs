@@ -1,5 +1,6 @@
 from src import authorize, util, resume
 import config
+import json
 
 import requests
 
@@ -61,6 +62,7 @@ def test_exists():
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
     token = creation["body"]["token"]
+
     
     result = resume.resume({"token": token}, {})
     assert result["statusCode"] == 200

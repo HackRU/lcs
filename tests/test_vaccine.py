@@ -1,4 +1,4 @@
-from src import authorize, util, waiver
+from src import authorize, util, vaccine
 import config
 import json
 
@@ -34,25 +34,25 @@ def teardown_module(m):
 
 
 def test_baduser():
-    result = waiver.waiver({"token": token + "bad"}, {})
+    result = vaccine.vaccine({"token": token + "bad"}, {})
     assert result["statusCode"] == 403
 
 
 def test_roundtrip():
-    result = waiver.waiver({"token": token}, {})
+    result = vaccine.vaccine({"token": token}, {})
     assert result["statusCode"] == 200
     upload = result["body"]["upload"]
     download = result["body"]["download"]
     
-    stellar_waiver = b'hire me plz'
-    upload_res = requests.put(upload, data=stellar_waiver, headers={"Content-Type": "application/pdf"})
+    stellar_vaccine = b'hire me plz'
+    upload_res = requests.put(upload, data=stellar_vaccine, headers={"Content-Type": "application/pdf"})
     assert upload_res.status_code == 200 or upload_res.status_code == 204
 
     download_res = requests.get(download)
     assert download_res.status_code == 200
-    assert download_res.content == stellar_waiver
+    assert download_res.content == stellar_vaccine
 
-    result = waiver.waiver({"token": token}, {})
+    result = vaccine.vaccine({"token": token}, {})
     assert result["statusCode"] == 200
     assert result["body"]["exists"]
 
@@ -62,7 +62,8 @@ def test_exists():
     creation = authorize.create_user({"email": email + "d", "password": pword}, {})
     assert creation["statusCode"] == 200
     token = creation["body"]["token"]
+
     
-    result = waiver.waiver({"token": token}, {})
+    result = vaccine.vaccine({"token": token}, {})
     assert result["statusCode"] == 200
     assert not result["body"]["exists"]

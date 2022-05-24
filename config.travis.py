@@ -12,6 +12,9 @@ DB_COLLECTIONS = {
     "slack messages": "slackMessages"
 }
 
+EMAIL_ADDRESS = os.getenv("TRAVIS_TEST_EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("TRAVIS_TEST_EMAIL_PASSWORD")
+
 SPARKPOST_KEY = os.getenv("TRAVIS_SPARKPOST_KEY", "")
 
 SLACK_KEYS = {
@@ -58,6 +61,7 @@ AWS = {
 }
 RESUME_BUCKET = "resumet"
 WAIVER_BUCKET = "waivert"
+VACCINE_BUCKET = "vaccinet"
 
 # Json webtoken
 JWT_SECRET = os.getenv("TRAVIS_JWT_SECRET", "")

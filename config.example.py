@@ -13,8 +13,8 @@ SLACK_KEYS = {
     'channel': ''
 }
 
-SPARKPOST_KEY = ""
-
+EMAIL_ADDRESS = ""
+EMAIL_PASSWORD = ""
 
 class GOOGLE_CAL:
     CAL_ID = ""

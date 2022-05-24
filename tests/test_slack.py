@@ -1,4 +1,6 @@
 from src import authorize, util
+import json
+
 import config
 from src.slack import generate_dm_link
 
@@ -48,6 +50,7 @@ def setup_module(m):
     result = authorize.create_user({"email": email, "password": password}, {})
     assert result["statusCode"] == 200
     token = result["body"]["token"]
+
     payload = {
         "token": token,
         "other_email": other_email

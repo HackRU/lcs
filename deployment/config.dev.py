@@ -55,7 +55,7 @@ AWS = {
 }
 RESUME_BUCKET = os.getenv("DEVELOP_RESUME_BUCKET", "")
 WAIVER_BUCKET = os.getenv("DEVELOP_WAIVER_BUCKET", "")
-
+VACCINE_BUCKET = os.getenv("DEVELOP_VACCINE_BUCKET", "")
 # Json webtoken
 JWT_SECRET = os.getenv("DEVELOP_JWT_SECRET", "")
 JWT_ALGO = os.getenv("DEVELOP_JWT_ALGO", "")

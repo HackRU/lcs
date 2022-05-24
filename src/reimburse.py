@@ -1,6 +1,7 @@
 import requests as req
 from pymongo import UpdateOne
 from pymongo.errors import BulkWriteError
+import json
 
 from src.schemas import *
 

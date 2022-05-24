@@ -8,14 +8,14 @@ from botocore.exceptions import ClientError
 
 def presign(method, user, s3_client):
     """
-    Function used to generate a presign URL to download/upload resume
+    Function used to generate a presign URL to download/upload vaccine card
     """
     # default is GET method
     http_method = "GET"
     # creates the parameters, which includes the bucket name and the name of the file to be saved
     # which is the user's email followed by the .pdf extension
     params = {
-        "Bucket": config.RESUME_BUCKET,
+        "Bucket": config.VACCINE_BUCKET,
         "Key": user["email"] + ".pdf"
     }
     # if instead the desired method is PUT, then ContentType is set and the http method is changed to PUT
@@ -33,11 +33,11 @@ def presign(method, user, s3_client):
 
 def exists(email, s3_client):
     """
-    Function that checks if a resume already exists for the given user
+    Function that checks if a Vaccine card already exists for the given user
     """
-    # tries to query the resume pdf and returns whether or not there was a 404 error
+    # tries to query the vaccine pdf and returns whether or not there was a 404 error
     try:
-        info = s3_client.head_object(Bucket=config.RESUME_BUCKET, Key=email + ".pdf")
+        info = s3_client.head_object(Bucket=config.VACCINE_BUCKET, Key=email + ".pdf")
         return True
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
@@ -53,14 +53,14 @@ def exists(email, s3_client):
     "required": ["token"]
 })
 @ensure_logged_in_user()
-def resume(event, ctx, user=None):
+def vaccine(event, ctx, user=None):
     """
-    Function used to upload a user's resume to a S3 bucket
+    Function used to upload a user's vaccine card to a S3 bucket
     """
     # creates a client connection to the S3 bucket
     client = boto3.client("s3", **config.AWS)
-    # attempts to create presigned URLs to upload and download the resume as well as check if a
-    # resume for that user already exists in S3
+    # attempts to create presigned URLs to upload and download the vaccine card as well as check if a
+    # vaccine card for that user already exists in S3
     try:
         return {
             "statusCode": 200, "body": {

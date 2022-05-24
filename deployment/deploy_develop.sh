@@ -21,6 +21,7 @@ declare -a env_vars=(
  "DEVELOP_SLACK_CHANNEL_ID"
  "DEVELOP_RESUME_BUCKET"
  "DEVELOP_WAIVER_BUCKET"
+ "DEVELOP_VACCINE_BUCKET"
  "DEVELOP_AWS_ACCESS_KEY_ID"
  "DEVELOP_AWS_SECRET_ACCESS_KEY")
  
@@ -38,6 +39,15 @@ do
    echo -e "$i=\c" >> .env.dev
    printenv $i >> .env.dev
 done
+
+wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh;
+source ~/.nvm/nvm.sh;
+
+nvm use 14
+
+##Checking Package Versions
+echo "Checking Node..."
+node -v
 
 # Deploying!
 echo "Deploying!"

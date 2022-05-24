@@ -1,4 +1,5 @@
 from src import authorize, util, reimburse
+import json
 import config
 
 from testing_utils import *
@@ -82,7 +83,9 @@ def setup_module(m):
     assert result["statusCode"] == 200
 
     global token
+
     token = result["body"]["token"]
+
     db = util.coll("users")
     updete = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "director": True}}})
     assert updete.modified_count >= 1
