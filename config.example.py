@@ -14,6 +14,7 @@ SLACK_KEYS = {
 }
 
 EMAIL_ADDRESS = ""
+#Must use a generated app password for gmail
 EMAIL_PASSWORD = ""
 
 class GOOGLE_CAL:

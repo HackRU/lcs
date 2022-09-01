@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 import pymongo
 import json
@@ -61,9 +62,12 @@ def attend_event(aws_event, context, user=None):
             return {'statusCode': 402, 'body': 'user already checked into event'}
         # update the user data to reflect event attendance by incrementing the count of the event by 1
         new_user = users.find_one_and_update({'email': user['email']},
-                                             {'$inc': {'day_of.' + event: 1}},
+                                                { 
+                                                    '$inc': {'day_of.' + event: 1},
+                                                    '$push': {'day_of.timestamps.' + event: datetime.utcnow()}
+                                                },
                                              return_document=pymongo.ReturnDocument.AFTER)
-
+        
         return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}}
 
     # TODO: revisit if it's valid for qr to be an email

@@ -237,7 +237,9 @@ def update(event, context, auth_user):
 
     # validate the updates, passing only the allowable ones through.
     updates = validate_updates(results, event['updates'], auth_user)
-
+    #May need to be more descriptive (say which updates failed specific)
+    if len(updates) == 0:
+        return {"statusCode": 403, "body": "No provided updates were valid."}
     # update the user and report success.
     user_coll.update_one({'email': event['user_email']}, updates)
     return {"statusCode": 200, "body": "Successful request."}
