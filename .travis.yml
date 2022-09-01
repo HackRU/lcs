@@ -3,7 +3,7 @@ language: python
 
 #Set up the basic environment to be python
 python:
-  - "3.9.2"
+  - "3.9.1"
 
 #Recognize mongodb as a service
 services:
