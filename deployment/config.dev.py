@@ -18,6 +18,8 @@ SLACK_KEYS = {
     'channel': os.getenv("DEVELOP_SLACK_CHANNEL_ID")
 }
 
+EMAIL_ADDRESS = os.getenv("DEVELOP_EMAIL_ADDRESS"),
+EMAIL_PASSWORD = os.getenv("DEVELOP_EMAIL_PASSWORD")
 
 class GOOGLE_CAL:
     CAL_ID = os.getenv("DEVELOP_GOOGLE_CAL_ID", "")
