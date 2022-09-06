@@ -22,7 +22,7 @@ service: lcs-sls
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.9
   stage: dev
 
 # you can overwrite defaults here
