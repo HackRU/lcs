@@ -52,6 +52,7 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
+  - serverless-dotenv-plugin
 package:
   include:
      - 'src/*.py'

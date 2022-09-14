@@ -20,7 +20,7 @@ ADD package.json /
 
 # Install the node packages outlined in package-lock.json (if present) or package.json
 RUN npm install
-RUN npm install -g serverless@2.72.2
+RUN npm install -g serverless
 
 # Add serverless.yml for lambda functions
 ADD serverless.yml /
