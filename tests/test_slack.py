@@ -8,12 +8,12 @@ from src.slack import generate_dm_link
 email = "generator@test.com"
 password = "temp_password"
 token = None
-slack_id = "U010WR7TMAQ"
+slack_id = "U0407CVP9K8"
 
 # credentials of the other user
 other_email = "other@test.com"
 other_password = "secure_password"
-other_slack_id = "U010WRFRJ7N"
+other_slack_id = "U040B24NB0V"
 
 # collections and database
 old_col = None

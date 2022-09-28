@@ -29,9 +29,7 @@ def do_substitutions(recipients, links, template, user):
 
     try:
         smtp = smtplib.SMTP("smtp.gmail.com", 587)
-        smtp.ehlo()
         smtp.starttls(context=ssl.create_default_context())
-        smtp.ehlo()
 
         smtp.login(email_sender, email_password)
         failed_emails = []
