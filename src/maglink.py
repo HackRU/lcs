@@ -1,10 +1,9 @@
 import random
-import datetime
 import string
 from datetime import datetime, timedelta
 from src import emails
-import json
-from src.schemas import *
+from src import util
+from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 
 DEFAULT_LINK_BASE = 'https://hackru.org/magic/{}'
 

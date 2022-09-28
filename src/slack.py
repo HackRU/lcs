@@ -1,6 +1,4 @@
 import requests
-import json
-
 import config
 from src import util
 from src.schemas import ensure_schema, ensure_logged_in_user
