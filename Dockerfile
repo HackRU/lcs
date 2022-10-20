@@ -1,6 +1,6 @@
 # Credit to Kirollos and Anarav for work on Dockerfile
 # Commands to build and run using this Dockerfile
-# docker pull nikolaik/python-nodejs:python3.6-nodejs14
+# docker pull nikolaik/python-nodejs:python3.9-nodejs14
 # docker build -t lcs .
 # docker run -p 3000:3000 -p 3001:3001 -p 3002:3002 -it --name serverless lcs
 
@@ -8,7 +8,7 @@
 # followed by the docker build and docker run commands to test out your changes!
 
 # Setup base image for python and nodejs
-FROM nikolaik/python-nodejs:python3.6-nodejs14
+FROM nikolaik/python-nodejs:python3.9-nodejs16
 
 
 # And our requirements, and install them
