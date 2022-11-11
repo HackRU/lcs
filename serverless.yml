@@ -52,7 +52,6 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
-  - serverless-dotenv-plugin
 package:
   include:
      - 'src/*.py'
@@ -169,29 +168,35 @@ functions:
   #           template:
   #             application/json: '$input.body'
   resume:
-    handler: src/resume.resume
+    handler: src/resume.resume_vaccine_waiver
     events:
       - http:
-          path: resume
+          path: /upload/{param_name}
           integration: lambda
           method: post
           cors: true
           request:
+            parameters: 
+              paths: 
+                param_name: true
             template:
-              application/json: '$input.body'
+              application/json: '{ $input.body, "path": "$input.path" }'
   waiver:
-    handler: src/waiver.waiver
+    handler: src/resume.waiver
     events:
       - http:
-          path: waiver
+          path: waiver #/upload/{type}
           integration: lambda
           method: post
           cors: true
           request:
+            parameters: 
+              paths: 
+                param_name: true
             template:
               application/json: '$input.body'
   vaccine:
-    handler: src/vaccine.vaccine
+    handler: src/resume.vaccine
     events:
       - http:
           path: vaccine
@@ -199,6 +204,9 @@ functions:
           method: post
           cors: true
           request:
+            parameters: 
+              paths: 
+                param_name: true
             template:
               application/json: '$input.body'
   send-emails:
