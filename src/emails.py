@@ -6,6 +6,8 @@ from src.schemas import ensure_schema, ensure_logged_in_user
 from src import util
 from src.read import read_info
 
+import traceback
+
 def do_substitutions(recipients, links, template, user):
     """
     Given the recipients, links for each recipients,
@@ -31,7 +33,7 @@ def do_substitutions(recipients, links, template, user):
         smtp = smtplib.SMTP("smtp.gmail.com", 587)
         smtp.starttls(context=ssl.create_default_context())
 
-        # smtp.login(email_sender, email_password)
+        smtp.login(email_sender, email_password)
         failed_emails = []
         # if links and len(links) != len(recipients):
         #     return util.add_cors_headers({"statusCode": 400, "body": "Differing lengths between links and recipients"})
@@ -51,7 +53,7 @@ def do_substitutions(recipients, links, template, user):
 
         smtp.quit()
     except Exception as e:
-        return util.add_cors_headers({"statusCode": 500, "body": "Error: " + str(e)})
+        return util.add_cors_headers({"statusCode": 500, "body": "Error: " + traceback.format_exc()})
 
     if failed_emails:
         return util.add_cors_headers({"statusCode": 400, "body": f"List of emails failed: {failed_emails}"})
