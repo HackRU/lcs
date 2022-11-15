@@ -38,6 +38,8 @@ def do_substitutions(recipients, links, template, user):
         if links and len(links) == len(recipients):
             for recipient, link in zip(recipients, links):
                 message = email_body.format(link=link)
+                print(message)
+                message = "test message"
                 try:
                     smtp.sendmail(email_sender, recipient, message)
                 except Exception:
