@@ -31,7 +31,7 @@ def do_substitutions(recipients, links, template, user):
         smtp = smtplib.SMTP("smtp.gmail.com", 587)
         smtp.starttls(context=ssl.create_default_context())
 
-        smtp.login(email_sender, email_password)
+        # smtp.login(email_sender, email_password)
         failed_emails = []
         # if links and len(links) != len(recipients):
         #     return util.add_cors_headers({"statusCode": 400, "body": "Differing lengths between links and recipients"})
