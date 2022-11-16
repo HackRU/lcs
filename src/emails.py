@@ -26,6 +26,7 @@ def do_substitutions(recipients, links, template, user):
     except Exception as e:
         return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
 
+    #for some reason passes these vars as tuples and need to convert to str -- look into 
     email_sender = ''.join(config.EMAIL_ADDRESS)
     email_password = ''.join(config.EMAIL_PASSWORD)
 
@@ -35,21 +36,21 @@ def do_substitutions(recipients, links, template, user):
         
         smtp.login(email_sender, email_password)
         failed_emails = []
-        # if links and len(links) != len(recipients):
-        #     return util.add_cors_headers({"statusCode": 400, "body": "Differing lengths between links and recipients"})
-        # if links and len(links) == len(recipients):
-        #     for recipient, link in zip(recipients, links):
-        #         message = email_body.format(link=link)
-        #         try:
-        #             smtp.sendmail(email_sender, recipient, message)
-        #         except Exception:
-        #             failed_emails.append(recipient)
-        # else:
-        #     for recipient in recipients:
-        #         try:
-        #             smtp.sendmail(email_sender, recipient, email_body)
-        #         except Exception:
-        #             failed_emails.append(recipient)
+        if links and len(links) != len(recipients):
+            return util.add_cors_headers({"statusCode": 400, "body": "Differing lengths between links and recipients"})
+        if links and len(links) == len(recipients):
+            for recipient, link in zip(recipients, links):
+                message = email_body.format(link=link)
+                try:
+                    smtp.sendmail(email_sender, recipient, message)
+                except Exception:
+                    failed_emails.append(recipient)
+        else:
+            for recipient in recipients:
+                try:
+                    smtp.sendmail(email_sender, recipient, email_body)
+                except Exception:
+                    failed_emails.append(recipient)
 
         smtp.quit()
     except Exception as e:
