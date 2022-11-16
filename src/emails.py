@@ -26,13 +26,13 @@ def do_substitutions(recipients, links, template, user):
     except Exception as e:
         return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
 
-    email_sender = config.EMAIL_ADDRESS
-    email_password = config.EMAIL_PASSWORD
+    email_sender = ''.join(config.EMAIL_ADDRESS)
+    email_password = ''.join(config.EMAIL_PASSWORD)
 
     try:
         smtp = smtplib.SMTP("smtp.gmail.com", 587)
         smtp.starttls(context=ssl.create_default_context())
-
+        
         smtp.login(email_sender, email_password)
         failed_emails = []
         # if links and len(links) != len(recipients):
