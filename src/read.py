@@ -1,6 +1,6 @@
 from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 from src import util
-import json
+from datetime import date, datetime
 
 def tidy_results(res):
     """
@@ -11,6 +11,16 @@ def tidy_results(res):
         del i['password']
     return res
 
+def stringify_timestamps(res):
+    """
+    Function used to stringify timestamps from datetime format
+    """
+    for obj in res:
+        if "timestamps" in obj["day_of"]:
+            for event in obj["day_of"]["timestamps"]:
+                for i in range(len(obj["day_of"]["timestamps"].get(event))):
+                    obj["day_of"]["timestamps"].get(event)[i] = obj["day_of"]["timestamps"].get(event)[i] .isoformat()
+    return res
 
 @ensure_schema({
     "type": "object",
@@ -62,8 +72,8 @@ def user_read(event, context, user):
     if user['registration_status'] in ['unregistered', 'registered', 'rejected']:
         if 'travelling_from' in user and 'reimbursement' in user['travelling_from']:
             del user['travelling_from']['reimbursement']
-
-    return {"statusCode": 200, "body": [json.dumps(user, default=str)]}
+    
+    return {"statusCode": 200, "body": [stringify_timestamps(user)]}
 
 
 @ensure_role([['director', 'organizer']], on_failure=lambda e, c, u, *a: user_read(e, c, u))
@@ -77,7 +87,7 @@ def organizer_read(event, context, user):
 
     # otherwise, the organizer submitted query is ran on the database and results are returned
     user_coll = util.coll('users')
-    return {"statusCode": 200, "body": json.dumps(tidy_results(list(user_coll.find(event['query'])), default=str))}
+    return {"statusCode": 200, "body": stringify_timestamps(tidy_results(list(user_coll.find(event['query']))))}
 
 
 @ensure_schema({
@@ -102,5 +112,5 @@ def read_info(event, context, user=None):
     tests = util.coll('users')
 
     if event.get('aggregate', False):
-        return {"statusCode": 200, "body": json.dumps(list(tests.aggregate(event['query'])), default=str)}
-    return {"statusCode": 200, "body": json.dumps(tidy_results(list(tests.find(event['query']))), default=str)}
+        return {"statusCode": 200, "body": stringify_timestamps(list(tests.aggregate(event['query'])))}
+    return {"statusCode": 200, "body": stringify_timestamps(tidy_results(list(tests.find(event['query']))))}
