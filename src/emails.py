@@ -27,8 +27,8 @@ def do_substitutions(recipients, links, template, user):
         return util.add_cors_headers({"statusCode": 400, "body": f"There is no template named {template}.txt"})
 
     #for some reason passes these vars as tuples and need to convert to str -- look into 
-    email_sender = ''.join(config.EMAIL_ADDRESS)
-    email_password = ''.join(config.EMAIL_PASSWORD)
+    email_sender = config.EMAIL_ADDRESS
+    email_password = config.EMAIL_PASSWORD
 
     try:
         smtp = smtplib.SMTP("smtp.gmail.com", 587)
