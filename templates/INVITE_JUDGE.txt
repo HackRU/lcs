@@ -1,0 +1,12 @@
+Hi,
+
+Welcome to HackRU!
+
+Thank you for choosing to judge HackRU. We have a digital rubric and account for you. Here is the link that will get you started:
+
+{link}
+
+Have a great time! We hope you enjoy the wonderful hacks.
+
+Best,
+HackRU Team

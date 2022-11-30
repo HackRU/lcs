@@ -13,8 +13,9 @@ SLACK_KEYS = {
     'channel': ''
 }
 
-SPARKPOST_KEY = ""
-
+EMAIL_ADDRESS = ""
+#Must use a generated app password for gmail
+EMAIL_PASSWORD = ""
 
 class GOOGLE_CAL:
     CAL_ID = ""

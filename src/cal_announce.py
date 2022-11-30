@@ -6,7 +6,6 @@ import requests
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from pymongo import DESCENDING
-import pickle
 from src import util
 import config
 
@@ -31,7 +30,7 @@ def google_cal(event, context, testing=False):
         return {'statusCode': 200, 'body': events}
     except HttpError as err:
         return {'statusCode': 500,
-                'body': f'Encountered a Google Calendar API error: {json.loads(err.args[1])["error"]["message"]}'}
+                'body': 'Encountered a Google Calendar API error: '+ json.loads(err.args[1])["error"]["message"]}
 
 
 def slack_announce(event, context):

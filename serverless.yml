@@ -22,7 +22,7 @@ service: lcs-sls
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.9
   stage: dev
 
 # you can overwrite defaults here
@@ -202,7 +202,7 @@ functions:
             template:
               application/json: '$input.body'
   send-emails:
-    handler: src/use_sparkpost.send_emails
+    handler: src/emails.send_to_emails
     events:
       - http:
           path: send-emails

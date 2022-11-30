@@ -4,6 +4,7 @@ logs
 
 # config cache
 config.prod.py
+config.dev.py
 config.test.py
 config.py
 

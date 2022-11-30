@@ -1,6 +1,7 @@
 from sparkpost import SparkPost
+import json
 
-from src.schemas import *
+from src.schemas import ensure_schema, ensure_logged_in_user, ensure_role
 import config
 from src import util
 from src.read import read_info
@@ -100,7 +101,7 @@ def send_to_emails(event, context, usr):
     """
     # disallow non-director users from sending emails to anyone but themselves
     if not usr['role']['director'] and event.get('recipients', []) != [usr['email']]:
-        return {'statusCode': 400, 'body': "Not authorized to send emails!"}
+        return {'statusCode': 400, 'body': json.dumps("Not authorized to send emails!")}
     else:  # note, below this point, we can assume usr is a director or that the recipients list has length 1.
         # recall that a non-director cannot have this: they must have "recipients"
         if 'query' in event and 'recipients' not in event:
@@ -112,7 +113,7 @@ def send_to_emails(event, context, usr):
             event['recipients'] = [i['email'] for i in queried['body'] if 'email' in i]
             # in case no recipients can be assumed, complains
             if len(event['recipients']) == 0:
-                return {'statusCode': 204, 'body': "No recipients found!"}
+                return {'statusCode': 204, 'body': json.dumps("No recipients found!")}
         # if links are given, then the appropriate method is called to send emails
         elif 'links' in event:
             return do_substitutions(event['recipients'], event['links'], event['template'], usr)
@@ -125,12 +126,12 @@ def send_to_emails(event, context, usr):
             )
             # in case any emails failed to be sent, complain
             if resp[u'total_accepted_recipients'] != len(event['recipients']):
-                return {'statusCode': 500, 'body': "Sparkpost troubles!"}
+                return {'statusCode': 500, 'body': json.dumps("Sparkpost troubles!")}
             else:
-                return {'statusCode': 200, 'body': "Success!"}
+                return {'statusCode': 200, 'body': json.dumps("Success!")}
         # in case of any Exception raised, complain
         except Exception:
-            return {'statusCode': 400, 'body': "Template not found or error in sending"}
+            return {'statusCode': 400, 'body': json.dumps("Template not found or error in sending")}
 
 
 def send_email(recipient, link, template, sender):

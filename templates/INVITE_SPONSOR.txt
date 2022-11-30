@@ -1,0 +1,14 @@
+Hi,
+
+We have it indicated that you have purchased access to recruiting benefits.
+
+Please use this link to create an account:
+
+{link}
+
+Use the link below to login and see the page where you can scan a Hacker's QR code and then see their resume.
+
+https://sponsorship.hackru.org/Login/
+
+Enjoy the hackathon!
+HackRU Team

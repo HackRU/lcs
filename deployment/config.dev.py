@@ -18,6 +18,8 @@ SLACK_KEYS = {
     'channel': os.getenv("DEVELOP_SLACK_CHANNEL_ID")
 }
 
+EMAIL_ADDRESS = os.getenv("DEVELOP_EMAIL_ADDRESS"),
+EMAIL_PASSWORD = os.getenv("DEVELOP_EMAIL_PASSWORD")
 
 class GOOGLE_CAL:
     CAL_ID = os.getenv("DEVELOP_GOOGLE_CAL_ID", "")
@@ -55,7 +57,7 @@ AWS = {
 }
 RESUME_BUCKET = os.getenv("DEVELOP_RESUME_BUCKET", "")
 WAIVER_BUCKET = os.getenv("DEVELOP_WAIVER_BUCKET", "")
-
+VACCINE_BUCKET = os.getenv("DEVELOP_VACCINE_BUCKET", "")
 # Json webtoken
 JWT_SECRET = os.getenv("DEVELOP_JWT_SECRET", "")
 JWT_ALGO = os.getenv("DEVELOP_JWT_ALGO", "")

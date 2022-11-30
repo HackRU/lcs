@@ -1,6 +1,7 @@
 from src import authorize, util, qrscan
 
 import config
+import json
 from testing_utils import *
 
 email = "organizer@email.com"
@@ -31,6 +32,7 @@ def setup_module(m):
         "link_email": hckemail,
         "qr_code": qr
     }
+
     db = util.coll("users")
     update = db.update_one({"email": email}, {"$set": {"role": {"hacker": False, "organizer": True}}})
     assert update.modified_count >= 1

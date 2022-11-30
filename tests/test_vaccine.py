@@ -43,7 +43,7 @@ def test_roundtrip():
     assert result["statusCode"] == 200
     upload = result["body"]["upload"]
     download = result["body"]["download"]
-
+    
     stellar_vaccine = b'hire me plz'
     upload_res = requests.put(upload, data=stellar_vaccine, headers={"Content-Type": "application/pdf"})
     assert upload_res.status_code == 200 or upload_res.status_code == 204
@@ -63,7 +63,7 @@ def test_exists():
     assert creation["statusCode"] == 200
     token = creation["body"]["token"]
 
-
+    
     result = vaccine.vaccine({"token": token}, {})
     assert result["statusCode"] == 200
     assert not result["body"]["exists"]
