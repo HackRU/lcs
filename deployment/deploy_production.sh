@@ -23,6 +23,7 @@ declare -a env_vars=(
  "PRODUCTION_REGION_NAME"
  "PRODUCTION_RESUME_BUCKET"
  "PRODUCTION_WAIVER_BUCKET"
+ "PRODUCTION_VACCINE_BUCKET"
  "PRODUCTION_START_YEAR"  
  "PRODUCTION_START_MONTH" 
  "PRODUCTION_START_DAY"  
@@ -37,7 +38,9 @@ declare -a env_vars=(
  "PRODUCTION_DAY_OF_END_YEAR"  
  "PRODUCTION_DAY_OF_END_MONTH"
  "PRODUCTION_DAY_OF_END_DAY"  
- "PRODUCTION_DAY_OF_END_HOUR")
+ "PRODUCTION_DAY_OF_END_HOUR"
+ "PRODUCTION_EMAIL_ADDRESS"
+ "PRODUCTION_EMAIL_PASSWORD")
  
 echo "For loop"
 # Disabled environment variables
@@ -54,6 +57,16 @@ do
    echo -e "$i=\c" >> .env.prod
    printenv $i >> .env.prod
 done
+
+wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh;
+source ~/.nvm/nvm.sh;
+
+nvm use 14
+
+##Checking Package Versions
+echo "Checking Node..."
+node -v
+
 
 # Deploying!
 echo "Deploying!"
