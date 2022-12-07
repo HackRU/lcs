@@ -73,7 +73,7 @@ def user_read(event, context, user):
         if 'travelling_from' in user and 'reimbursement' in user['travelling_from']:
             del user['travelling_from']['reimbursement']
     
-    return {"statusCode": 200, "body": [stringify_timestamps(user)]}
+    return {"statusCode": 200, "body": stringify_timestamps([user])}
 
 
 @ensure_role([['director', 'organizer']], on_failure=lambda e, c, u, *a: user_read(e, c, u))
