@@ -1,5 +1,5 @@
 import config
-from src.schemas import ensure_schema, ensure_logged_in_user
+from src.schemas import ensure_schema, ensure_logged_in_user, get_token
 import boto3
 from botocore.exceptions import ClientError
 
@@ -71,22 +71,25 @@ def exists(file, email, s3_client):
 #      },
 #      "required": ["token"]
 #  })
-# @ensure_schema({
-#      "type":"object",
-#       "properties": {
 
-#         "body": {
-#           "type": "object",
-#           "properties": {
+# Note for tomorrow: error has something to do with @ensure_schema, change it so that headers obj inside event is kept
+@ensure_schema({
+     "type":"object",
+      "properties": {
 
-#             "token": {"type": "string"},
-#             },
-#             "required": ["token"]
-#         }
-#       },
-#       "required": ["body"]
-#  })
-#@ensure_logged_in_user()
+        "body": {
+          "type": "object",
+          "properties": {
+
+            "token": {"type": "string"},
+            },
+            "required": ["token"]
+        }
+      },
+      "required": ["body", "headers"]
+ })
+@get_token()
+@ensure_logged_in_user()
 def resume_vaccine_waiver(event, ctx, user=None):
     """
     Function used to upload a user's resume to a S3 bucket
@@ -109,7 +112,9 @@ def resume_vaccine_waiver(event, ctx, user=None):
     #         "statusCode": 500,
     #         "body": "failed to connect to s3" + str(e)
     #     }
-    print(event['path']['param_name'])
+    print("//////////// inside endpoint /////////////")
+    print("Event: ")
+    print(event)
     # print(event.path)
     # print("ctx")
     # print(ctx.function_name)

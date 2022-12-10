@@ -167,7 +167,7 @@ functions:
   #         request:
   #           template:
   #             application/json: '$input.body'
-  resume:
+  uploads:
     handler: src/resume.resume_vaccine_waiver
     events:
       - http:
@@ -179,22 +179,22 @@ functions:
             parameters: 
               paths: 
                 param_name: true
-            template:
-              application/json: '{ $input.body, "path": "$input.path" }'
-  waiver:
-    handler: src/resume.waiver
-    events:
-      - http:
-          path: waiver #/upload/{type}
-          integration: lambda
-          method: post
-          cors: true
-          request:
-            parameters: 
-              paths: 
-                param_name: true
-            template:
-              application/json: '$input.body'
+            # template:
+            #   application/json: '{ $input.body, "path": "$input.path" }'
+  # waiver:
+  #   handler: src/resume.resume_vaccine_waiver
+  #   events:
+  #     - http:
+  #         path: /upload1/{param_name} #waiver
+  #         integration: lambda
+  #         method: post
+  #         cors: true
+  #         request:
+  #           parameters: 
+  #             paths: 
+  #               param_name: true
+  #           # template:
+  #           #   application/json: '$input.body'
   vaccine:
     handler: src/resume.vaccine
     events:

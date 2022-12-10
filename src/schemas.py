@@ -20,6 +20,25 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         return wrapt
     return wrap
 
+def get_token(on_failure = lambda e, c, err: {"statusCode": 400, "body": "Error in JSON: {}".format(err)}):
+    """
+    Wrapper function used to extract the email, token, and pathName
+    """
+    def wrap(fn):
+        @wraps(fn)
+        def wrapt(event, context, *args):
+            email = event['body']['email']
+            token = event['body']['token']
+            pathName = event['path']['param_name']
+            print("headers")
+            print(event['headers'])
+            header = event['headers']
+            event = {"email": email, "token": token, "pathName": pathName, "headers": header}
+            #print(obj) 
+            return fn(event, context, *args)
+        return wrapt
+    return wrap
+
 
 def ensure_logged_in_user(email_key='email', token_key='token',
                           on_failure=lambda e, c, m, *a: {"statusCode": 403, "body": m}):
@@ -31,6 +50,7 @@ def ensure_logged_in_user(email_key='email', token_key='token',
         def wrapt(event, context, *args):
 
             token = event[token_key]
+            #print(event['path']['param_name'])
             try:
                 decoded_payload = jwt.decode(token, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
             except jwt.exceptions.InvalidTokenError as err:
