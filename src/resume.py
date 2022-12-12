@@ -86,7 +86,7 @@ def exists(file, email, s3_client):
             "required": ["token"]
         }
       },
-      "required": ["body", "headers"]
+      "required": ["body"]
  })
 @get_token()
 @ensure_logged_in_user()
@@ -94,27 +94,27 @@ def resume_vaccine_waiver(event, ctx, user=None):
     """
     Function used to upload a user's resume to a S3 bucket
     """
-    # # creates a client connection to the S3 bucket
-    # client = boto3.client("s3", **config.AWS)
-    # # attempts to create presigned URLs to upload and download the resume as well as check if a
-    # # resume for that user already exists in S3
-    # try:
-    #     return {
-    #         "statusCode": 200, "body": {
-    #             "upload": presign(file, method="put_object", user=user, s3_client=client),
-    #             "download": presign(file, method="get_object", user=user, s3_client=client),
-    #             "exists": exists(file, email=user["email"], s3_client=client)
-    #         }
-    #     }
-    # # if there are any errors, they are communicated back
-    # except ClientError as e:
-    #     return {
-    #         "statusCode": 500,
-    #         "body": "failed to connect to s3" + str(e)
-    #     }
-    print("//////////// inside endpoint /////////////")
-    print("Event: ")
-    print(event)
+    # creates a client connection to the S3 bucket
+    client = boto3.client("s3", **config.AWS)
+    # attempts to create presigned URLs to upload and download the resume as well as check if a
+    # resume for that user already exists in S3
+    # print("//////////// inside endpoint /////////////")
+    # print(event)
+    file = event['pathName']
+    try:
+        return {
+            "statusCode": 200, "body": {
+                "upload": presign(file, method="put_object", user=user, s3_client=client),
+                "download": presign(file, method="get_object", user=user, s3_client=client),
+                "exists": exists(file, email=user["email"], s3_client=client)
+            }
+        }
+    # if there are any errors, they are communicated back
+    except ClientError as e:
+        return {
+            "statusCode": 500,
+            "body": "failed to connect to s3" + str(e)
+        }
     # print(event.path)
     # print("ctx")
     # print(ctx.function_name)

@@ -30,11 +30,8 @@ def get_token(on_failure = lambda e, c, err: {"statusCode": 400, "body": "Error 
             email = event['body']['email']
             token = event['body']['token']
             pathName = event['path']['param_name']
-            print("headers")
-            print(event['headers'])
             header = event['headers']
             event = {"email": email, "token": token, "pathName": pathName, "headers": header}
-            #print(obj) 
             return fn(event, context, *args)
         return wrapt
     return wrap

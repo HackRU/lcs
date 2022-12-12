@@ -167,7 +167,7 @@ functions:
   #         request:
   #           template:
   #             application/json: '$input.body'
-  uploads:
+  uploads: # this handler will handle 3 routes: waiver, resume, and vaccine
     handler: src/resume.resume_vaccine_waiver
     events:
       - http:
@@ -195,20 +195,20 @@ functions:
   #               param_name: true
   #           # template:
   #           #   application/json: '$input.body'
-  vaccine:
-    handler: src/resume.vaccine
-    events:
-      - http:
-          path: vaccine
-          integration: lambda
-          method: post
-          cors: true
-          request:
-            parameters: 
-              paths: 
-                param_name: true
-            template:
-              application/json: '$input.body'
+  # vaccine:
+  #   handler: src/resume.vaccine
+  #   events:
+  #     - http:
+  #         path: vaccine
+  #         integration: lambda
+  #         method: post
+  #         cors: true
+  #         request:
+  #           parameters: 
+  #             paths: 
+  #               param_name: true
+  #           template:
+  #             application/json: '$input.body'
   send-emails:
     handler: src/emails.send_to_emails
     events:
