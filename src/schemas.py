@@ -13,7 +13,8 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         @wraps(fn)
         def wrapt(event, context, *extras):
             try:
-                js.validate(event, schema)
+                print(event)
+                js.validate(event['body'], schema)
                 return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
                 return util.add_cors_headers(on_failure(event, context, e))
@@ -29,8 +30,8 @@ def ensure_logged_in_user(email_key='email', token_key='token',
     def rapper(fn):
         @wraps(fn)
         def wrapt(event, context, *args):
-
-            token = event[token_key]
+            print(event)
+            token = event['body'][token_key]
             try:
                 decoded_payload = jwt.decode(token, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
             except jwt.exceptions.InvalidTokenError as err:

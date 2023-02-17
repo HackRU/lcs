@@ -52,7 +52,7 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
-  - serverless-dotenv-plugin
+  # - serverless-dotenv-plugin
 package:
   include:
      - 'src/*.py'
@@ -231,9 +231,9 @@ functions:
           integration: lambda
           method: post
           cors: true
-          request:
-            template:
-              application/json: '$input.body'
+          # request:
+          #   template:
+          #     application/json: '$input.body'
   link-qr:
     handler: src/qrscan.qr_match
     events:

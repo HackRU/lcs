@@ -3,7 +3,6 @@
 # docker pull nikolaik/python-nodejs:python3.9-nodejs14
 # docker build -t lcs .
 # docker run -p 3000:3000 -p 3001:3001 -p 3002:3002 -it --name serverless lcs
-
 # if you make changes do not hesistate to run docker rm serverless 
 # followed by the docker build and docker run commands to test out your changes!
 
