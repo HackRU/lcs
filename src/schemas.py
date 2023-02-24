@@ -14,7 +14,7 @@ def ensure_schema(schema, on_failure = lambda e, c, err: {"statusCode": 400, "bo
         def wrapt(event, context, *extras):
             try:
                 print(event)
-                js.validate(event['body'], schema)
+                js.validate(event, schema)
                 return util.add_cors_headers(fn(event, context, *extras))
             except js.exceptions.ValidationError as e:
                 return util.add_cors_headers(on_failure(event, context, e))
@@ -31,11 +31,12 @@ def ensure_logged_in_user(email_key='email', token_key='token',
         @wraps(fn)
         def wrapt(event, context, *args):
             print(event)
-            token = event['body'][token_key]
+            token = event['headers']['Authorization']
+            print(token)
             try:
                 decoded_payload = jwt.decode(token, config.JWT_SECRET, algorithms=[config.JWT_ALGO])
             except jwt.exceptions.InvalidTokenError as err:
-                return on_failure(event, context, str(err), *args)
+                return on_failure(event['body'], context, str(err), *args)
 
             email = decoded_payload["email"]
             users = util.coll('users')
@@ -43,15 +44,15 @@ def ensure_logged_in_user(email_key='email', token_key='token',
             # try to find user
             user = users.find_one({'email': email})
             if user is None:
-                return on_failure(event, context, 'User Not found', *args)
+                return on_failure(event['body'], context, 'User Not found', *args)
             
             # look for token
             tokens = list(filter(lambda tk: tk == token, user['token']))
             if len(tokens) == 0:
-                return on_failure(event, context, 'Unauthorized token', *args)
+                return on_failure(event['body'], context, 'Unauthorized token', *args)
             del user['_id']
             del user['password']
-            return fn(event, context, user, *args)
+            return fn(event['body'], context, user, *args)
         return wrapt
     return rapper
 
