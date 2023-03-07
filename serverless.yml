@@ -52,7 +52,7 @@ provider:
 plugins:
   - serverless-python-requirements
   - serverless-offline
-  - serverless-dotenv-plugin
+  # - serverless-dotenv-plugin
 package:
   include:
      - 'src/*.py'
@@ -95,7 +95,7 @@ functions:
     handler: src/google_auth.authorize_google
     events:
       - http:
-          path: 
+          path: google-auth
           integration: lambda
           method: post
           cors: true
