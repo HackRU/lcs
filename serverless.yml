@@ -91,6 +91,17 @@ functions:
           request:
             template:
               application/json: '$input.body'
+  google-authorize:
+    handler: src/google_auth.authorize_google
+    events:
+      - http:
+          path: 
+          integration: lambda
+          method: post
+          cors: true
+          request:
+            template:
+              application/json: '$input.body'
   consume:
     handler: src/consume.consume_url
     events:

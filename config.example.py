@@ -12,7 +12,7 @@ SLACK_KEYS = {
     'token': '',
     'channel': ''
 }
-
+GOOGLE_CLIENT_ID = ""
 EMAIL_ADDRESS = ""
 #Must use a generated app password for gmail
 EMAIL_PASSWORD = ""

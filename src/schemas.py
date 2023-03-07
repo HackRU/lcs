@@ -49,7 +49,8 @@ def ensure_logged_in_user(email_key='email', token_key='token',
             if len(tokens) == 0:
                 return on_failure(event, context, 'Unauthorized token', *args)
             del user['_id']
-            del user['password']
+            if 'password' in user:
+                del user['password']
             return fn(event, context, user, *args)
         return wrapt
     return rapper
