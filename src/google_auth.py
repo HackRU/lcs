@@ -29,12 +29,12 @@ def authorize_google(event, context):
     #Last point: Or do we let users have two seperate accounts? (One with google signin and one password auth)
        #but currently impossible since we rely on email as unique for most endpoints
         #but then do we give option of only google-signin accounts to have passwords?
-    print(event)
+   
     token = event["token"]
     # need to check for csrf cookies
     try:
         idinfo = id_token.verify_oauth2_token(token, requests.Request(), config.GOOGLE_CLIENT_ID)
-        print(idinfo)
+        
         #safe to use id token since comes froom google (and verified)
         email  = idinfo["email"]
         google_id = idinfo['sub']
