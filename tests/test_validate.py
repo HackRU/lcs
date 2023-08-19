@@ -54,20 +54,16 @@ def test_validate_token():
 
 @pytest.mark.run(order=2)
 def test_add_timestamp_when_registered_success():
-    user_email = "user@mentorq.test"
-    auth_email = "director@test"
-    auth_pass = "director"
-    auth_dict = { 'email': auth_email, "password": auth_pass}
-    auth = authorize.authorize(auth_dict, None)
+    user_email = "creep@radiohead.ed"
+    password = "love"
+    user_dict = { 'email': user_email, "password": password}
+    auth = authorize.authorize(user_dict, None)
 
     auth_token = auth['body']['token']
 
     # make sure the test subject and authorizer exists
-    user1_dict = get_db_user(user_email)
-    assert 'email' in user1_dict and user1_dict['email'] == user_email
-
-    auth_user = get_db_user(auth_email)
-    assert "email" in auth_user and auth_user['email'] == auth_email
+    user_db = get_db_user(user_email)
+    assert 'email' in user_db and user_db['email'] == user_email
 
     updates = {
         "$set": {
@@ -84,7 +80,7 @@ def test_add_timestamp_when_registered_success():
     }
 
     # success case
-    success = validate.update(event, auth_user)
+    success = validate.update(event, user_db)
     assert check_by_schema(schema_for_http(200, {"type": "string", "const": "Successful request."}), success)
     confirm = get_db_user(user_email)
     assert 'registered_at' in confirm and confirm['registration_status'] == "registered"
@@ -103,9 +99,9 @@ def test_add_timestamp_when_registered_success():
 
 @pytest.mark.run(order=3)
 def test_add_timestamp_when_registered_failure():
-    # case that won't add the timestamp because the registration_status beforehand is not "unregistered"
-    auth_email = "director@test"
-    auth_pass = "director"
+    # case that won't add the timestamp 
+    auth_email = "creep@radiohead.ed"
+    auth_pass = "love"
     auth_dict = { 'email': auth_email, "password": auth_pass}
     auth = authorize.authorize(auth_dict, None)
 
@@ -113,14 +109,9 @@ def test_add_timestamp_when_registered_failure():
     auth_user = get_db_user(auth_email)
     assert "email" in auth_user and auth_user['email'] == auth_email
 
-    # this user's initial registration_status is "coming", so his registration_status won't change at all even after updates
-    user_email = "test@test"
-    user_dict = get_db_user(user_email)
-    assert 'email' in user_dict and user_dict['email'] == user_email
-
     updates = {
         "$set": {
-            "registration_status": "registered"
+            "grad_year": "2025"
         }, 
         "$inc": {},
         "$push": {}
@@ -128,12 +119,22 @@ def test_add_timestamp_when_registered_failure():
 
     event = {
         "token": auth_token,
-        "user_email": user_email, 
+        "user_email": auth_email, 
         "updates": updates
     }
 
     failure = validate.update(event, auth_user)
     assert check_by_schema(schema_for_http(200, {"type": "string", "const": "Successful request."}), failure)
-    # nothing will happen because the updates are invalid: You cannot change the hacker's registration_status from 'coming' to 'unregistered'
-    confirm = get_db_user(user_email)
-    assert "registered_at" not in confirm and confirm['registration_status'] != 'unregistered'
+    # no timestamp will be added because the update is completely unrelated to changing "registration_status" to "registered"
+    confirm = get_db_user(auth_email)
+    # make sure timestamp does not exist in this user's db
+    assert "registered_at" not in confirm 
+
+    # revert all updates that have been made in this test
+    users = connect_to_db()
+    revert_updates = {
+        "$set": {
+            "grad_year": ""
+        }
+    }
+    users.update_one({'email': auth_email}, revert_updates)    
