@@ -80,7 +80,8 @@ def test_add_timestamp_when_registered_success():
     }
 
     # success case
-    success = validate.update(event, None, user_db)
+    # pylint: disable=no-value-for-parameter
+    success = validate.update(event, None)
     assert check_by_schema(schema_for_http(200, {"type": "string", "const": "Successful request."}), success)
     confirm = get_db_user(user_email)
     assert 'registered_at' in confirm and confirm['registration_status'] == "registered"
@@ -123,7 +124,8 @@ def test_add_timestamp_when_registered_failure():
         "updates": updates
     }
 
-    failure = validate.update(event, None, auth_user)
+    # pylint: disable=no-value-for-parameter
+    failure = validate.update(event, None)
     assert check_by_schema(schema_for_http(200, {"type": "string", "const": "Successful request."}), failure)
     # no timestamp will be added because the update is completely unrelated to changing "registration_status" to "registered"
     confirm = get_db_user(auth_email)
