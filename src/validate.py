@@ -8,6 +8,7 @@ from src import util
 
 import config
 
+from datetime import datetime
 
 
 @ensure_schema({
@@ -244,4 +245,16 @@ def update(event, context, auth_user):
         return {"statusCode": 403, "body": "No provided updates were valid."}
     # update the user and report success.
     user_coll.update_one({'email': event['user_email']}, updates)
+
+    # if the user has just registered, we add a timestamp to that person's profile
+    if results['registration_status'] == "unregistered" and "registration_status" in updates['$set']:
+        curr_datetime = datetime.now(config.TIMEZONE) 
+        newData = {
+            "$set": {
+                "registered_at": curr_datetime.strftime("%Y-%m-%d %H:%M:%S") # must convert type Datetime to String before update
+            },
+            '$inc': {},
+            '$push': {}
+        }
+        user_coll.update_one({'email': event['user_email']}, newData)
     return {"statusCode": 200, "body": "Successful request."}

@@ -50,8 +50,10 @@ def authorize(event, context):
     }
 
     encoded_jwt = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGO)
+    if isinstance(encoded_jwt, bytes): # if encoded jwt is type bytes, json does not like raw bytes so convert it to string
+        encoded_jwt = encoded_jwt.decode('utf-8')
     update_val = {
-        "token": encoded_jwt.decode("utf-8"), # Encoded jwt is type bytes, json does not like raw bytes so convert to string
+        "token": encoded_jwt, 
     }
 
     # appends the newly generated token to the list of auth tokens associated with this user
