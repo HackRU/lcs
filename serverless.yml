@@ -273,7 +273,7 @@ functions:
       - http:
           path: statistics
           integration: lambda
-          method: get
+          method: post
           cors: true
           request: 
             template: 
