@@ -6,7 +6,7 @@ import config
 from src.schemas import ensure_schema
 from src import util, consume
 
-
+# test comment
 @ensure_schema({
     "type": "object",
     "properties": {
