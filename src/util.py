@@ -37,7 +37,7 @@ def get_db():
     connection pooling
     """
     global _cached
-    if not _cached:
+    if _cached is None:
         _cached = MongoClient(config.DB_URI).get_database()
     return _cached
 

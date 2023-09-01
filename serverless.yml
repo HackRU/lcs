@@ -257,7 +257,7 @@ functions:
             template:
               application/json: '$input.body'
   slack-dm:
-    handler: src/slack.generate_dm_link
+    handler: src/slack.generate_dm_link 
     -http:
       path: slack-dm
       integration: lambda
@@ -266,3 +266,15 @@ functions:
       request:
         template:
           application/json: '$input.body'
+
+  statistics: 
+    handler: src/statistics.statistics
+    events: 
+      - http:
+          path: statistics
+          integration: lambda
+          method: post
+          cors: true
+          request: 
+            template: 
+              application/json: '$input.body'

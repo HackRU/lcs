@@ -8,15 +8,16 @@ from src import util
 
 import config
 
+from datetime import datetime
+
 def stringify_timestamps(res):
     """
     Function used to stringify timestamps from datetime format
     """
-    for obj in res:
-        if "timestamps" in obj["day_of"]:
-            for event in obj["day_of"]["timestamps"]:
-                for i in range(len(obj["day_of"]["timestamps"].get(event))):
-                    obj["day_of"]["timestamps"].get(event)[i] = obj["day_of"]["timestamps"].get(event)[i] .isoformat()
+    if "timestamps" in res["day_of"]:
+        for event in res["day_of"]["timestamps"]:
+            for i in range(len(res["day_of"]["timestamps"].get(event))):
+                res["day_of"]["timestamps"].get(event)[i] = res["day_of"]["timestamps"].get(event)[i].isoformat()
     return res
 
 @ensure_schema({
@@ -31,7 +32,7 @@ def validate(event, context, user=None):
     """
     Given a token, ensure that the token is an unexpired token of the user with the provided email.
     """
-    return {"statusCode": 200, "body": stringify_timestamps(list(user)), "isBase64Encoded": False}
+    return {"statusCode": 200, "body": stringify_timestamps(user), "isBase64Encoded": False}
 
 
 def validate_updates(user, updates, auth_usr=None):
@@ -253,4 +254,16 @@ def update(event, context, auth_user):
         return {"statusCode": 403, "body": "No provided updates were valid."}
     # update the user and report success.
     user_coll.update_one({'email': event['user_email']}, updates)
+
+    # if the user has just registered, we add a timestamp to that person's profile
+    if results['registration_status'] == "unregistered" and "registration_status" in updates['$set']:
+        curr_datetime = datetime.now(config.TIMEZONE) 
+        newData = {
+            "$set": {
+                "registered_at": curr_datetime.strftime("%Y-%m-%d %H:%M:%S") # must convert type Datetime to String before update
+            },
+            '$inc': {},
+            '$push': {}
+        }
+        user_coll.update_one({'email': event['user_email']}, newData)
     return {"statusCode": 200, "body": "Successful request."}
