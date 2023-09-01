@@ -10,6 +10,15 @@ import config
 
 from datetime import datetime
 
+def stringify_timestamps(res):
+    """
+    Function used to stringify timestamps from datetime format
+    """
+    if "timestamps" in res["day_of"]:
+        for event in res["day_of"]["timestamps"]:
+            for i in range(len(res["day_of"]["timestamps"].get(event))):
+                res["day_of"]["timestamps"].get(event)[i] = res["day_of"]["timestamps"].get(event)[i].isoformat()
+    return res
 
 @ensure_schema({
     "type": "object",
@@ -23,7 +32,7 @@ def validate(event, context, user=None):
     """
     Given a token, ensure that the token is an unexpired token of the user with the provided email.
     """
-    return {"statusCode": 200, "body": user, "isBase64Encoded": False}
+    return {"statusCode": 200, "body": stringify_timestamps(user), "isBase64Encoded": False}
 
 
 def validate_updates(user, updates, auth_usr=None):
