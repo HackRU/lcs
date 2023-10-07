@@ -19,7 +19,8 @@ def stringify_timestamps(res):
         if "timestamps" in obj["day_of"]:
             for event in obj["day_of"]["timestamps"]:
                 for i in range(len(obj["day_of"]["timestamps"].get(event))):
-                    obj["day_of"]["timestamps"].get(event)[i] = obj["day_of"]["timestamps"].get(event)[i] .isoformat()
+                    if type(obj["day_of"]["timestamps"].get(event)[i]) == datetime: # if datetime then convert to string
+                        obj["day_of"]["timestamps"].get(event)[i] = obj["day_of"]["timestamps"].get(event)[i] .isoformat()
     return res
 
 @ensure_schema({
