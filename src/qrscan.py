@@ -51,6 +51,7 @@ def attend_event(aws_event, context, user=None):
     Function used to mark that a user has attended an event
     """
     users = coll('users')
+    houses = coll('houses')
     qr = aws_event['qr']
     event = aws_event['event']
     again = aws_event.get('again', False)
@@ -67,7 +68,14 @@ def attend_event(aws_event, context, user=None):
                                                 },
                                              return_document=pymongo.ReturnDocument.AFTER)
         
-        return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}}
+        # update the user's house points to reflect event attendance by incrementing it by 1
+        update_points = houses.find_one_and_update({"name": user['house']}, 
+                                                   {
+                                                       '$inc': {'points': 1}
+                                                   },
+                                                return_document=pymongo.ReturnDocument.AFTER)
+
+        return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}, 'user_house': user['house'] ,'user_house_updated_points': update_points['points']}
 
     # TODO: revisit if it's valid for qr to be an email
     user = users.find_one({'email': qr})
