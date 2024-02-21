@@ -278,3 +278,27 @@ functions:
           request: 
             template: 
               application/json: '$input.body'
+
+  sponsors:
+    handler: src/sponsors.sponsors
+    events:
+      - http:
+          path: sponsors
+          integration: lambda
+          method: get
+          cors: true
+          request: 
+            template:
+              application/json: '$input.body'
+
+  make-teams:
+    handler: src/teams.make_teams
+    events:
+      - http: 
+          path: make-teams
+          integration: lambda
+          method: post
+          cors: true
+          request: 
+            template:
+              application/json: '$input.body'

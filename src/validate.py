@@ -255,12 +255,19 @@ def update(event, context, auth_user):
     # update the user and report success.
     user_coll.update_one({'email': event['user_email']}, updates)
 
-    # if the user has just registered, we add a timestamp to that person's profile
+    # if the user has just registered, we add house assigment and a timestamp to that person's profile
     if results['registration_status'] == "unregistered" and "registration_status" in updates['$set']:
+        # house assignment
+        houses = ["Roar.js", "Bitsprout", "Pseudoclaw", "Python"]
+        head_count = user_coll.count_documents({"registration_status": "registered"})
+        house_placement = houses[head_count%len(houses)]
+
+        # timestamp
         curr_datetime = datetime.now(config.TIMEZONE) 
         newData = {
             "$set": {
-                "registered_at": curr_datetime.strftime("%Y-%m-%d %H:%M:%S") # must convert type Datetime to String before update
+                "registered_at": curr_datetime.strftime("%Y-%m-%d %H:%M:%S"), # must convert type Datetime to String before update
+                "house": house_placement
             },
             '$inc': {},
             '$push': {}
