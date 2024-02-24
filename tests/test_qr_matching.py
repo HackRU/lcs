@@ -90,10 +90,11 @@ def test_attend():
         assert result['statusCode'] == 200
 
     # by email
+    users = util.coll('users')
+    users.update_one({'email': hckemail}, {'$set': {'house': 'Python'}})
     test(hckemail)
 
     # reset day_of
-    users = util.coll('users')
     users.update_one({'email': hckemail}, {'$set': {'day_of.' + event: 0}})
 
     # by qr

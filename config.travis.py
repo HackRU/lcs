@@ -9,7 +9,9 @@ DB_URI = DB_URI_LOCAL
 DB_COLLECTIONS = {
     "users": "users",
     "magic links": "magicLinks",
-    "slack messages": "slackMessages"
+    "slack messages": "slackMessages",
+    "houses": "houses",
+    "teams": "teams"
 }
 
 EMAIL_ADDRESS = os.getenv("TRAVIS_TEST_EMAIL_ADDRESS")
