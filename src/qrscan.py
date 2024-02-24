@@ -67,15 +67,14 @@ def attend_event(aws_event, context, user=None):
                                                     '$push': {'day_of.timestamps.' + event: datetime.utcnow()}
                                                 },
                                              return_document=pymongo.ReturnDocument.AFTER)
-        
         # update the user's house points to reflect event attendance by incrementing it by 1
-        update_points = houses.find_one_and_update({"name": user['house']}, 
+        update_points = houses.find_one_and_update({"name": new_user['house']}, 
                                                    {
                                                        '$inc': {'points': 1}
                                                    },
                                                 return_document=pymongo.ReturnDocument.AFTER)
 
-        return {'statusCode': 200, 'body': {'email': user['email'], 'new_count': new_user['day_of'][event]}, 'user_house': user['house'] ,'user_house_updated_points': update_points['points']}
+        return {'statusCode': 200, 'body': {'email': new_user['email'], 'new_count': new_user['day_of'][event], 'user_house': update_points}}
 
     # TODO: revisit if it's valid for qr to be an email
     user = users.find_one({'email': qr})
