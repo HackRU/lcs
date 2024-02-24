@@ -67,6 +67,7 @@ def attend_event(aws_event, context, user=None):
                                                     '$push': {'day_of.timestamps.' + event: datetime.utcnow()}
                                                 },
                                              return_document=pymongo.ReturnDocument.AFTER)
+
         # update the user's house points to reflect event attendance by incrementing it by 1
         update_points = houses.find_one_and_update({"name": new_user['house']}, 
                                                    {
