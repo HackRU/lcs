@@ -40,6 +40,7 @@ def qr_match(event, context, user=None):
         'token': {'type': 'string'},
         'qr': {'type': 'string'},
         'event': {'type': 'string'},
+        'point': {'type': 'integer'},
         'again': {'type': 'boolean'}
     },
     'required': ['token', 'qr', 'event']
@@ -55,12 +56,17 @@ def attend_event(aws_event, context, user=None):
     qr = aws_event['qr']
     event = aws_event['event']
     again = aws_event.get('again', False)
+    point = aws_event.get('point', 0)
+
+    # in case user accidentally put a negative number
+    if point < 0:
+        point = 0
 
     def attend(user):
         # if the user has already attended the event and is not an event that can be re-attended, complain
         if not again and user['day_of'].get(event, 0) > 0:
             return {'statusCode': 402, 'body': 'user already checked into event'}
-        # update the user data to reflect event attendance by incrementing the count of the event by 1
+        # update the user data to reflect event attendance by incrementing the count of the event by the variable 'point'
         new_user = users.find_one_and_update({'email': user['email']},
                                                 { 
                                                     '$inc': {'day_of.' + event: 1},
@@ -68,10 +74,10 @@ def attend_event(aws_event, context, user=None):
                                                 },
                                              return_document=pymongo.ReturnDocument.AFTER)
 
-        # update the user's house points to reflect event attendance by incrementing it by 1
+        # update the user's house points to reflect event attendance by incrementing it by the variable 'point'
         update_points = houses.find_one_and_update({"name": new_user['house']}, 
                                                    {
-                                                       '$inc': {'points': 1}
+                                                       '$inc': {'points': point}
                                                    },
                                                 return_document=pymongo.ReturnDocument.AFTER)
 
