@@ -8,7 +8,9 @@ DB_URI = DB_URI_LOCAL
 DB_COLLECTIONS = {
     "users": "users",
     "magic links": "magicLinks",
-    "slack messages": "slackMessages"
+    "slack messages": "slackMessages",
+    "houses": "houses",
+    "teams": "teams"
 }
 
 SPARKPOST_KEY = os.getenv("DEVELOP_SPARKPOST_KEY", "")

@@ -9,7 +9,9 @@ DB_URI = os.getenv("PRODUCTION_DB_URI", "")
 DB_COLLECTIONS = {
     "users": "users",
     "magic links": "magicLinks",
-    "slack messages": "slackMessages"
+    "slack messages": "slackMessages",
+    "houses": "houses",
+    "teams": "teams"
 }
 
 SPARKPOST_KEY = os.getenv("PRODUCTION_SPARKPOST_KEY", "")
