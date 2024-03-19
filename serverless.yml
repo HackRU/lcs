@@ -302,3 +302,15 @@ functions:
           request: 
             template:
               application/json: '$input.body'
+
+  get-house-points: 
+    handler: src/houses.get_all_points
+    events: 
+      - http: 
+          path: get-house_points
+          integration: lambda
+          method: get
+          cors: true
+          request: 
+            template:
+              application/json: '$input.body'

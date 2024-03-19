@@ -9,7 +9,9 @@ DB_URI = os.getenv("PRODUCTION_DB_URI", "")
 DB_COLLECTIONS = {
     "users": "users",
     "magic links": "magicLinks",
-    "slack messages": "slackMessages"
+    "slack messages": "slackMessages",
+    "houses": "houses",
+    "teams": "teams"
 }
 
 SPARKPOST_KEY = os.getenv("PRODUCTION_SPARKPOST_KEY", "")
@@ -61,6 +63,7 @@ AWS = {
 RESUME_BUCKET = os.getenv("PRODUCTION_RESUME_BUCKET", "")
 WAIVER_BUCKET = os.getenv("PRODUCTION_WAIVER_BUCKET", "")
 VACCINE_BUCKET = os.getenv("PRODUCTION_VACCINE_BUCKET", "")
+SPONSOR_BUCKET = os.getenv("PRODUCTION_SPONSOR_BUCKET", "")
 # Json webtoken
 JWT_SECRET = os.getenv("PRODUCTION_JWT_SECRET", "")
 JWT_ALGO = os.getenv("PRODUCTION_JWT_ALGO", "")
