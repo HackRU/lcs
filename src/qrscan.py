@@ -81,7 +81,7 @@ def attend_event(aws_event, context, user=None):
                                                    },
                                                 return_document=pymongo.ReturnDocument.AFTER)
 
-        return {'statusCode': 200, 'body': {'email': new_user['email'], 'new_count': new_user['day_of'][event], 'user_house': update_points}}
+        return {'statusCode': 200, 'body': {'email': new_user['email'], 'new_count': new_user['day_of'][event], 'user_house': new_user['house']}}
 
     # TODO: revisit if it's valid for qr to be an email
     user = users.find_one({'email': qr})
